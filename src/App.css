@@ -1,0 +1,111 @@
+.App {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.button {
+  background-color: rgb(138, 71, 204);
+  width: fit-content;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: calc(12px + 1vmin);
+  padding: 0.25em 0.6em;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.button.active {
+  background-color: rgb(96, 24, 163);
+}
+
+.button:hover {
+  background-color: mediumorchid;
+}
+
+.popup {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 25%;
+  bottom: 25%;
+  margin: auto;
+  background-color: #282c34;
+  color: white;
+}
+
+.menu {
+  display: flex;
+  /* border-style: solid; */
+  text-align: left;
+}
+
+.menu-left {
+  flex-grow: 1;
+}
+
+.menu-right {
+  display: flex;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
+
+.overflow-hidden { overflow: hidden; }
+
+.month {
+  min-width: 100%;
+  padding-left: 0.2em;
+  padding-right: 0.5em;
+  /* border-style: solid;
+  border-width: 3px;
+  border-color: blueviolet; */
+}
+
+.day {
+  display: flex;
+  justify-content: space-between;
+  border-style: solid;
+  border-width: 2px;
+  border-color: blueviolet;
+  margin-bottom: 0.2em;;
+}
+
+.day-item {
+  text-align: center;
+  border-left-style: solid;
+  border-width: 1px;
+  border-color: blueviolet;
+}
+
+.time-input {
+  width: 5em;
+  margin-bottom: 0.5em;
+}
+
+.error {
+  color: red;
+}
