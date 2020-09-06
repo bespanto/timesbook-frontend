@@ -4,18 +4,18 @@ import * as DateUtils from "../DateUtils";
 // selectors
 export const selectBookingEntries = (state) => state.bookingEntries;
 export const selectBookingEntryByDay = (state, date) =>{
-  return state.bookingEntries.find((item) => item.day === DateUtils.getDateString(date))
+  return state.bookingEntries.find((item) => item.day === DateUtils.getNormalizedDateString(date))
 };
 
 const bookingEntriesMap = [
   {
-    day: "2020-8-2",
+    day: "2020-09-02",
     start: "08:20",
     end: "12:35",
     break: "01:10",
   },
   {
-    day: "2020-8-3",
+    day: "2020-09-03",
     start: "09:40",
     end: "15:45",
     break: "02:15",

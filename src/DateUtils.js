@@ -2,8 +2,13 @@ export function getDaysInMonth(year, month) {
   return 32 - new Date(year, month, 32).getDate();
 }
 
-export function getDateString(date) {
-  return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+// Get normalized date string (i.e. 2020-09-05) 
+export function getNormalizedDateString(date) {
+  let month = date.getMonth() + 1; // convert to realy month count (i.e 9 => September)
+  month < 10 ? month = '0' + month : month = '' + month
+  let day = date.getDate();
+  day < 10 ? day = '0' + day : day = '' + day
+  return date.getFullYear() + "-" + month + "-" + day;
 }
 
 export function getMonthName(date) {

@@ -32,7 +32,7 @@ function BookingDayForm(props) {
       dispatch(
         BookingEntriesSlice.editBookingEntry(
           {
-            day: DateUtils.getDateString(props.date),
+            day: DateUtils.getNormalizedDateString(props.date),
             start: editStart,
             end: editEnd,
             break: editBreak,
@@ -80,7 +80,7 @@ function BookingDayForm(props) {
   return (
     <div>
       <div className="error">{error}</div>
-      <p>{DateUtils.getDateString(props.date)}</p>
+      <p>{DateUtils.getNormalizedDateString(props.date)}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>
           <div>Start</div>
