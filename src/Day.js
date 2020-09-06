@@ -23,8 +23,15 @@ function Day(props) {
       <div className="col-2 text-center text-muted day-item">
         {bookingEntry === undefined ? "--:--" : bookingEntry.break}
       </div>
-      <div className="col-2 text-center text-muted day-item">--:--</div>
-      <div className="col-2 text-center text-muted day-item">--:--</div>
+      <div className="col-2 text-center text-muted day-item">
+        {bookingEntry === undefined ? "--:--" : DateUtils.minutesToTimeString(
+          DateUtils.getWorkingTimeInMinutes(bookingEntry.start, bookingEntry.end, bookingEntry.break))}
+      </div>
+      <div className="col-2 text-center text-muted day-item">
+        {bookingEntry === undefined ? "--:--" : DateUtils.minutesToTimeString(
+          DateUtils.getWorkingTimeInMinutes(bookingEntry.start, bookingEntry.end, bookingEntry.break)
+          - 8*60)}
+      </div>
       <div className="col-2 text-center day-item small">
         <input
           type="button"

@@ -17,13 +17,11 @@ function BookingDayForm(props) {
     e.preventDefault()
 
     let error = '';
-    if (!isTimeEntryOk(editStart))
-      error = 'Start has not right form hh:mm';
-    else
-      if (!isTimeEntryOk(editEnd))
-        error = 'End has not right form hh:mm';
-      else if (!isTimeEntryOk(editBreak))
-        error = 'Break has not right form hh:mm';
+    try {
+      DateUtils.getWorkingTimeInMinutes(editStart, editEnd, editBreak)
+    } catch (err) {
+      error = err.message;
+    }
 
     if (error !== '')
       setError(error);
@@ -41,24 +39,6 @@ function BookingDayForm(props) {
       );
       props.handleClose();
     }
-  }
-
-  // Check format hh:mm
-  function isTimeEntryOk(timeField) {
-    const words = timeField.split(':');
-    // if (words.length === 2 && Number.isInteger(words[0]) && words[0] < 24 && words[0] >= 0 && Number.isInteger(words[1]) && words[0] < 60 && words[0] >= 0)
-    const hours = filterInt(words[0]);
-    const minutes = filterInt(words[1]);
-    if (words.length === 2 && hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60)
-      return true;
-    else
-      return false
-  }
-
-  function filterInt(value) {
-    if (/^(-|\+)?([0-9]+|Infinity)$/.test(value))
-      return Number(value);
-    return NaN;
   }
 
   function handleChange(event) {
@@ -88,7 +68,7 @@ function BookingDayForm(props) {
             <input
               id="start"
               name="start"
-              type="text"
+              type="time"
               maxLength="5"
               className="time-input"
               value={editStart}
@@ -99,7 +79,7 @@ function BookingDayForm(props) {
           <div>
             <input
               name="end"
-              type="text"
+              type="time"
               maxLength="5"
               className="time-input"
               value={editEnd}
@@ -110,7 +90,7 @@ function BookingDayForm(props) {
           <div>
             <input
               name="break"
-              type="text"
+              type="time"
               maxLength="5"
               className="time-input"
               value={editBreak}
