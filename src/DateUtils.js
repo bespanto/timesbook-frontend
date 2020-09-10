@@ -43,8 +43,9 @@ export function getWeekday(date) {
 
 export function minutesToTimeString(minutes) {
 
+  console.log(minutes);
   let h = Math.trunc(minutes / 60);
-  if (h < 10 && h > 0)
+  if (h < 10 && h >= 0)
     h = '0' + h;
   else
     if (h < 0) {
@@ -54,7 +55,7 @@ export function minutesToTimeString(minutes) {
     }
 
   let m = minutes % 60
-  if (m < 10 && m > 0)
+  if (m < 10 && m >= 0)
     m = '0' + m;
   else
     if (m < 0) {
