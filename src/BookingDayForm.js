@@ -48,8 +48,8 @@ function BookingDayForm(props) {
   }
 
   return (
-    <div>
-      <p>{moment(props.utcBookingDay).format(DAY_FORMAT)}</p>
+    <div style={{marginLeft: '1.75em', marginRight: '1.75em'}}>
+      <p>{moment(props.utcBookingDay).format('DD.MM.YYYY')}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>
           <div>Start</div>
@@ -76,7 +76,7 @@ function BookingDayForm(props) {
             />
           </div>
         </div>
-        <div>
+        <div style={{marginBottom: '0.3em', marginTop: '0.3em'}}>
           <input
             type="submit"
             value={props.submitButtonValue}

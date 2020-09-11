@@ -29,6 +29,8 @@
 }
 
 .popup {
+  display: flex;
+  justify-content: center;
   position: fixed;
   width: 100%;
   height: 100%;
@@ -44,19 +46,16 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: absolute;
-  left: 25%;
-  right: 25%;
+  height: fit-content;
+  position: relative; 
   top: 25%;
-  bottom: 25%;
-  margin: auto;
+  margin: 0 auto;
   background-color: #282c34;
   color: white;
 }
 
 .menu {
   display: flex;
-  /* border-style: solid; */
   text-align: left;
 }
 
