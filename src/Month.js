@@ -92,8 +92,8 @@ function Month(props) {
           <div className="col-2 text-center day-item small">Ende</div>
           <div className="col-2 text-center day-item small">Ist</div>
           <div className="col-2 text-center day-item small">+/-</div>
-          <div className="col-2 text-center day-item small">X</div>
-          <div className="col-2 text-center day-item small">X</div>
+          <div className="col-2 text-center day-item small"></div>
+          <div className="col-2 text-center day-item small"></div>
         </div>
       </div>
       <div>{getDayComponents()}</div>

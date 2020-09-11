@@ -55,7 +55,7 @@ function Day(props) {
       <div className="col-2 text-center day-item small">
         <input
           type="button"
-          value="Löschen"
+          value="-"
           className="button"
         ></input>
       </div>
