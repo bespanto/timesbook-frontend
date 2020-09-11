@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { postData } from './serverConnections/connect'
+import { patchData } from "./serverConnections/connect";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
+import {USERNAME} from "./Const";
 import "./App.css";
 
 function Header(props) {
@@ -11,25 +12,12 @@ function Header(props) {
   const dispatch = useDispatch();
 
   function sendEntryToBackend(item) {
-    postData('http://localhost:8000/bookingEntries', item)
+    patchData(`http://localhost:8000/bookingEntries/${USERNAME}`, item)
       .then(response => {
         if (response.ok)
           return response.json()
         else
           throw response
-      })
-      .then(data => {
-        if (data.errors) {
-          console.error(data.errors)
-          for (let k of Object.keys(data.errors)) {
-            console.error(k + ': ' + data.errors[k].message);
-            setErrorTemporally('[err]');
-          }
-
-        }
-        else {
-          console.log(data);
-        }
       })
       .catch(() => setErrorTemporally('Can\'t save data in backend'));
   }
@@ -38,7 +26,6 @@ function Header(props) {
     setError(error);
     window.setTimeout(() => setError(''), 3000);
   }
-
 
   function syncAll() {
     bookingEntries.forEach(

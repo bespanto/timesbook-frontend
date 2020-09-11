@@ -1,46 +1,39 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import {DAY_FORMAT} from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import * as DateUtils from "./DateUtils";
 
 function BookingDayForm(props) {
   const dispatch = useDispatch();
   const bookingEntry = useSelector((state) =>
-    BookingEntriesSlice.selectBookingEntryByDay(state, props.date)
+    BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
   );
-  const [editStart, setEditStart] = useState(bookingEntry === undefined ? "" : bookingEntry.start);
-  const [editEnd, setEditEnd] = useState(bookingEntry === undefined ? "" : bookingEntry.end);
-  const [editBreak, setEditBreak] = useState(bookingEntry === undefined ? "" : bookingEntry.break);
-  const [error, setError] = useState('');
+  const [editStart, setEditStart] = useState(bookingEntry === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
+  const [editEnd, setEditEnd] = useState(bookingEntry === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
 
+  /**
+   * 
+   * @param {*} e 
+   */
   function handleSubmit(e) {
     e.preventDefault()
-
-    let error = '';
-    try {
-      DateUtils.getWorkingTimeInMinutes(editStart, editEnd, editBreak)
-    } catch (err) {
-      error = err.message;
-    }
-
-    if (error !== '')
-      setError(error);
-    else {
-      setError('');
-      dispatch(
-        BookingEntriesSlice.editBookingEntry(
-          {
-            day: DateUtils.getNormalizedDateString(props.date),
-            start: editStart,
-            end: editEnd,
-            break: editBreak,
-          }
-        )
-      );
-      props.handleClose();
-    }
+    dispatch(
+      BookingEntriesSlice.editBookingEntry(
+        {
+          day: props.utcBookingDay.toJSON(),
+          start: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + editStart).toJSON(),
+          end: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + editEnd).toJSON(),
+        }
+      )
+    );
+    props.handleClose();
   }
 
+  /**
+   * 
+   * @param {*} event 
+   */
   function handleChange(event) {
     switch (event.target.name) {
       case "start":
@@ -49,9 +42,6 @@ function BookingDayForm(props) {
       case "end":
         setEditEnd(event.target.value);
         break;
-      case "break":
-        setEditBreak(event.target.value);
-        break;
       default:
         break;
     }
@@ -59,8 +49,7 @@ function BookingDayForm(props) {
 
   return (
     <div>
-      <div className="error">{error}</div>
-      <p>{DateUtils.getNormalizedDateString(props.date)}</p>
+      <p>{moment(props.utcBookingDay).format(DAY_FORMAT)}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>
           <div>Start</div>
@@ -83,17 +72,6 @@ function BookingDayForm(props) {
               maxLength="5"
               className="time-input"
               value={editEnd}
-              onChange={handleChange}
-            />
-          </div>
-          <div>Pause</div>
-          <div>
-            <input
-              name="break"
-              type="time"
-              maxLength="5"
-              className="time-input"
-              value={editBreak}
               onChange={handleChange}
             />
           </div>

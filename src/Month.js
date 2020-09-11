@@ -1,29 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import moment from "moment";
+import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
 import BookingDayForm from "./BookingDayForm";
 import shortid from "shortid";
+import {USERNAME, DAY_FORMAT} from "./Const";
 import "./App.css";
 
 function Month(props) {
   const [bookingDateToEdit, setBookingDateToEdit] = useState('');
   const [now, setNow] = useState(new Date());
   const [popupIsVisible, setPopupIsVisible] = useState(false);
+  const daysInMonth = DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
+  const dispath = useDispatch()
+
+  useEffect(() => {
+    const from = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))).format(DAY_FORMAT)
+    const till = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), daysInMonth))).format(DAY_FORMAT)
+
+    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
+      .then((response) => response.json())
+      .then((json) => dispath(BookingEntriesSlice.setBookingEntries(json)))
+      .catch((error) => console.error(error))
+  }, []);
 
   function getDayComponents() {
     let days = [];
-    for (
-      let index = 0;
-      index < DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
-      index++
-    ) {
-      const day = index + 1;
-      const actDate = new Date(now.getFullYear(), now.getMonth(), day);
+    for (let day = 1; day <= daysInMonth; day++) {
+      const utcBookingDay = new Date(Date.UTC(now.getFullYear(), now.getMonth(), day));
       days.push(
         <Day
           key={shortid.generate()}
-          date={actDate}
+          utcBookingDay={utcBookingDay}
           showPopup={showPopup}
         />
       );
@@ -79,17 +90,17 @@ function Month(props) {
         <div className="row">
           <div className="col-2 text-center small">Start</div>
           <div className="col-2 text-center day-item small">Ende</div>
-          <div className="col-2 text-center day-item small">Pause</div>
           <div className="col-2 text-center day-item small">Ist</div>
           <div className="col-2 text-center day-item small">+/-</div>
-          <div className="col-2 text-center day-item small"></div>
+          <div className="col-2 text-center day-item small">X</div>
+          <div className="col-2 text-center day-item small">X</div>
         </div>
       </div>
       <div>{getDayComponents()}</div>
       {popupIsVisible && (
         <Popup handleClose={closePopup}>
           <BookingDayForm
-            date={bookingDateToEdit}
+            utcBookingDay={bookingDateToEdit}
             submitButtonValue="Save"
             handleClose={closePopup}
           />
