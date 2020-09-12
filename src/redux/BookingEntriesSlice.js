@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
-import {USERNAME, DAY_FORMAT} from "../Const";
+import { DAY_FORMAT} from "../Const";
 
 // selectors
 export const selectBookingEntries = (state) => state.bookingEntries;
@@ -41,7 +41,6 @@ export const bookingEntriesSlice = createSlice({
         }
       });
       if(!found){
-        action.payload.username = USERNAME;
         state.push(action.payload);
       }
     },

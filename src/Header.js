@@ -1,38 +1,31 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from "react-redux";
-import { patchData } from "./serverConnections/connect";
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from "react-redux";
+import * as DateUtils from "./DateUtils";
+import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import {USERNAME} from "./Const";
+import {USERNAME, DAY_FORMAT} from "./Const";
 import "./App.css";
 
 function Header(props) {
   const [error, setError] = useState('');
-  const bookingEntries = useSelector((state) => BookingEntriesSlice.selectBookingEntries(state));
   const dispatch = useDispatch();
 
-  function sendEntryToBackend(item) {
-    patchData(`http://localhost:8000/bookingEntries/${USERNAME}`, item)
-      .then(response => {
-        if (response.ok)
-          return response.json()
-        else
-          throw response
-      })
-      .catch(() => setErrorTemporally('Can\'t save data in backend'));
-  }
+  useEffect(() => {
+    const now = new Date();
+    const daysInMonth = DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
+    const from = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))).format(DAY_FORMAT)
+    const till = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), daysInMonth))).format(DAY_FORMAT)
+
+    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
+      .then((response) => response.json())
+      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
+      .catch((error) => setErrorTemporally('Verbindung zum Server nicht möglich'))
+  }, []);
 
   async function setErrorTemporally(error) {
     setError(error);
-    window.setTimeout(() => setError(''), 3000);
-  }
-
-  function syncAll() {
-    bookingEntries.forEach(
-      item => {
-        sendEntryToBackend(item);
-      }
-    )
+    window.setTimeout(() => setError(''), 10000);
   }
 
   return (
@@ -52,7 +45,6 @@ function Header(props) {
           <span className={error === '' ? '' : 'hidden error'} >{error}</span>
         </div>
         <div>
-          <input type="button" value="Sync" className="button" onClick={() => syncAll()}></input>
         </div>
       </nav>
     </header>

@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import moment from "moment";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
 import BookingDayForm from "./BookingDayForm";
 import shortid from "shortid";
-import {USERNAME, DAY_FORMAT} from "./Const";
 import "./App.css";
 
 function Month(props) {
@@ -17,17 +13,6 @@ function Month(props) {
   const [now, setNow] = useState(new Date());
   const [popupIsVisible, setPopupIsVisible] = useState(false);
   const daysInMonth = DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
-  const dispath = useDispatch()
-
-  useEffect(() => {
-    const from = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))).format(DAY_FORMAT)
-    const till = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), daysInMonth))).format(DAY_FORMAT)
-
-    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
-      .then((response) => response.json())
-      .then((json) => dispath(BookingEntriesSlice.setBookingEntries(json)))
-      .catch((error) => console.error(error))
-  }, []);
 
   function getDayComponents() {
     let days = [];
