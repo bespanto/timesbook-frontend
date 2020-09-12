@@ -34,11 +34,10 @@ function BookingDayForm(props) {
     if (!moment(reqEnd, 'HH:mm').isValid())
       throw new InvalidDateException('Keine gültige Eingabe für  \'Ende\'')
 
-    const start = moment(reqStart, moment.ISO_8601);
-    const end = moment(reqEnd, moment.ISO_8601);
-
+    const start = moment(reqStart, 'HH:mm');
+    const end = moment(reqEnd, 'HH:mm');
     if (!end.isAfter(start))
-      throw new InvalidDateException('\'Start\' kann nicht vor \'Ende\' liegen');
+      throw new InvalidDateException(' \'Ende\' kann nicht vor \'Start\' liegen');
   }
 
   /**
