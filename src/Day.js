@@ -1,5 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEraser, faEdit } from '@fortawesome/free-solid-svg-icons'
 import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
@@ -45,19 +47,17 @@ function Day(props) {
         {overtime}
       </div>
       <div className="col-2 text-center day-item small">
-        <input
-          type="button"
-          value="Edit"
+        <button
           className="button"
           onClick={() => props.showPopup(props.utcBookingDay)}
-        ></input>
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </button>
       </div>
       <div className="col-2 text-center day-item small">
-        <input
-          type="button"
-          value="-"
-          className="button"
-        ></input>
+        <button className="button">
+          <FontAwesomeIcon icon={faEraser} />
+        </button>
       </div>
     </div>
   );

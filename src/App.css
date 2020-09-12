@@ -15,8 +15,8 @@
   text-decoration: none;
   display: inline-block;
   font-size: calc(12px + 1vmin);
-  padding: 0.25em 0.6em;
-  margin: 4px 2px;
+  /* padding: 0.25em 0.6em; */
+  margin: 4px 4px;
   cursor: pointer;
 }
 

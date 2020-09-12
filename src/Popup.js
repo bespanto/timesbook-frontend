@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
 import "./App.css";
 
 function Popup(props) {
@@ -9,12 +11,9 @@ function Popup(props) {
         <div className="menu">
           <div className="menu-left"></div>
           <div className="menu-right">
-            <input
-              type="button"
-              value="x"
-              className="button"
-              onClick={(e) => props.handleClose()}
-            ></input>
+            <button className="button" onClick={(e) => props.handleClose()}>
+              <FontAwesomeIcon icon={faWindowClose} />
+            </button>
           </div>
         </div>
         {children}

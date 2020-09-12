@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
@@ -68,23 +70,17 @@ function Month(props) {
       <div>
         <div className="row day">
           <div className="col-2">
-            <input
-              type="button"
-              value="<"
-              className="button"
-              onClick={(e) => monthDown(e)}
-            ></input>
+            <button className="button" onClick={(e) => monthDown(e)}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
           </div>
           <div className="col-8">
             {DateUtils.getMonthName(now)} {now.getFullYear()}
           </div>
           <div className="col-2">
-            <input
-              type="button"
-              value=">"
-              className="button"
-              onClick={(e) => monthUp(e)}
-            ></input>
+          <button className="button" onClick={(e) => monthUp(e)}>
+            <FontAwesomeIcon icon={faArrowRight} />
+            </button>
           </div>
         </div>
         <div className="row">
@@ -101,7 +97,7 @@ function Month(props) {
         <Popup handleClose={closePopup}>
           <BookingDayForm
             utcBookingDay={bookingDateToEdit}
-            submitButtonValue="Save"
+            submitButtonValue="Speichern"
             handleClose={closePopup}
           />
         </Popup>
