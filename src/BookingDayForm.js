@@ -11,8 +11,10 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
   );
-  const [editStart, setEditStart] = useState(bookingEntry === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
-  const [editEnd, setEditEnd] = useState(bookingEntry === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
+  console.log(bookingEntry.pause);
+  const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
+  const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
+  const [pause, setPause] = useState(bookingEntry === undefined ||  bookingEntry.pause === undefined ? "" : bookingEntry.pause);
   const [error, setError] = useState('');
 
   /**
@@ -28,9 +30,7 @@ function BookingDayForm(props) {
           throw new Exception('Speichern auf dem Server ist fehlgeschlagen.');
       })
       .catch((err) => {
-        // Workaround für 'net::ERR_CONNECTION_REFUSED',
-        // da throw new Exception() nicht funktioniert.
-        setError('Speichern auf dem Server ist fehlgeschlagen.')
+        throw new Exception('Speichern auf dem Server ist fehlgeschlagen.')
       });
   }
 
@@ -47,7 +47,7 @@ function BookingDayForm(props) {
   * @param {*} reqStart 
   * @param {*} reqEnd 
   */
-  function checkStartEnd(reqStart, reqEnd) {
+  function checkInputs(reqStart, reqEnd, reqPause) {
     if (!moment(reqStart, 'HH:mm').isValid())
       throw new Exception('Keine gültige Eingabe für \'Start\'')
     if (!moment(reqEnd, 'HH:mm').isValid())
@@ -56,6 +56,11 @@ function BookingDayForm(props) {
     const end = moment(reqEnd, 'HH:mm');
     if (!end.isAfter(start))
       throw new Exception(' \'Ende\' kann nicht vor \'Start\' liegen');
+
+    const pause = moment.duration(reqPause);
+    const workingTime = moment.duration(end.diff(start));
+    if (workingTime - pause <= 0)
+      throw new Exception('Arbeitszeit muss größer als Pause sein');
   }
 
   /**
@@ -67,16 +72,15 @@ function BookingDayForm(props) {
     const entryToEdit = {
       username: USERNAME,
       day: props.utcBookingDay.toJSON(),
-      start: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + editStart).toJSON(),
-      end: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + editEnd).toJSON(),
+      start: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
+      end: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
+      pause: pause
     }
     try {
-      checkStartEnd(editStart, editEnd);
+      checkInputs(start, end, pause);
       sendEntryToBackend(entryToEdit);
-      if (error !== ''){
-        dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
-        props.handleClose();
-      }
+      dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
+      props.handleClose();
     } catch (error) {
       setError(error.message)
     }
@@ -89,10 +93,13 @@ function BookingDayForm(props) {
   function handleChange(event) {
     switch (event.target.name) {
       case "start":
-        setEditStart(event.target.value);
+        setStart(event.target.value);
         break;
       case "end":
-        setEditEnd(event.target.value);
+        setEnd(event.target.value);
+        break;
+      case "pause":
+        setPause(event.target.value);
         break;
       default:
         break;
@@ -113,7 +120,7 @@ function BookingDayForm(props) {
               type="time"
               maxLength="5"
               className="time-input"
-              value={editStart}
+              value={start}
               onChange={handleChange}
             />
           </div>
@@ -124,26 +131,31 @@ function BookingDayForm(props) {
               type="time"
               maxLength="5"
               className="time-input"
-              value={editEnd}
+              value={end}
               onChange={handleChange}
             />
           </div>
+        </div>
+        <div>Pause</div>
+        <div>
+          <input
+            name="pause"
+            type="time"
+            maxLength="5"
+            className="time-input"
+            value={pause}
+            onChange={handleChange}
+          />
         </div>
         <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
           <input
             type="submit"
             value={props.submitButtonValue}
             className="button"
-            // UNSAUBER! Workaround für 'net::ERR_CONNECTION_REFUSED',
-            // Nach dem Erscheinen der Fehlermeldung wird der Button deaktiviert.
-            // Danach ist nur das Schließen möglich. Ansonsten wird das wiederholte Drücken trotz
-            // der Fehlemeldung möglich!!! => Fehlverhalten: das Popup wird zugemacht und der
-            // Eintrag wird in der Zeile gemacht
-            disabled={error === 'Speichern auf dem Server ist fehlgeschlagen.' ? 'true' : ''}
           />
         </div>
       </form>
-    </div>
+    </div >
   );
 }
 

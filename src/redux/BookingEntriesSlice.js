@@ -8,21 +8,21 @@ export const selectBookingEntryByDay = (state, date) =>{
   return state.bookingEntries.find((item) => moment(item.day).format(DAY_FORMAT) === moment(date).format(DAY_FORMAT))
 };
 
-const bookingEntriesMap = []
-//  [
-//   {
-//     day: "2020-09-02",
-//     start: "08:20",
-//     end: "12:35",
-//     break: "01:10",
-//   },
-//   {
-//     day: "2020-09-03",
-//     start: "09:40",
-//     end: "15:45",
-//     break: "02:15",
-//   },
-// ];
+const bookingEntriesMap = 
+ [
+  {
+    day: "2020-09-02",
+    start: "2020-09-02T08:20Z",
+    end: "2020-09-02T12:35Z",
+    pause: "01:10",
+  },
+  {
+    day: "2020-09-03",
+    start: "2020-09-03T09:40Z",
+    end: "2020-09-03T15:45Z",
+    pause: "02:15",
+  },
+];
 
 export const initialState = bookingEntriesMap;
 
@@ -37,6 +37,7 @@ export const bookingEntriesSlice = createSlice({
         if(moment(element.day).format(DAY_FORMAT)  === moment(action.payload.day).format(DAY_FORMAT)){
           element.start = action.payload.start;
           element.end = action.payload.end;
+          element.pause = action.payload.pause;
           found = true;
         }
       });

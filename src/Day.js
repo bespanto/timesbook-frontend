@@ -16,17 +16,20 @@ function Day(props) {
   const placeholder = '--:--';
   let start = placeholder;
   let end = placeholder;
+  let pause = placeholder;
   let workingTime = placeholder;
   let overtime = placeholder;
 
   if (bookingEntry !== undefined) {
-    start = moment(bookingEntry.start)
-    end = moment(bookingEntry.end)
-    workingTime = moment.duration(end.diff(start))
+    start = moment(bookingEntry.start);
+    end = moment(bookingEntry.end);
+    pause = moment.duration(bookingEntry.pause);
+    workingTime = moment.duration(end.diff(start));
     start = start.format(timeFormat);
     end = end.format(timeFormat);
-    overtime = DateUtils.minutesToTimeString(workingTime.asMinutes() - 8 * 60)
-    workingTime = DateUtils.minutesToTimeString(workingTime.asMinutes());
+    overtime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8*60 );
+    workingTime = DateUtils.minutesToTimeString(workingTime.asMinutes()- pause.asMinutes());
+    pause = DateUtils.minutesToTimeString(pause.asMinutes());
   }
 
   return (
@@ -41,20 +44,18 @@ function Day(props) {
         {end}
       </div>
       <div className="col-2 text-center text-muted day-item">
+        {pause}
+      </div>
+      <div className="col-2 text-center text-muted day-item">
         {workingTime}
       </div>
       <div className="col-2 text-center text-muted day-item">
         {overtime}
       </div>
-      <div className="col-2 text-center day-item small">
-        <button
-          className="button"
-          onClick={() => props.showPopup(props.utcBookingDay)}
-        >
+      <div className="col-2 text-center day-item">
+        <button className="button" onClick={() => props.showPopup(props.utcBookingDay)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
-      </div>
-      <div className="col-2 text-center day-item small">
         <button className="button">
           <FontAwesomeIcon icon={faEraser} />
         </button>
