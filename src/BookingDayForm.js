@@ -14,7 +14,8 @@ function BookingDayForm(props) {
   console.log(bookingEntry.pause);
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
-  const [pause, setPause] = useState(bookingEntry === undefined ||  bookingEntry.pause === undefined ? "" : bookingEntry.pause);
+  const [pause, setPause] = useState(bookingEntry === undefined || bookingEntry.pause === undefined ? "" : bookingEntry.pause);
+  const [activities, setActivities] = useState(bookingEntry === undefined || bookingEntry.activities === undefined ? "" : bookingEntry.activities);
   const [error, setError] = useState('');
 
   /**
@@ -74,7 +75,8 @@ function BookingDayForm(props) {
       day: props.utcBookingDay.toJSON(),
       start: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
       end: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
-      pause: pause
+      pause: pause,
+      activities: activities
     }
     try {
       checkInputs(start, end, pause);
@@ -100,6 +102,9 @@ function BookingDayForm(props) {
         break;
       case "pause":
         setPause(event.target.value);
+        break;
+      case "activities":
+        setActivities(event.target.value);
         break;
       default:
         break;
@@ -144,6 +149,15 @@ function BookingDayForm(props) {
             maxLength="5"
             className="time-input"
             value={pause}
+            onChange={handleChange}
+          />
+        </div>
+        <div>Tätigkeiten</div>
+        <div>
+          <input
+            name="activities"
+            type="textarea"
+            value={activities}
             onChange={handleChange}
           />
         </div>

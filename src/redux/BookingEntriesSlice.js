@@ -38,6 +38,7 @@ export const bookingEntriesSlice = createSlice({
           element.start = action.payload.start;
           element.end = action.payload.end;
           element.pause = action.payload.pause;
+          element.activities = action.payload.activities;
           found = true;
         }
       });

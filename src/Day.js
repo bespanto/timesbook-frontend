@@ -19,6 +19,7 @@ function Day(props) {
   let pause = placeholder;
   let workingTime = placeholder;
   let overtime = placeholder;
+  const activities = bookingEntry === undefined ? '' : bookingEntry.activities;
 
   if (bookingEntry !== undefined) {
     start = moment(bookingEntry.start);
@@ -27,8 +28,8 @@ function Day(props) {
     workingTime = moment.duration(end.diff(start));
     start = start.format(timeFormat);
     end = end.format(timeFormat);
-    overtime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8*60 );
-    workingTime = DateUtils.minutesToTimeString(workingTime.asMinutes()- pause.asMinutes());
+    overtime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8 * 60);
+    workingTime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
     pause = DateUtils.minutesToTimeString(pause.asMinutes());
   }
 
@@ -36,7 +37,7 @@ function Day(props) {
     <div className="row day">
       <div className="col-12">
         {DateUtils.getWeekday(props.utcBookingDay)}, {props.utcBookingDay.getDate()}.
-      </div>
+        </div>
       <div className="col-2 text-center text-muted">
         {start}
       </div>
@@ -56,9 +57,12 @@ function Day(props) {
         <button className="button" onClick={() => props.showPopup(props.utcBookingDay)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
-        <button className="button">
+        {/* <button className="button">
           <FontAwesomeIcon icon={faEraser} />
-        </button>
+        </button> */}
+      </div>
+      <div className="col-12 text-left text-muted">
+        <small>{activities}</small>
       </div>
     </div>
   );
