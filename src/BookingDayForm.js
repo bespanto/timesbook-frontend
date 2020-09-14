@@ -5,13 +5,17 @@ import { USERNAME } from "./Const";
 import moment from "moment";
 import { DAY_FORMAT } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
+import * as UiStateSlice from "./redux/UiStateSlice";
 
 function BookingDayForm(props) {
   const dispatch = useDispatch();
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
   );
-  console.log(bookingEntry.pause);
+  const globError = useSelector((state) =>
+    UiStateSlice.selectUiState(state)
+  );
+
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
   const [pause, setPause] = useState(bookingEntry === undefined || bookingEntry.pause === undefined ? "" : bookingEntry.pause);
@@ -31,7 +35,8 @@ function BookingDayForm(props) {
           throw new Exception('Speichern auf dem Server ist fehlgeschlagen.');
       })
       .catch((err) => {
-        throw new Exception('Speichern auf dem Server ist fehlgeschlagen.')
+        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Antwort vom Server.'));
+        throw new Exception(err.message);
       });
   }
 
@@ -81,7 +86,9 @@ function BookingDayForm(props) {
     try {
       checkInputs(start, end, pause);
       sendEntryToBackend(entryToEdit);
-      dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
+      if (globError === '') {
+        dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
+      }
       props.handleClose();
     } catch (error) {
       setError(error.message)
@@ -113,7 +120,7 @@ function BookingDayForm(props) {
 
   return (
     <div style={{ marginLeft: '1.75em', marginRight: '1.75em' }}>
-      <div className="error">{error}</div>
+      <div className="error">{error}{globError.currentError}</div>
       <p>{moment(props.utcBookingDay).format('DD.MM.YYYY')}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>

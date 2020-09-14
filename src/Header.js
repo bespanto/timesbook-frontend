@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import * as DateUtils from "./DateUtils";
 import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import {USERNAME, DAY_FORMAT} from "./Const";
+import { USERNAME, DAY_FORMAT } from "./Const";
 import "./App.css";
 
 function Header(props) {
-  const [error, setError] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,13 +19,10 @@ function Header(props) {
     fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
       .then((response) => response.json())
       .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
-      .catch((error) => setErrorTemporally('Verbindung zum Server nicht möglich'))
+      .catch((error) =>
+        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Antwort vom Server.'))
+      );
   }, []);
-
-  async function setErrorTemporally(error) {
-    setError(error);
-    window.setTimeout(() => setError(''), 10000);
-  }
 
   return (
     <header className="sticky-top">
@@ -42,7 +38,6 @@ function Header(props) {
           </div>
         </div>
         <div>
-          <span className={error === '' ? '' : 'hidden error'} >{error}</span>
         </div>
         <div>
         </div>

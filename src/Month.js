@@ -1,19 +1,28 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
 import BookingDayForm from "./BookingDayForm";
+import * as UiStateSlice from "./redux/UiStateSlice";
 import shortid from "shortid";
 import "./App.css";
 
 function Month(props) {
+  const dispatch = useDispatch();
   const [bookingDateToEdit, setBookingDateToEdit] = useState('');
   const [now, setNow] = useState(new Date());
   const [popupIsVisible, setPopupIsVisible] = useState(false);
   const daysInMonth = DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
+  const globError = useSelector((state) =>
+    UiStateSlice.selectUiState(state)
+  );
 
+  /**
+   * 
+   */
   function getDayComponents() {
     let days = [];
     for (let day = 1; day <= daysInMonth; day++) {
@@ -29,25 +38,49 @@ function Month(props) {
     return days;
   }
 
+  /**
+   * 
+   * @param {*} e 
+   */
   function monthDown(e) {
     e.preventDefault();
     if (now.getMonth() === 0) setNow(new Date(now.getFullYear() - 1, 11));
     else setNow(new Date(now.getFullYear(), now.getMonth() - 1));
   }
 
+  /**
+   * 
+   * @param {*} e 
+   */
   function monthUp(e) {
     e.preventDefault();
     if (now.getMonth() === 11) setNow(new Date(now.getFullYear() + 1, 0));
     else setNow(new Date(now.getFullYear(), now.getMonth() + 1));
   }
 
+  /**
+   * 
+   * @param {*} date 
+   */
   function showPopup(date) {
     setBookingDateToEdit(date);
     setPopupIsVisible(true);
   }
 
-  function closePopup(date) {
+  /**
+   * 
+   * @param {*} date 
+   */
+  function closePopup() {
     setPopupIsVisible(false);
+  }
+
+  /**
+ * 
+ * @param {*} date 
+ */
+  function closeErrorPopup() {
+    dispatch(UiStateSlice.setCurrentError(''));
   }
 
   return (
@@ -56,15 +89,15 @@ function Month(props) {
         <div className="row day">
           <div className="col-2">
             <button className="button" onClick={(e) => monthDown(e)}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+              <FontAwesomeIcon icon={faArrowLeft} />
             </button>
           </div>
           <div className="col-8">
             {DateUtils.getMonthName(now)} {now.getFullYear()}
           </div>
           <div className="col-2">
-          <button className="button" onClick={(e) => monthUp(e)}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            <button className="button" onClick={(e) => monthUp(e)}>
+              <FontAwesomeIcon icon={faArrowRight} />
             </button>
           </div>
         </div>
@@ -87,6 +120,13 @@ function Month(props) {
           />
         </Popup>
       )}
+      {globError.currentError !== '' &&
+        <Popup handleClose={closeErrorPopup}>
+          <div style={{ marginLeft: '0.75em', marginRight: '0.75em', marginBottom: '2em', marginTop: '1em' }}>
+            <div className="error">{globError.currentError}</div>
+          </div>
+        </Popup>
+      }
     </div>
   );
 }
