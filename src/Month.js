@@ -101,7 +101,7 @@ function Month(props) {
             </button>
           </div>
         </div>
-        <div className="row">
+        <div className="row day">
           <div className="col-2 text-center small">Start</div>
           <div className="col-2 text-center day-item small">Ende</div>
           <div className="col-2 text-center day-item small">Pause</div>

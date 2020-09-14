@@ -39,19 +39,19 @@ function Day(props) {
         {DateUtils.getWeekday(props.utcBookingDay)}, {props.utcBookingDay.getDate()}.
         </div>
       <div className="col-2 text-center text-muted">
-        {start}
+        <small>{start}</small>
       </div>
       <div className="col-2 text-center text-muted day-item">
-        {end}
+        <small>{end}</small>
       </div>
       <div className="col-2 text-center text-muted day-item">
-        {pause}
+        <small>{pause}</small>
       </div>
       <div className="col-2 text-center text-muted day-item">
-        {workingTime}
+        <small>{workingTime}</small>
       </div>
       <div className="col-2 text-center text-muted day-item">
-        {overtime}
+        <small>{overtime}</small>
       </div>
       <div className="col-2 text-center day-item">
         <button className="button" onClick={() => props.showPopup(props.utcBookingDay)}>
