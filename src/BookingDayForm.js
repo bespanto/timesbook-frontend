@@ -127,10 +127,8 @@ function BookingDayForm(props) {
           <div>Start</div>
           <div>
             <input
-              id="start"
               name="start"
               type="time"
-              maxLength="5"
               className="time-input"
               value={start}
               onChange={handleChange}
@@ -141,7 +139,6 @@ function BookingDayForm(props) {
             <input
               name="end"
               type="time"
-              maxLength="5"
               className="time-input"
               value={end}
               onChange={handleChange}
@@ -153,7 +150,6 @@ function BookingDayForm(props) {
           <input
             name="pause"
             type="time"
-            maxLength="5"
             className="time-input"
             value={pause}
             onChange={handleChange}
