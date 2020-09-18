@@ -1,9 +1,9 @@
 export function getDaysInMonth(year, month) {
-  return 32 - new Date(year, month, 32).getDate();
+  return 32 - new Date(year, parseInt(month)-1, 32).getDate();
 }
 
 
-export function getMonthName(date) {
+export function getMonthName(number) {
   var month = new Array(12);
   month[0] = "Januar";
   month[1] = "Februar";
@@ -17,10 +17,10 @@ export function getMonthName(date) {
   month[9] = "Oktober";
   month[10] = "November";
   month[11] = "Dezember";
-  return month[date.getMonth()];
+  return month[number];
 }
 
-export function getWeekday(date) {
+export function getWeekday(dayOfWeek) {
   var weekday = new Array(7);
   weekday[0] = "Sonntag";
   weekday[1] = "Montag";
@@ -29,7 +29,7 @@ export function getWeekday(date) {
   weekday[4] = "Donnerstag";
   weekday[5] = "Freitag";
   weekday[6] = "Samstag";
-  return weekday[date.getDay()];
+  return weekday[dayOfWeek];
 }
 
 

@@ -1,19 +1,94 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
+import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
+import { USERNAME } from "./Const";
+import * as DateUtils from "./DateUtils";
 import "./App.css";
 
 function Login(props) {
+  const [username, setUsername] = useState('a');
+  const [pass, setPass] = useState('');
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
+  const dispatch = useDispatch();
+
+
+  function fetchData(monthDate) {
+    const year = moment(monthDate).format('YYYY');
+    const month = moment(monthDate).format('MM');
+    const daysInMonth = DateUtils.getDaysInMonth(year, month);
+    const from = monthDate + '-01';
+    const till = monthDate + '-' + daysInMonth;
+
+    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => {
+        if (response.ok)
+          return response.json();
+        else
+          throw response
+      })
+      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
+      .catch((error) => {
+        if (error.status === 401)
+          dispatch(UiStateSlice.setActiveMenuItem(1))
+        else
+          dispatch(UiStateSlice.setCurrentError('Kann keine Daten vom Server empfangen.'));
+      }
+      );
+  }
+
 
   /**
  * 
  */
   function handleSubmit(e) {
     e.preventDefault();
-    console.log('handle submit');
+    // console.log('handle submit');
+    // postData('http://localhost:8000/api/user/login', {email: username, password: pass})
+    fetch('http://localhost:8000/api/user/login', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: username, password: pass }),
+    })
+      .then(function (response) {
+        if (response.status === 400)
+          dispatch(UiStateSlice.setCurrentError('Login ist gescheitert'));
+        else
+          return response.json();
+      }).then(json => {
+        localStorage.setItem('jwt', json.jwt)
+        fetchData(uiState.now);
+        dispatch(UiStateSlice.setActiveMenuItem(0));
+      })
+      .catch((err) => {
+        dispatch(UiStateSlice.setCurrentError('Serveranfrage ist gescheitert'));
+      });
+  }
+
+  /**
+ * 
+ * @param {*} event 
+ */
+  function handleChange(event) {
+    switch (event.target.name) {
+      case "username":
+        setUsername(event.target.value);
+        break;
+      case "pass":
+        setPass(event.target.value);
+        break;
+      default:
+        break;
+    }
   }
 
   return (
@@ -25,15 +100,17 @@ function Login(props) {
           <div>Benutzername</div>
           <div>
             <input
-              name="user"
+              name="username"
               type="text"
+              onChange={handleChange}
             />
           </div>
           <div>Passwort</div>
           <div>
             <input
-              name="password"
+              name="pass"
               type="password"
+              onChange={handleChange}
             />
           </div>
         </div>

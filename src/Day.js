@@ -9,7 +9,7 @@ import "./App.css";
 
 function Day(props) {
   const bookingEntry = useSelector((state) =>
-    BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
+    BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
 
   const timeFormat = 'HH:mm';
@@ -36,7 +36,7 @@ function Day(props) {
   return (
     <div className="row day">
       <div className="col-12">
-        {DateUtils.getWeekday(props.utcBookingDay)}, {props.utcBookingDay.getDate()}.
+      {DateUtils.getWeekday(moment(props.bookingDay).weekday())}, {moment(props.bookingDay).date()}.
         </div>
       <div className="col-2 text-center text-muted">
         <small>{start}</small>
@@ -54,7 +54,7 @@ function Day(props) {
         <small>{overtime}</small>
       </div>
       <div className="col-2 text-center day-item">
-        <button className="button" onClick={() => props.showPopup(props.utcBookingDay)}>
+        <button className="button" onClick={() => props.showPopup(props.bookingDay)}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
         {/* <button className="button">

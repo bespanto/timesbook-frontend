@@ -1,12 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
+import moment from "moment";
 
 // selectors
 export const selectUiState = (state) => state.uiState
 
 export const initialState = {
-        activeMenuItem: 0,
-        currentError: ''
-    }
+    now: moment().format('YYYY-MM'),
+    activeMenuItem: 0,
+    currentError: ''
+}
 
 //slice
 export const uiStateSlice = createSlice({
@@ -18,8 +20,11 @@ export const uiStateSlice = createSlice({
         },
         setCurrentError: (state, action) => {
             state.currentError = action.payload;
+        },
+        setNow: (state, action) => {
+            state.now = action.payload;
         }
     }
 })
 
-export const { setActiveMenuItem, setCurrentError } = uiStateSlice.actions;
+export const { setActiveMenuItem, setCurrentError, setNow } = uiStateSlice.actions;
