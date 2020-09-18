@@ -12,10 +12,10 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
   );
-  const globError = useSelector((state) =>
+  const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
-
+  
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
   const [pause, setPause] = useState(bookingEntry === undefined || bookingEntry.pause === undefined ? "" : bookingEntry.pause);
@@ -86,7 +86,7 @@ function BookingDayForm(props) {
     try {
       checkInputs(start, end, pause);
       sendEntryToBackend(entryToEdit);
-      if (globError === '') {
+      if (uiState.currentError === '') {
         dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
       }
       props.handleClose();
@@ -120,7 +120,7 @@ function BookingDayForm(props) {
 
   return (
     <div style={{ marginLeft: '1.75em', marginRight: '1.75em' }}>
-      <div className="error">{error}{globError.currentError}</div>
+      <div className="error">{error}{uiState.currentError}</div>
       <p>{moment(props.utcBookingDay).format('DD.MM.YYYY')}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>

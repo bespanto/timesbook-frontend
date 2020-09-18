@@ -1,28 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch } from "react-redux";
-import * as DateUtils from "./DateUtils";
-import moment from "moment";
-import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import { USERNAME, DAY_FORMAT } from "./Const";
 import "./App.css";
 
 function Header(props) {
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const now = new Date();
-    const daysInMonth = DateUtils.getDaysInMonth(now.getFullYear(), now.getMonth());
-    const from = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))).format(DAY_FORMAT)
-    const till = moment.utc(new Date(Date.UTC(now.getFullYear(), now.getMonth(), daysInMonth))).format(DAY_FORMAT)
-
-    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
-      .then((response) => response.json())
-      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
-      .catch((error) =>
-        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Antwort vom Server.'))
-      );
-  }, []);
 
   return (
     <header className="sticky-top">

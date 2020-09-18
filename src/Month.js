@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -9,6 +9,9 @@ import BookingDayForm from "./BookingDayForm";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import shortid from "shortid";
 import "./App.css";
+import moment from "moment";
+import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
+import { USERNAME, DAY_FORMAT } from "./Const";
 
 function Month(props) {
   const dispatch = useDispatch();
@@ -19,6 +22,24 @@ function Month(props) {
   const globError = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
+
+  useEffect(() => fetchData(now), []);
+
+  function fetchData(monthDate) {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    const daysInMonth = DateUtils.getDaysInMonth(year, month);
+    const from = moment.utc(new Date(Date.UTC(year, month, 1))).format(DAY_FORMAT)
+    const till = moment.utc(new Date(Date.UTC(year, month, daysInMonth))).format(DAY_FORMAT)
+
+    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`)
+      .then((response) => response.json())
+      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
+      .catch((error) =>
+        dispatch(UiStateSlice.setCurrentError('Kann keine Daten vom Server empfangen.'))
+      );
+  }
+
 
   /**
    * 
@@ -44,8 +65,15 @@ function Month(props) {
    */
   function monthDown(e) {
     e.preventDefault();
-    if (now.getMonth() === 0) setNow(new Date(now.getFullYear() - 1, 11));
-    else setNow(new Date(now.getFullYear(), now.getMonth() - 1));
+
+    let monthDate;
+    if (now.getMonth() === 0)
+      monthDate = new Date(now.getFullYear() - 1, 11)
+    else
+      monthDate = new Date(now.getFullYear(), now.getMonth() - 1);
+
+    fetchData(monthDate);
+    setNow(monthDate);
   }
 
   /**
@@ -54,8 +82,15 @@ function Month(props) {
    */
   function monthUp(e) {
     e.preventDefault();
-    if (now.getMonth() === 11) setNow(new Date(now.getFullYear() + 1, 0));
-    else setNow(new Date(now.getFullYear(), now.getMonth() + 1));
+
+    let monthDate;
+    if (now.getMonth() === 11)
+      monthDate = new Date(now.getFullYear() + 1, 0);
+    else
+      monthDate = new Date(now.getFullYear(), now.getMonth() + 1);
+
+    fetchData(monthDate);
+    setNow(monthDate);
   }
 
   /**

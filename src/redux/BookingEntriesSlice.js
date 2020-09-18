@@ -8,21 +8,21 @@ export const selectBookingEntryByDay = (state, date) =>{
   return state.bookingEntries.find((item) => moment(item.day).format(DAY_FORMAT) === moment(date).format(DAY_FORMAT))
 };
 
-const bookingEntriesMap = 
- [
-  {
-    day: "2020-09-02",
-    start: "2020-09-02T08:20Z",
-    end: "2020-09-02T12:35Z",
-    pause: "01:10",
-  },
-  {
-    day: "2020-09-03",
-    start: "2020-09-03T09:40Z",
-    end: "2020-09-03T15:45Z",
-    pause: "02:15",
-  },
-];
+const bookingEntriesMap = [];
+//  [
+//   {
+//     day: "2020-09-02",
+//     start: "2020-09-02T08:20Z",
+//     end: "2020-09-02T12:35Z",
+//     pause: "01:10",
+//   },
+//   {
+//     day: "2020-09-03",
+//     start: "2020-09-03T09:40Z",
+//     end: "2020-09-03T15:45Z",
+//     pause: "02:15",
+//   },
+// ];
 
 export const initialState = bookingEntriesMap;
 
