@@ -4,6 +4,7 @@ import TabPanel from "./TabPanel";
 import Month from "./Month";
 import "./App.css";
 import * as UiStateSlice from "./redux/UiStateSlice";
+import Login from "./Login";
 
 function Main(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
@@ -15,10 +16,7 @@ function Main(props) {
           <Month />
         </TabPanel>
         <TabPanel index={1} activatedTab={uiState.activeMenuItem}>
-          <h3>Panel 2</h3>
-        </TabPanel>
-        <TabPanel index={2} activatedTab={uiState.activeMenuItem}>
-          <h3>Panel 3</h3>
+          <Login />
         </TabPanel>
       </div>
     </main>
