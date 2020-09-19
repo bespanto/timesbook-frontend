@@ -44,9 +44,9 @@ function Month(props) {
       .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
       .catch((error) => {
         if (error.status === 401)
-          dispatch(UiStateSlice.setActiveMenuItem(1))
+          dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
         else
-          dispatch(UiStateSlice.setCurrentError('Kann keine Daten vom Server empfangen.'));
+          dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
       }
       );
   }
@@ -152,7 +152,7 @@ function Month(props) {
       {popupIsVisible && (
         <Popup handleClose={closePopup}>
           <BookingDayForm
-            utcBookingDay={bookingDateToEdit}
+            bookingDay={bookingDateToEdit}
             submitButtonValue="Speichern"
             handleClose={closePopup}
           />

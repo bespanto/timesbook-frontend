@@ -10,12 +10,12 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 function BookingDayForm(props) {
   const dispatch = useDispatch();
   const bookingEntry = useSelector((state) =>
-    BookingEntriesSlice.selectBookingEntryByDay(state, props.utcBookingDay)
+    BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
-  
+
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
   const [pause, setPause] = useState(bookingEntry === undefined || bookingEntry.pause === undefined ? "" : bookingEntry.pause);
@@ -27,17 +27,49 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function sendEntryToBackend(item) {
-    patchData(`http://localhost:8000/bookingEntries/${USERNAME}`, item)
+    patchData(`http://localhost:8000/bookingEntries/${USERNAME}`, localStorage.getItem('jwt'), item)
       .then(response => {
         if (response.ok)
-          response.json()
+          return response.json()
         else
-          throw new Exception('Speichern auf dem Server ist fehlgeschlagen.');
+          if (response.status === 401){
+            dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
+            throw response;
+          }
+          else
+            throw response;
       })
-      .catch((err) => {
-        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Antwort vom Server.'));
-        throw new Exception(err.message);
+      .catch((error) => {
+        throw new Exception('ERROR: ' + error);
+        // error.json().then(data =>  dispatch(UiStateSlice.setCurrentError(data.error)) )
       });
+  }
+
+  /**
+   * 
+   * @param {*} e 
+   */
+  function handleSubmit(e) {
+    e.preventDefault()
+    console.log(moment(props.bookingDay).format());
+    console.log(moment.utc(props.bookingDay).format());
+    const entryToEdit = {
+      username: USERNAME,
+      day: moment.utc(props.bookingDay).format(),
+      start: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
+      end: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
+      pause: pause,
+      activities: activities
+    }
+    try {
+      console.log(pause)
+      checkInputs(start, end, pause);
+      sendEntryToBackend(entryToEdit);
+      dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
+      props.handleClose();
+    } catch (error) {
+      setError(error.message)
+    }
   }
 
   /**
@@ -54,6 +86,8 @@ function BookingDayForm(props) {
   * @param {*} reqEnd 
   */
   function checkInputs(reqStart, reqEnd, reqPause) {
+    if (!moment(reqPause, 'HH:mm').isValid())
+      throw new Exception('\'Pause\' muss angegeben werden');
     if (!moment(reqStart, 'HH:mm').isValid())
       throw new Exception('Keine gültige Eingabe für \'Start\'')
     if (!moment(reqEnd, 'HH:mm').isValid())
@@ -69,31 +103,7 @@ function BookingDayForm(props) {
       throw new Exception('Arbeitszeit muss größer als Pause sein');
   }
 
-  /**
-   * 
-   * @param {*} e 
-   */
-  function handleSubmit(e) {
-    e.preventDefault()
-    const entryToEdit = {
-      username: USERNAME,
-      day: props.utcBookingDay.toJSON(),
-      start: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
-      end: new Date(moment(props.utcBookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
-      pause: pause,
-      activities: activities
-    }
-    try {
-      checkInputs(start, end, pause);
-      sendEntryToBackend(entryToEdit);
-      if (uiState.currentError === '') {
-        dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
-      }
-      props.handleClose();
-    } catch (error) {
-      setError(error.message)
-    }
-  }
+
 
   /**
    * 
@@ -120,8 +130,8 @@ function BookingDayForm(props) {
 
   return (
     <div style={{ marginLeft: '1.75em', marginRight: '1.75em' }}>
-      <div className="error">{error}{uiState.currentError}</div>
-      <p>{moment(props.utcBookingDay).format('DD.MM.YYYY')}</p>
+      <div className="error">{error}</div>
+      <p>{moment(props.bookingDay).format('DD.MM.YYYY')}</p>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div>
           <div>Start</div>

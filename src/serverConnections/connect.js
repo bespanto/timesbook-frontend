@@ -27,14 +27,15 @@ export async function postData(url = '', data = {}) {
  * @param {*} url 
  * @param {*} data 
  */
-export async function patchData(url = '', data = {}) {
+export async function patchData(url = '', jwt, data = {}) {
   const response = await fetch(url, {
     method: 'PATCH',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'auth-token': jwt
     },
     redirect: 'follow', 
     referrerPolicy: 'no-referrer',

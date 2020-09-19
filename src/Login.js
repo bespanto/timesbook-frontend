@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
@@ -15,6 +15,7 @@ function Login(props) {
   );
   const dispatch = useDispatch();
 
+  useEffect(() => fetchData(uiState.now));
 
   function fetchData(monthDate) {
     const year = moment(monthDate).format('YYYY');
