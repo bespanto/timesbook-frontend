@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
-import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import { USERNAME } from "./Const";
-import * as DateUtils from "./DateUtils";
+import { HOST } from "./Const";
 import "./App.css";
 
 function Login(props) {
@@ -15,46 +12,13 @@ function Login(props) {
   );
   const dispatch = useDispatch();
 
-  useEffect(() => fetchData(uiState.now));
-
-  function fetchData(monthDate) {
-    const year = moment(monthDate).format('YYYY');
-    const month = moment(monthDate).format('MM');
-    const daysInMonth = DateUtils.getDaysInMonth(year, month);
-    const from = monthDate + '-01';
-    const till = monthDate + '-' + daysInMonth;
-
-    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`, {
-      headers: {
-        'auth-token': localStorage.getItem('jwt')
-      }
-    })
-      .then((response) => {
-        if (response.ok)
-          return response.json();
-        else
-          throw response
-      })
-      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
-      .catch((error) => {
-        if (error.status === 401)
-          dispatch(UiStateSlice.setActiveMenuItem(1))
-        else
-          dispatch(UiStateSlice.setCurrentError('Kann keine Daten vom Server empfangen.'));
-      }
-      );
-  }
-
-
   /**
  * 
  */
   function handleSubmit(e) {
     e.preventDefault();
-    // console.log('handle submit');
-    // postData('http://localhost:8000/api/user/login', {email: username, password: pass})
-    fetch('http://localhost:8000/api/user/login', {
-      method: 'POST', // or 'PUT'
+    fetch(`http://${HOST}/api/user/login`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -67,7 +31,7 @@ function Login(props) {
           return response.json();
       }).then(json => {
         localStorage.setItem('jwt', json.jwt)
-        fetchData(uiState.now);
+        props.fetchData();
         dispatch(UiStateSlice.setActiveMenuItem(0));
       })
       .catch((err) => {

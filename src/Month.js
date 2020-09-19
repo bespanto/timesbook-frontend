@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -9,48 +9,17 @@ import BookingDayForm from "./BookingDayForm";
 import shortid from "shortid";
 import "./App.css";
 import moment from "moment";
-import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import { USERNAME, DAY_FORMAT } from "./Const";
+import { DAY_FORMAT } from "./Const";
+
 
 function Month(props) {
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
-  const dispatch = useDispatch();
   const [bookingDateToEdit, setBookingDateToEdit] = useState('');
   const [popupIsVisible, setPopupIsVisible] = useState(false);
-
-  useEffect(() => fetchData(uiState.now));
-
-  function fetchData(monthDate) {
-    const year = moment(monthDate).format('YYYY');
-    const month = moment(monthDate).format('MM');
-    const daysInMonth = DateUtils.getDaysInMonth(year, month);
-    const from = monthDate + '-01';
-    const till = monthDate + '-' + daysInMonth;
-
-    fetch(`http://localhost:8000/bookingEntries/${USERNAME}/${from}/${till}`, {
-      headers: {
-        'auth-token': localStorage.getItem('jwt')
-      }
-    })
-      .then((response) => {
-        if (response.ok)
-          return response.json();
-        else
-          throw response
-      })
-      .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
-      .catch((error) => {
-        if (error.status === 401)
-          dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
-        else
-          dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
-      }
-      );
-  }
-
+  const dispatch = useDispatch();
 
   /**
    * 
@@ -79,8 +48,8 @@ function Month(props) {
     e.preventDefault();
 
     const month = moment(uiState.now).subtract(1, 'months').format('YYYY-MM');
-    fetchData(month);
     dispatch(UiStateSlice.setNow(month));
+    props.fetchData();
   }
 
   /**
@@ -91,9 +60,8 @@ function Month(props) {
     e.preventDefault();
 
     const month = moment(uiState.now).add(1, 'months').format('YYYY-MM');
-    fetchData(month);
     dispatch(UiStateSlice.setNow(month));
-
+    props.fetchData();
   }
 
   /**
@@ -131,7 +99,7 @@ function Month(props) {
             </button>
           </div>
           <div className="col-8">
-          {DateUtils.getMonthName(moment(uiState.now).month())} {moment(uiState.now).year()}
+            {DateUtils.getMonthName(moment(uiState.now).month())} {moment(uiState.now).year()}
           </div>
           <div className="col-2">
             <button className="button" onClick={(e) => monthUp(e)}>

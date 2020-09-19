@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { patchData } from "./serverConnections/connect";
 import { USERNAME } from "./Const";
 import moment from "moment";
-import { DAY_FORMAT } from "./Const";
+import { DAY_FORMAT, HOST } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
 
@@ -11,9 +11,6 @@ function BookingDayForm(props) {
   const dispatch = useDispatch();
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
-  );
-  const uiState = useSelector((state) =>
-    UiStateSlice.selectUiState(state)
   );
 
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
@@ -27,7 +24,7 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function sendEntryToBackend(item) {
-    patchData(`http://localhost:8000/bookingEntries/${USERNAME}`, localStorage.getItem('jwt'), item)
+    patchData(`http://${HOST}/bookingEntries/${USERNAME}`, localStorage.getItem('jwt'), item)
       .then(response => {
         if (response.ok)
           return response.json()
