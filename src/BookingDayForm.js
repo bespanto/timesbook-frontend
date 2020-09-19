@@ -48,8 +48,6 @@ function BookingDayForm(props) {
    */
   function handleSubmit(e) {
     e.preventDefault()
-    console.log(moment(props.bookingDay).format());
-    console.log(moment.utc(props.bookingDay).format());
     const entryToEdit = {
       username: USERNAME,
       day: moment.utc(props.bookingDay).format(),
@@ -59,7 +57,6 @@ function BookingDayForm(props) {
       activities: activities
     }
     try {
-      console.log(pause)
       checkInputs(start, end, pause);
       sendEntryToBackend(entryToEdit);
       dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
