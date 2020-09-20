@@ -12,6 +12,7 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
 
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
@@ -36,7 +37,12 @@ function BookingDayForm(props) {
           else
             throw response;
       })
+      .then((data) => {
+        dispatch(BookingEntriesSlice.editBookingEntry(data));
+        props.handleClose();
+      })
       .catch((error) => {
+        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Verbindung zum Server.'));
         throw new Exception('ERROR: ' + error);
         // error.json().then(data =>  dispatch(UiStateSlice.setCurrentError(data.error)) )
       });
@@ -59,8 +65,6 @@ function BookingDayForm(props) {
     try {
       checkInputs(start, end, pause);
       sendEntryToBackend(entryToEdit);
-      dispatch(BookingEntriesSlice.editBookingEntry(entryToEdit));
-      props.handleClose();
     } catch (error) {
       setError(error.message)
     }
