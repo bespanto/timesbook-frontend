@@ -47,6 +47,7 @@ export const bookingEntriesSlice = createSlice({
       }
     },
     setBookingEntries: (state, action) => {
+      state.length = 0;
       state.push(...action.payload);
     },
   },
