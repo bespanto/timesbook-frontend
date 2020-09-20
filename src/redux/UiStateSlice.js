@@ -7,7 +7,8 @@ export const selectUiState = (state) => state.uiState
 export const initialState = {
     now: moment().format('YYYY-MM'),
     activeMenuItem: 0,
-    currentError: ''
+    currentError: '',
+    loggedIn: false
 }
 
 //slice
@@ -23,8 +24,11 @@ export const uiStateSlice = createSlice({
         },
         setNow: (state, action) => {
             state.now = action.payload;
+        },
+        setLoggedIn: (state, action) => {
+            state.loggedIn = action.payload;
         }
     }
 })
 
-export const { setActiveMenuItem, setCurrentError, setNow } = uiStateSlice.actions;
+export const { setActiveMenuItem, setCurrentError, setNow, setLoggedIn } = uiStateSlice.actions;
