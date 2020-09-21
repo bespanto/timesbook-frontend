@@ -25,6 +25,7 @@ function Header(props) {
           throw response
       })
       .then((json) => {
+        // TODO: Serhii
         console.log(json);
         dispatch(UiStateSlice.setLoggedIn(true))
         dispatch(UiStateSlice.setProfile(json));
