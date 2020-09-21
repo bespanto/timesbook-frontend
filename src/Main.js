@@ -1,11 +1,11 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import TabPanel from "./TabPanel";
 import Month from "./Month";
 import "./App.css";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import { USERNAME, HOST } from "./Const";
+import { HOST } from "./Const";
 import Login from "./Login";
 import Profile from "./Profile";
 import Admin from "./Admin";
@@ -16,7 +16,7 @@ function Main(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
   const dispatch = useDispatch();
 
-  const fetchData = useCallback(() => {
+  useEffect(() =>{
     const year = moment(uiState.now).format('YYYY');
     const month = moment(uiState.now).format('MM');
     const daysInMonth = DateUtils.getDaysInMonth(year, month);
@@ -44,19 +44,17 @@ function Main(props) {
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
       }
       );
-  }, [dispatch, uiState.now])
-
-  useEffect(() => fetchData(), [fetchData]);
+  }, [dispatch, uiState.now, uiState.profile.username]);
 
 
   return (
     <main >
       <div className="position-relative overflow-hidden">
         <TabPanel index={0} activatedTab={uiState.activeMenuItem}>
-          <Month fetchData={fetchData} />
+          <Month />
         </TabPanel>
         <TabPanel index={1} activatedTab={uiState.activeMenuItem}>
-          {uiState.loggedIn ? <Profile /> : <Login fetchData={fetchData} />}
+          {uiState.loggedIn ? <Profile /> : <Login />}
         </TabPanel>
         <TabPanel index={2} activatedTab={uiState.activeMenuItem}>
           <Admin />

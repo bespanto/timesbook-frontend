@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,7 +37,7 @@ function Header(props) {
         else{
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
         }
-      },[dispatch]);
+      },[]);
   })
 
   return (
