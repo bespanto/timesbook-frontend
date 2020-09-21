@@ -44,7 +44,7 @@ function Main(props) {
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
       }
       );
-  }, [dispatch, uiState.now, uiState.profile.username]);
+  }, [dispatch, uiState.now, uiState.profile.username, uiState.loggedIn]);
 
 
   return (

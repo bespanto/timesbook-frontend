@@ -31,7 +31,6 @@ function Login(props) {
           return response.json();
       }).then(json => {
         localStorage.setItem('jwt', json.jwt)
-        props.fetchData();
         dispatch(UiStateSlice.setActiveMenuItem(0));
       })
       .catch((err) => {

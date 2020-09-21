@@ -25,8 +25,6 @@ function Header(props) {
           throw response
       })
       .then((json) => {
-        // TODO: Serhii
-        console.log(json);
         dispatch(UiStateSlice.setLoggedIn(true))
         dispatch(UiStateSlice.setProfile(json));
       })
@@ -55,7 +53,7 @@ function Header(props) {
             {uiState.loggedIn &&
             uiState.profile.role === 'admin' &&
             <hr /> && 
-            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(2))}>Admin</li>}
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(2))}>Admin-Bereich</li>}
             
           </ul>
         </div>

@@ -49,7 +49,6 @@ function Month(props) {
 
     const month = moment(uiState.now).subtract(1, 'months').format('YYYY-MM');
     dispatch(UiStateSlice.setNow(month));
-    props.fetchData();
   }
 
   /**
@@ -61,7 +60,6 @@ function Month(props) {
 
     const month = moment(uiState.now).add(1, 'months').format('YYYY-MM');
     dispatch(UiStateSlice.setNow(month));
-    props.fetchData();
   }
 
   /**
