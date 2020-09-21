@@ -8,7 +8,13 @@ export const initialState = {
     now: moment().format('YYYY-MM'),
     activeMenuItem: 0,
     currentError: '',
-    loggedIn: false
+    loggedIn: false,
+    profile: {
+        name: '',
+        username: '',
+        organization: '',
+        role: ''
+    }
 }
 
 //slice
@@ -27,8 +33,18 @@ export const uiStateSlice = createSlice({
         },
         setLoggedIn: (state, action) => {
             state.loggedIn = action.payload;
+        },
+        setProfile: (state, action) => {
+            if (action.payload === null)
+                state.profile = null
+            else {
+                state.profile.name = action.payload.name;
+                state.profile.username = action.payload.username;
+                state.profile.organization = action.payload.organization;
+                state.profile.role = action.payload.role;
+            }
         }
     }
 })
 
-export const { setActiveMenuItem, setCurrentError, setNow, setLoggedIn } = uiStateSlice.actions;
+export const { setActiveMenuItem, setCurrentError, setNow, setLoggedIn, setProfile } = uiStateSlice.actions;

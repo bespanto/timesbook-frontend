@@ -7,6 +7,8 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import { USERNAME, HOST } from "./Const";
 import Login from "./Login";
+import Profile from "./Profile";
+import Admin from "./Admin";
 import moment from "moment";
 import * as DateUtils from "./DateUtils";
 
@@ -21,7 +23,7 @@ function Main(props) {
     const from = uiState.now + '-01';
     const till = uiState.now + '-' + daysInMonth;
 
-    fetch(`http://${HOST}/bookingEntries/${USERNAME}/${from}/${till}`, {
+    fetch(`http://${HOST}/bookingEntries/${uiState.profile.username}/${from}/${till}`, {
       headers: {
         'auth-token': localStorage.getItem('jwt')
       }
@@ -34,8 +36,10 @@ function Main(props) {
       })
       .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
       .catch((error) => {
-        if (error.status === 401)
-          dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
+        if (error.status === 401) {
+          dispatch(UiStateSlice.setLoggedIn(false));
+          dispatch(UiStateSlice.setActiveMenuItem(1)); // nicht eingeloggt
+        }
         else
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
       }
@@ -49,10 +53,13 @@ function Main(props) {
     <main >
       <div className="position-relative overflow-hidden">
         <TabPanel index={0} activatedTab={uiState.activeMenuItem}>
-          <Month fetchData={fetchData}/>
+          <Month fetchData={fetchData} />
         </TabPanel>
         <TabPanel index={1} activatedTab={uiState.activeMenuItem}>
-          <Login fetchData={fetchData}/>
+          {uiState.loggedIn ? <Profile /> : <Login fetchData={fetchData} />}
+        </TabPanel>
+        <TabPanel index={2} activatedTab={uiState.activeMenuItem}>
+          <Admin />
         </TabPanel>
       </div>
     </main>

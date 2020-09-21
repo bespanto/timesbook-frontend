@@ -17,12 +17,12 @@ function Login(props) {
  */
   function handleSubmit(e) {
     e.preventDefault();
-    fetch(`http://${HOST}/api/user/login`, {
+    fetch(`http://${HOST}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email: username, password: pass }),
+      body: JSON.stringify({ username: username, password: pass }),
     })
       .then(function (response) {
         if (response.status === 400)

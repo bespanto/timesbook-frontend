@@ -7,14 +7,13 @@ import { HOST } from "./Const";
 import "./App.css";
 
 function Header(props) {
-  const [name, setName] = useState('');
   const dispatch = useDispatch();
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
 
   useEffect(() => {
-    fetch(`http://${HOST}/api/user/profile`, {
+    fetch(`http://${HOST}/user`, {
       headers: {
         'auth-token': localStorage.getItem('jwt')
       }
@@ -25,15 +24,20 @@ function Header(props) {
         else
           throw response
       })
-      .then((json) => {console.log(json); setName(json.name); dispatch(UiStateSlice.setLoggedIn(true))})
+      .then((json) => {
+        console.log(json);
+        dispatch(UiStateSlice.setLoggedIn(true))
+        dispatch(UiStateSlice.setProfile(json));
+      })
       .catch((error) => {
-        if (error.status === 401){
-          dispatch(UiStateSlice.setLoggedIn(false));// nicht eingeloggt
-          setName('');
+        if (error.status === 401) {
+          dispatch(UiStateSlice.setLoggedIn(false));
+          dispatch(UiStateSlice.setActiveMenuItem(1));
         }
-        else
+        else{
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
-      });
+        }
+      },[dispatch]);
   })
 
   return (
@@ -43,15 +47,21 @@ function Header(props) {
           <button className="navbar-toggler" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <span className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Zeitbuchungen</span>
-            <span className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>Login</span>
-          </div>
+          <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Zeitbuchungen</li>
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>Login/Profil</li>
+            
+            {uiState.loggedIn &&
+            uiState.profile.role === 'admin' &&
+            <hr /> && 
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(2))}>Admin</li>}
+            
+          </ul>
         </div>
         <div>
         </div>
         <div>
-        <small>{name}</small>
+          <small>{uiState.loggedIn ? uiState.profile.name : '' }</small>
           <button className="button" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>
             <FontAwesomeIcon icon={uiState.loggedIn ? faUser : faUserSlash} />
           </button>
