@@ -11,6 +11,7 @@ function Day(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+  const weekday = moment(props.bookingDay).weekday();
 
   const timeFormat = 'HH:mm';
   const placeholder = '--:--';
@@ -34,35 +35,37 @@ function Day(props) {
   }
 
   return (
-    <div className="row day">
-      <div className="col-12">
-      {DateUtils.getWeekday(moment(props.bookingDay).weekday())}, {moment(props.bookingDay).date()}.
+    <div className={weekday === 6 || weekday === 0 ? 'text-muted': ''}>
+      <div className="row day" >
+        <div className="col-12 text-underline" >
+          <ins>{DateUtils.getWeekday(weekday)}, {moment(props.bookingDay).date()}.</ins>
         </div>
-      <div className="col-2 text-center text-muted">
-        <small>{start}</small>
-      </div>
-      <div className="col-2 text-center text-muted day-item">
-        <small>{end}</small>
-      </div>
-      <div className="col-2 text-center text-muted day-item">
-        <small>{pause}</small>
-      </div>
-      <div className="col-2 text-center text-muted day-item">
-        <small>{workingTime}</small>
-      </div>
-      <div className="col-2 text-center text-muted day-item">
-        <small>{overtime}</small>
-      </div>
-      <div className="col-2 text-center day-item">
-        <button className="button" onClick={() => props.showPopup(props.bookingDay)}>
-          <FontAwesomeIcon icon={faEdit} />
-        </button>
-        {/* <button className="button">
+        <div className="col-2 text-center">
+          <small>{start}</small>
+        </div>
+        <div className="col-2 text-center day-item">
+          <small>{end}</small>
+        </div>
+        <div className="col-2 text-center day-item">
+          <small>{pause}</small>
+        </div>
+        <div className="col-2 text-center day-item">
+          <small>{workingTime}</small>
+        </div>
+        <div className="col-2 text-center day-item">
+          <small>{overtime}</small>
+        </div>
+        <div className="col-2 text-center day-item">
+          <button className="button" onClick={() => props.showPopup(props.bookingDay)}>
+            <FontAwesomeIcon icon={faEdit} />
+          </button>
+          {/* <button className="button">
           <FontAwesomeIcon icon={faEraser} />
         </button> */}
-      </div>
-      <div className="col-12 text-left text-muted">
-        <small>{activities}</small>
+        </div>
+        <div className="col-12 text-left">
+          <small>{activities}</small>
+        </div>
       </div>
     </div>
   );
