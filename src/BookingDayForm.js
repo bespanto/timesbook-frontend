@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { patchData } from "./serverConnections/connect";
+import { patchData, deleteData } from "./serverConnections/connect";
 import { USERNAME } from "./Const";
 import moment from "moment";
 import { DAY_FORMAT, HOST } from "./Const";
@@ -23,13 +23,13 @@ function BookingDayForm(props) {
    * 
    * @param {*} item 
    */
-  function sendEntryToBackend(item) {
+  function saveEntryToBackend(item) {
     patchData(`http://${HOST}/bookingEntries/${USERNAME}`, localStorage.getItem('jwt'), item)
       .then(response => {
         if (response.ok)
           return response.json()
         else
-          if (response.status === 401){
+          if (response.status === 401) {
             dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
             throw response;
           }
@@ -43,16 +43,13 @@ function BookingDayForm(props) {
       .catch((error) => {
         dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Verbindung zum Server.'));
         throw new Exception('ERROR: ' + error);
-        // error.json().then(data =>  dispatch(UiStateSlice.setCurrentError(data.error)) )
       });
   }
 
   /**
    * 
-   * @param {*} e 
    */
-  function handleSubmit(e) {
-    e.preventDefault()
+  function save() {
     const entryToEdit = {
       username: USERNAME,
       day: moment.utc(props.bookingDay).format(),
@@ -63,7 +60,7 @@ function BookingDayForm(props) {
     }
     try {
       checkInputs(start, end, pause);
-      sendEntryToBackend(entryToEdit);
+      saveEntryToBackend(entryToEdit);
     } catch (error) {
       setError(error.message)
     }
@@ -71,7 +68,47 @@ function BookingDayForm(props) {
 
   /**
    * 
-   * @param {*} message 
+   * @param {*} item 
+   */
+  function deleteEntryFromBackend(item) {
+    deleteData(`http://${HOST}/bookingEntries/${USERNAME}/${item.day}`, localStorage.getItem('jwt'), item)
+      .then(response => {
+        if (response.ok)
+          return response.json()
+        else
+          if (response.status === 401) {
+            dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
+            throw response;
+          }
+          else
+            throw response;
+      })
+      .then((data) => {
+        dispatch(BookingEntriesSlice.deleteBookingEntry(item.day));
+        props.handleClose();
+      })
+      .catch((error) => {
+        dispatch(UiStateSlice.setCurrentError('Löschen ist nicht möglich. Keine Verbindung zum Server.'));
+        throw new Exception('ERROR: ' + error);
+      });
+  }
+
+  /**
+ * 
+ */
+  function remove() {
+    const entryToDelete = {
+      day: moment.utc(props.bookingDay).format(),
+    }
+    try {
+      deleteEntryFromBackend(entryToDelete);
+    } catch (error) {
+      setError(error.message)
+    }
+  }
+
+  /**
+   * 
    */
   function Exception(message) {
     this.message = message;
@@ -79,8 +116,6 @@ function BookingDayForm(props) {
 
   /**
   * 
-  * @param {*} reqStart 
-  * @param {*} reqEnd 
   */
   function checkInputs(reqStart, reqEnd, reqPause) {
     if (!moment(reqPause, 'HH:mm').isValid())
@@ -99,8 +134,6 @@ function BookingDayForm(props) {
     if (workingTime - pause <= 0)
       throw new Exception('Arbeitszeit muss größer als Pause sein');
   }
-
-
 
   /**
    * 
@@ -129,56 +162,55 @@ function BookingDayForm(props) {
     <div style={{ marginLeft: '1.75em', marginRight: '1.75em' }}>
       <div className="error">{error}</div>
       <p>{moment(props.bookingDay).format('DD.MM.YYYY')}</p>
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <div>
-          <div>Start</div>
-          <div>
-            <input
-              name="start"
-              type="time"
-              className="time-input"
-              value={start}
-              onChange={handleChange}
-            />
-          </div>
-          <div>Ende</div>
-          <div>
-            <input
-              name="end"
-              type="time"
-              className="time-input"
-              value={end}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        <div>Pause</div>
+      <div>
+        <div>Start</div>
         <div>
           <input
-            name="pause"
+            name="start"
             type="time"
             className="time-input"
-            value={pause}
+            value={start}
             onChange={handleChange}
           />
         </div>
-        <div>Tätigkeiten</div>
+        <div>Ende</div>
         <div>
           <input
-            name="activities"
-            type="textarea"
-            value={activities}
+            name="end"
+            type="time"
+            className="time-input"
+            value={end}
             onChange={handleChange}
           />
         </div>
-        <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
-          <input
-            type="submit"
-            value={props.submitButtonValue}
-            className="button"
-          />
-        </div>
-      </form>
+      </div>
+      <div>Pause</div>
+      <div>
+        <input
+          name="pause"
+          type="time"
+          className="time-input"
+          value={pause}
+          onChange={handleChange}
+        />
+      </div>
+      <div>Tätigkeiten</div>
+      <div>
+        <input
+          name="activities"
+          type="textarea"
+          value={activities}
+          onChange={handleChange}
+        />
+      </div>
+      <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
+        <button type="button" className="button" onClick={() => remove()}>
+          Löschen
+        </button>
+        <button type="button" className="button" onClick={(e) => save()}>
+          {props.submitButtonValue}
+        </button>
+      </div>
     </div >
   );
 }

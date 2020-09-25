@@ -50,7 +50,12 @@ export const bookingEntriesSlice = createSlice({
       state.length = 0;
       state.push(...action.payload);
     },
+    deleteBookingEntry: (state, action) => {
+      const newArr = state.filter(element => moment(element.day).format(DAY_FORMAT) !== moment(action.payload).format(DAY_FORMAT))
+      state.length = 0;
+      state.push(...newArr);
+    },
   },
 });
 
-export const { editBookingEntry, setBookingEntries } = bookingEntriesSlice.actions;
+export const { editBookingEntry, setBookingEntries, deleteBookingEntry } = bookingEntriesSlice.actions;

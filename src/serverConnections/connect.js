@@ -43,3 +43,25 @@ export async function patchData(url = '', jwt, data = {}) {
   })
   return response;
 }
+
+/**
+ * 
+ * @param {*} url 
+ * @param {*} data 
+ */
+export async function deleteData(url = '', jwt, data = {}) {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      'auth-token': jwt
+    },
+    redirect: 'follow', 
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify(data)
+  })
+  return response;
+}
