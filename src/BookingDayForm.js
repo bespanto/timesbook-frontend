@@ -70,8 +70,8 @@ function BookingDayForm(props) {
    * 
    * @param {*} item 
    */
-  function deleteEntryFromBackend(item) {
-    deleteData(`http://${HOST}/bookingEntries/${USERNAME}/${item.day}`, localStorage.getItem('jwt'), item)
+  function deleteEntryFromBackend(day) {
+    deleteData(`http://${HOST}/bookingEntries/${USERNAME}/${day}`, localStorage.getItem('jwt'))
       .then(response => {
         if (response.ok)
           return response.json()
@@ -84,7 +84,7 @@ function BookingDayForm(props) {
             throw response;
       })
       .then((data) => {
-        dispatch(BookingEntriesSlice.deleteBookingEntry(item.day));
+        dispatch(BookingEntriesSlice.deleteBookingEntry(day));
         props.handleClose();
       })
       .catch((error) => {
@@ -97,11 +97,8 @@ function BookingDayForm(props) {
  * 
  */
   function remove() {
-    const entryToDelete = {
-      day: moment.utc(props.bookingDay).format(),
-    }
     try {
-      deleteEntryFromBackend(entryToDelete);
+      deleteEntryFromBackend(moment.utc(props.bookingDay).format());
     } catch (error) {
       setError(error.message)
     }
