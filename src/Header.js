@@ -47,8 +47,12 @@ function Header(props) {
             <span className="navbar-toggler-icon"></span>
           </button>
           <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Zeitbuchungen</li>
-            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>Login/Profil</li>
+            {uiState.loggedIn &&
+              <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Zeitbuchungen</li>
+            }
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>
+              {uiState.loggedIn ? 'Profil' : 'Login/Registrieung'}
+            </li>
 
             {uiState.loggedIn &&
               uiState.profile.role === 'admin' &&

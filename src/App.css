@@ -20,6 +20,10 @@
   cursor: pointer;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .button.active {
   background-color: rgb(96, 24, 163);
 }

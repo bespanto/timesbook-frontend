@@ -20,7 +20,8 @@
     "redux": "^4.0.5",
     "serialize-javascript": "^4.0.0",
     "shortid": "^2.2.15",
-    "terser-webpack-plugin": "^4.1.0"
+    "terser-webpack-plugin": "^4.1.0",
+    "validate.js": "^0.13.1"
   },
   "scripts": {
     "start": "react-scripts start",
