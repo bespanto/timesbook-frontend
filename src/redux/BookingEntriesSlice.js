@@ -1,26 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
-import * as DateUtils from "../DateUtils";
+import moment from "moment";
+import { DAY_FORMAT} from "../Const";
 
 // selectors
 export const selectBookingEntries = (state) => state.bookingEntries;
 export const selectBookingEntryByDay = (state, date) =>{
-  return state.bookingEntries.find((item) => item.day === DateUtils.getNormalizedDateString(date))
+  return state.bookingEntries.find((item) => moment(item.day).format(DAY_FORMAT) === moment(date).format(DAY_FORMAT))
 };
 
-const bookingEntriesMap = [
-  {
-    day: "2020-09-02",
-    start: "08:20",
-    end: "12:35",
-    break: "01:10",
-  },
-  {
-    day: "2020-09-03",
-    start: "09:40",
-    end: "15:45",
-    break: "02:15",
-  },
-];
+const bookingEntriesMap = [];
+//  [
+//   {
+//     day: "2020-09-02",
+//     start: "2020-09-02T08:20Z",
+//     end: "2020-09-02T12:35Z",
+//     pause: "01:10",
+//   },
+//   {
+//     day: "2020-09-03",
+//     start: "2020-09-03T09:40Z",
+//     end: "2020-09-03T15:45Z",
+//     pause: "02:15",
+//   },
+// ];
 
 export const initialState = bookingEntriesMap;
 
@@ -30,20 +32,30 @@ export const bookingEntriesSlice = createSlice({
   initialState: initialState,
   reducers: {
     editBookingEntry: (state, action) => {
-      console.log(action.payload);
       let found = false;
       state.forEach(element => {
-        if(element.day  === action.payload.day){
+        if(moment(element.day).format(DAY_FORMAT)  === moment(action.payload.day).format(DAY_FORMAT)){
           element.start = action.payload.start;
           element.end = action.payload.end;
-          element.break = action.payload.break;
+          element.pause = action.payload.pause;
+          element.activities = action.payload.activities;
           found = true;
         }
       });
-      if(!found)
+      if(!found){
         state.push(action.payload);
+      }
+    },
+    setBookingEntries: (state, action) => {
+      state.length = 0;
+      state.push(...action.payload);
+    },
+    deleteBookingEntry: (state, action) => {
+      const newArr = state.filter(element => moment(element.day).format(DAY_FORMAT) !== moment(action.payload).format(DAY_FORMAT))
+      state.length = 0;
+      state.push(...newArr);
     },
   },
 });
 
-export const { editBookingEntry } = bookingEntriesSlice.actions;
+export const { editBookingEntry, setBookingEntries, deleteBookingEntry } = bookingEntriesSlice.actions;

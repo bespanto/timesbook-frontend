@@ -1,52 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { postData } from './serverConnections/connect'
-import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faUserSlash } from '@fortawesome/free-solid-svg-icons';
+import { HOST } from "./Const";
 import "./App.css";
 
 function Header(props) {
-  const [error, setError] = useState('');
-  const bookingEntries = useSelector((state) => BookingEntriesSlice.selectBookingEntries(state));
   const dispatch = useDispatch();
+  const uiState = useSelector((state) =>
+    UiStateSlice.selectUiState(state)
+  );
 
-  function sendEntryToBackend(item) {
-    postData('http://localhost:8000/bookingEntries', item)
-      .then(response => {
+  useEffect(() => {
+    fetch(`http://${HOST}/user`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => {
         if (response.ok)
-          return response.json()
+          return response.json();
         else
           throw response
       })
-      .then(data => {
-        if (data.errors) {
-          console.error(data.errors)
-          for (let k of Object.keys(data.errors)) {
-            console.error(k + ': ' + data.errors[k].message);
-            setErrorTemporally('[err]');
-          }
-
+      .then((json) => {
+        dispatch(UiStateSlice.setLoggedIn(true))
+        dispatch(UiStateSlice.setProfile(json));
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          dispatch(UiStateSlice.setLoggedIn(false));
+          dispatch(UiStateSlice.setActiveMenuItem(1));
         }
         else {
-          console.log(data);
+          dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
         }
-      })
-      .catch(() => setErrorTemporally('Can\'t save data in backend'));
-  }
-
-  async function setErrorTemporally(error) {
-    setError(error);
-    window.setTimeout(() => setError(''), 3000);
-  }
-
-
-  function syncAll() {
-    bookingEntries.forEach(
-      item => {
-        sendEntryToBackend(item);
-      }
-    )
-  }
+      }, []);
+  })
 
   return (
     <header className="sticky-top">
@@ -55,17 +46,30 @@ function Header(props) {
           <button className="navbar-toggler" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <span className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Calendar</span>
-            <span className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>Panel 2</span>
-            <span className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(2))}>Panel 3</span>
-          </div>
+          <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {uiState.loggedIn &&
+              <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(0))}>Zeitbuchungen</li>
+            }
+            <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>
+              {uiState.loggedIn ? 'Profil' : 'Login/Registrieung'}
+            </li>
+
+            {uiState.loggedIn &&
+              uiState.profile.role === 'admin' &&
+              <span>
+                <hr />
+                <li className="dropdown-item" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(2))}>Admin-Bereich</li>
+              </span>}
+
+          </ul>
         </div>
         <div>
-          <span className={error === '' ? '' : 'hidden error'} >{error}</span>
         </div>
         <div>
-          <input type="button" value="Sync" className="button" onClick={() => syncAll()}></input>
+          <small>{uiState.loggedIn ? uiState.profile.name : ''}</small>
+          <button className="button" onClick={() => dispatch(UiStateSlice.setActiveMenuItem(1))}>
+            <FontAwesomeIcon icon={uiState.loggedIn ? faUser : faUserSlash} />
+          </button>
         </div>
       </nav>
     </header>
