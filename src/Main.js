@@ -15,9 +15,6 @@ function Main(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
   const dispatch = useDispatch();
 
-  console.log(process.env.REACT_APP_API_URL);
-  console.log(process.env.NODE_ENV);
-
   useEffect(() =>{
     const year = moment(uiState.now).format('YYYY');
     const month = moment(uiState.now).format('MM');
