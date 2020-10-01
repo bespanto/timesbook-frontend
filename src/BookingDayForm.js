@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { patchData, deleteData } from "./serverConnections/connect";
-import { USERNAME } from "./Const";
 import moment from "moment";
 import { DAY_FORMAT, HOST } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
@@ -12,6 +11,7 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
 
   const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
   const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
@@ -24,7 +24,7 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function saveEntryToBackend(item) {
-    patchData(`http://${HOST}/bookingEntries/${USERNAME}`, localStorage.getItem('jwt'), item)
+    patchData(`http://${HOST}/bookingEntries/${uiState.profile.username}`, localStorage.getItem('jwt'), item)
       .then(response => {
         if (response.ok)
           return response.json()
@@ -51,7 +51,7 @@ function BookingDayForm(props) {
    */
   function save() {
     const entryToEdit = {
-      username: USERNAME,
+      username: uiState.profile.username,
       day: moment.utc(props.bookingDay).format(),
       start: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
       end: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
@@ -71,7 +71,7 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function deleteEntryFromBackend(day) {
-    deleteData(`http://${HOST}/bookingEntries/${USERNAME}/${day}`, localStorage.getItem('jwt'))
+    deleteData(`http://${HOST}/bookingEntries/${uiState.profile.username}/${day}`, localStorage.getItem('jwt'))
       .then(response => {
         if (response.ok)
           return response.json()
