@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import validate, { result } from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import { HOST } from "./Const";
 import "./App.css";
 
 function Login(props) {
@@ -22,7 +21,7 @@ function Login(props) {
    * Handles login event
    */
   function handleLogin() {
-    fetch(`http://${HOST}/auth/login`, {
+    fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +101,7 @@ function Login(props) {
         dispatch(UiStateSlice.setCurrentError(''));
 
 
-    fetch(`http://${HOST}/auth/register`, {
+    fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

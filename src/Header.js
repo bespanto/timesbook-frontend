@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faUserSlash } from '@fortawesome/free-solid-svg-icons';
-import { HOST } from "./Const";
 import "./App.css";
 
 function Header(props) {
@@ -13,7 +12,7 @@ function Header(props) {
   );
 
   useEffect(() => {
-    fetch(`http://${HOST}/user`, {
+    fetch(`${process.env.REACT_APP_API_URL}/user`, {
       headers: {
         'auth-token': localStorage.getItem('jwt')
       }

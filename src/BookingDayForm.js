@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { patchData, deleteData } from "./serverConnections/connect";
 import moment from "moment";
-import { DAY_FORMAT, HOST } from "./Const";
+import { DAY_FORMAT } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
 
@@ -24,7 +24,7 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function saveEntryToBackend(item) {
-    patchData(`http://${HOST}/bookingEntries/${uiState.profile.username}`, localStorage.getItem('jwt'), item)
+    patchData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`, localStorage.getItem('jwt'), item)
       .then(response => {
         if (response.ok)
           return response.json()
@@ -71,7 +71,7 @@ function BookingDayForm(props) {
    * @param {*} item 
    */
   function deleteEntryFromBackend(day) {
-    deleteData(`http://${HOST}/bookingEntries/${uiState.profile.username}/${day}`, localStorage.getItem('jwt'))
+    deleteData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`, localStorage.getItem('jwt'))
       .then(response => {
         if (response.ok)
           return response.json()

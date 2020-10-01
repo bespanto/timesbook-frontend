@@ -5,7 +5,6 @@ import Month from "./Month";
 import "./App.css";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import { HOST } from "./Const";
 import Login from "./Login";
 import Profile from "./Profile";
 import Admin from "./Admin";
@@ -16,6 +15,9 @@ function Main(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
   const dispatch = useDispatch();
 
+  console.log(process.env.REACT_APP_API_URL);
+  console.log(process.env.NODE_ENV);
+
   useEffect(() =>{
     const year = moment(uiState.now).format('YYYY');
     const month = moment(uiState.now).format('MM');
@@ -23,7 +25,7 @@ function Main(props) {
     const from = uiState.now + '-01';
     const till = uiState.now + '-' + daysInMonth;
 
-    fetch(`http://${HOST}/bookingEntries/${uiState.profile.username}/${from}/${till}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${from}/${till}`, {
       headers: {
         'auth-token': localStorage.getItem('jwt')
       }
