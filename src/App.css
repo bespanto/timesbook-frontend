@@ -114,3 +114,11 @@
 .error {
   color: red;
 }
+
+@media (min-width: 768px) {
+  .app-width {
+    max-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
