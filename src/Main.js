@@ -7,7 +7,9 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import Login from "./Login";
 import Profile from "./Profile";
-import Admin from "./Admin";
+import Employee from "./Employee";
+import VacationRequests from "./VacationRequests";
+import Vacation from "./Vacation";
 import moment from "moment";
 import * as DateUtils from "./DateUtils";
 
@@ -37,7 +39,7 @@ function Main(props) {
       .catch((error) => {
         if (error.status === 401) {
           dispatch(UiStateSlice.setLoggedIn(false));
-          dispatch(UiStateSlice.setActiveMenuItem(1)); // nicht eingeloggt
+          dispatch(UiStateSlice.setActiveMenuItem('Login')); // nicht eingeloggt
         }
         else
           dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
@@ -49,14 +51,20 @@ function Main(props) {
   return (
     <main >
       <div className="position-relative overflow-hidden">
-        <TabPanel index={0} activatedTab={uiState.activeMenuItem}>
+        <TabPanel index={'TimeBooking'} activatedTab={uiState.activeMenuItem}>
           <Month />
         </TabPanel>
-        <TabPanel index={1} activatedTab={uiState.activeMenuItem}>
+        <TabPanel index={'Login'} activatedTab={uiState.activeMenuItem}>
           {uiState.loggedIn ? <Profile /> : <Login />}
         </TabPanel>
-        <TabPanel index={2} activatedTab={uiState.activeMenuItem}>
-          <Admin />
+        <TabPanel index={'EmployeeManagement'} activatedTab={uiState.activeMenuItem}>
+          <Employee/>
+        </TabPanel>
+        <TabPanel index={'Vacation'} activatedTab={uiState.activeMenuItem}>
+          <Vacation />
+        </TabPanel>
+        <TabPanel index={'VacationRequests'} activatedTab={uiState.activeMenuItem}>
+          <VacationRequests />
         </TabPanel>
       </div>
     </main>

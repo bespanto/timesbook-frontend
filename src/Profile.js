@@ -14,6 +14,7 @@ function Profile(props) {
     console.log('logout');
     localStorage.removeItem('jwt');
     dispatch(UiStateSlice.setLoggedIn(false));
+    dispatch(UiStateSlice.setActiveMenuItem('Login'));
   }
 
   return (

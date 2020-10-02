@@ -30,7 +30,7 @@ function BookingDayForm(props) {
           return response.json()
         else
           if (response.status === 401) {
-            dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
+            dispatch(UiStateSlice.setActiveMenuItem('Login')) // nicht eingeloggt
             throw response;
           }
           else
@@ -77,7 +77,7 @@ function BookingDayForm(props) {
           return response.json()
         else
           if (response.status === 401) {
-            dispatch(UiStateSlice.setActiveMenuItem(1)) // nicht eingeloggt
+            dispatch(UiStateSlice.setActiveMenuItem('Login')) // nicht eingeloggt
             throw response;
           }
           else

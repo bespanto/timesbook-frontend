@@ -9,15 +9,13 @@ function Admin(props) {
   );
 
   return (
-    <div className="month">
+    <div>
       <div className="error">{uiState.currentError}</div>
-      <p>Admin-Bereich</p>
+      <p>Mitarbeiter</p>
       <ul>
-        <li className="text-left">Unternehmen</li>
-        <li className="text-left">Abteilungen</li>
-        <li className="text-left">Projekte</li>
-        <li className="text-left">Benutzer</li>
-        <li className="text-left">Urlaubsanträge</li>
+        <li className="text-left">Maria Dorsch</li>
+        <li className="text-left">Jan Bartsch</li>
+        <li className="text-left">Matthias Deller</li>
       </ul>
     </div>
   );

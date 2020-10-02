@@ -35,7 +35,7 @@ function Login(props) {
           throw response
       }).then(json => {
         localStorage.setItem('jwt', json.jwt)
-        dispatch(UiStateSlice.setActiveMenuItem(0));
+        dispatch(UiStateSlice.setActiveMenuItem('TimeBooking'));
       })
       .catch((err) => {
         if (err.status === 400)
