@@ -6,6 +6,24 @@ import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import shortid from "shortid";
 import "./App.css";
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container';
+
+const useStyles = makeStyles({
+  tableContainer: {
+    marginTop: '1em',
+  },
+  table: {
+    // minWidth: 650,
+  },
+});
 
 function Admin(props) {
   const [name, setName] = useState('');
@@ -18,6 +36,7 @@ function Admin(props) {
   const dispatch = useDispatch();
   let history = useHistory();
   const loc = useLocation();
+  const classes = useStyles();
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/user`, {
@@ -186,15 +205,28 @@ function Admin(props) {
           <button className="button" onClick={() => inviteUser()}>Einladen</button>
         </div>
       </div>
-      <div className="row section" style={{ marginTop: '1.5em' }}>
-        <div className="col">
-          Name
-        </div>
-        <div className="col">
-          E-Mail
-        </div>
-      </div>
-      {getEmployees()}
+      <Container className={classes.tableContainer}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>E-mail</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {employees.map((row) => (
+                <TableRow key={row.name}>
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell>{row.username}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
     </div>
   );
 }
