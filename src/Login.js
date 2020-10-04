@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
@@ -16,6 +17,7 @@ function Login(props) {
     UiStateSlice.selectUiState(state)
   );
   const dispatch = useDispatch();
+  let history = useHistory();
 
   /**
    * Handles login event
@@ -35,7 +37,8 @@ function Login(props) {
           throw response
       }).then(json => {
         localStorage.setItem('jwt', json.jwt)
-        dispatch(UiStateSlice.setActiveMenuItem('TimeBooking'));
+        dispatch(UiStateSlice.setLoggedIn(true));
+        history.push('/TimeBooking');
       })
       .catch((err) => {
         if (err.status === 400)

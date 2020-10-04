@@ -1,20 +1,21 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
 
 
 function Profile(props) {
+  const dispatch = useDispatch();
+  let history = useHistory();
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
-  const dispatch = useDispatch();
 
   function logout(){
-    console.log('logout');
     localStorage.removeItem('jwt');
     dispatch(UiStateSlice.setLoggedIn(false));
-    dispatch(UiStateSlice.setActiveMenuItem('Login'));
+    history.push('/Login')
   }
 
   return (

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { patchData } from "./serverConnections/connect";
-import validate, { result } from "validate.js";
+import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import shortid from "shortid";
 import "./App.css";

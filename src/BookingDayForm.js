@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { patchData, deleteData } from "./serverConnections/connect";
 import moment from "moment";
 import { DAY_FORMAT } from "./Const";
@@ -8,6 +9,7 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 
 function BookingDayForm(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
@@ -30,7 +32,7 @@ function BookingDayForm(props) {
           return response.json()
         else
           if (response.status === 401) {
-            dispatch(UiStateSlice.setActiveMenuItem('Login')) // nicht eingeloggt
+            history.push('/Login')
             throw response;
           }
           else
@@ -77,7 +79,8 @@ function BookingDayForm(props) {
           return response.json()
         else
           if (response.status === 401) {
-            dispatch(UiStateSlice.setActiveMenuItem('Login')) // nicht eingeloggt
+            history.push('/Login')
+            console.log(history)
             throw response;
           }
           else

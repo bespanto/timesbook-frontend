@@ -8,7 +8,7 @@ export const initialState = {
     now: moment().format('YYYY-MM'),
     activeMenuItem: localStorage.getItem('jwt') ? 'TimeBooking' : 'Login',
     currentError: '',
-    loggedIn: false,
+    loggedIn: localStorage.getItem('jwt') ? 'true' : 'false',
     profile: {
         name: '',
         username: '',
