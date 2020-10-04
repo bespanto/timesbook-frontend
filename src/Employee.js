@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import { patchData } from "./serverConnections/connect";
 import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -10,10 +11,40 @@ function Admin(props) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [employees, setEmployees] = useState([]);
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
   const dispatch = useDispatch();
+  let history = useHistory();
+  const loc = useLocation();
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/user`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => {
+        if (response.ok)
+          return response.json();
+        else
+          throw response
+      })
+      .then((json) => {
+        console.log(json);
+        setEmployees(json);
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          dispatch(UiStateSlice.setLoggedIn(false));
+        }
+        else {
+          dispatch(UiStateSlice.setCurrentError('Fehler! Der Server antwortet nicht.'));
+        }
+      });
+  }, [history, dispatch, uiState.loggedIn, loc.pathname])
+
 
   /**
  * Sets state for changed fields on tap event
@@ -74,7 +105,7 @@ function Admin(props) {
           setSuccessMsg(`Der Benutzer ${username} wurde erfolgreich eingeladen`);
           setName('');
           setUsername('');
-          setTimeout(()=>setSuccessMsg(''), 5000);
+          setTimeout(() => setSuccessMsg(''), 5000);
         })
         .catch((error) => {
           if (error.status === 403) {
@@ -90,7 +121,7 @@ function Admin(props) {
         }
         );
     }
-    setTimeout(()=>dispatch(UiStateSlice.setCurrentError('')), 5000);
+    setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
   }
 
   function getEmployees() {
@@ -107,7 +138,7 @@ function Admin(props) {
       },
     ]
     let arr = [];
-    empArr.forEach(item => {
+    employees.forEach(item => {
       arr.push(
         <div key={shortid.generate()} className="row section">
           <div className="col">
@@ -115,9 +146,6 @@ function Admin(props) {
           </div>
           <div className="col">
             <small>{item.username}</small>
-          </div>
-          <div className="col">
-            <small>{item.status}</small>
           </div>
         </div>)
     })
@@ -154,7 +182,7 @@ function Admin(props) {
               onChange={handleChange}
             /></small>
         </div>
-        <div style={{marginTop: '0.5em'}}>
+        <div style={{ marginTop: '0.5em' }}>
           <button className="button" onClick={() => inviteUser()}>Einladen</button>
         </div>
       </div>
@@ -164,9 +192,6 @@ function Admin(props) {
         </div>
         <div className="col">
           E-Mail
-        </div>
-        <div className="col">
-          Status
         </div>
       </div>
       {getEmployees()}

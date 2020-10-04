@@ -20,7 +20,7 @@ function Header(props) {
         history.push('/Login');
       }
       else {
-        fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
           headers: {
             'auth-token': localStorage.getItem('jwt')
           }
