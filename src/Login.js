@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import validate, { result } from "validate.js";
+import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
 
@@ -10,7 +10,7 @@ function Login(props) {
   const [username, setUsername] = useState('');
   const [pass, setPass] = useState('');
   const [passRepeat, setPassRepeat] = useState('');
-  const [registerMode, setRegisterMode] = useState(false);
+  const [registerMode, setRegisterMode] = useState('');
   const [successMsg, setSuccessMsg] = useState(false);
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
@@ -43,6 +43,7 @@ function Login(props) {
         else
           dispatch(UiStateSlice.setCurrentError('Serveranfrage ist gescheitert'));
       });
+    setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
   }
 
   /**
@@ -97,29 +98,29 @@ function Login(props) {
     else
       if (pass !== passRepeat)
         dispatch(UiStateSlice.setCurrentError('Passwörter stimmen nicht überein'));
-      else
-        dispatch(UiStateSlice.setCurrentError(''));
-
-
-    fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: username, password: pass, name: name, organization: orga }),
-    })
-      .then(function (response) {
-        if (response.ok) {
-          resetRegisterFields();
-          setSuccessMsg('Registrierung erfolgreich');
-          setRegisterMode(false);
-        }
-        else
-          throw response
-      })
-      .catch((err) => {
-        dispatch(UiStateSlice.setCurrentError('Registrierung ist nicht möglich.'));
-      });
+      else {
+        fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: username, password: pass, name: name, organization: orga }),
+        })
+          .then(function (response) {
+            if (response.ok) {
+              resetRegisterFields();
+              setSuccessMsg('Registrierung erfolgreich');
+              setTimeout(() => setSuccessMsg(''), 5000);
+              setRegisterMode(false);
+            }
+            else
+              throw response
+          })
+          .catch((err) => {
+            dispatch(UiStateSlice.setCurrentError('Registrierung ist nicht möglich.'));
+          });
+      }
+    setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
   }
 
   /**

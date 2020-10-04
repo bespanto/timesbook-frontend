@@ -6,7 +6,7 @@ export const selectUiState = (state) => state.uiState
 
 export const initialState = {
     now: moment().format('YYYY-MM'),
-    activeMenuItem: 'TimeBooking',
+    activeMenuItem: localStorage.getItem('jwt') ? 'TimeBooking' : 'Login',
     currentError: '',
     loggedIn: false,
     profile: {
