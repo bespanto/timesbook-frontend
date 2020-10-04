@@ -12,7 +12,7 @@ function Login(props) {
   const [pass, setPass] = useState('');
   const [passRepeat, setPassRepeat] = useState('');
   const [registerMode, setRegisterMode] = useState('');
-  const [successMsg, setSuccessMsg] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
   const uiState = useSelector((state) =>
     UiStateSlice.selectUiState(state)
   );
