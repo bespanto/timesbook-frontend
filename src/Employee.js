@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import { patchData } from "./serverConnections/connect";
-import validate from "validate.js";
-import * as UiStateSlice from "./redux/UiStateSlice";
 import shortid from "shortid";
+import validate from "validate.js";
+import { patchData } from "./serverConnections/connect";
+import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
+//Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
-
 
 function Admin(props) {
   const [name, setName] = useState('');
@@ -140,112 +138,78 @@ function Admin(props) {
     setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
   }
 
-  function getEmployees() {
-    const empArr = [
-      {
-        name: 'Maria Dorsch',
-        username: 'm.dorsch@gmail.com',
-        status: 'activ'
-      },
-      {
-        name: 'Jan Bartsch',
-        username: 'j.bartsch@yahoo.com',
-        status: 'activ'
-      },
-    ]
-    let arr = [];
-    employees.forEach(item => {
-      arr.push(
-        <div key={shortid.generate()} className="row section">
-          <div className="col">
-            <small>{item.name}</small>
-          </div>
-          <div className="col">
-            <small>{item.username}</small>
-          </div>
-        </div>)
-    })
-    return arr;
-  }
-
   return (
     <React.Fragment>
       <CssBaseline />
-      <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-      >
-        <Grid item>
-          <Typography>Mitarbeiter</Typography>
+      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+        <Typography variant="h6">Mitarbeiter</Typography>
+      </Box>
+      <Box display="flex" justifyContent="center">
+        <div className="error">{uiState.currentError}</div>
+        <div style={{ color: 'green' }}>{successMsg}</div>
+      </Box>
+      <Box display="flex" justifyContent="center" style={{ marginLeft: '0.5em', marginRight: '0.5em' }}>
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              id="name"
+              label="Name"
+              variant="outlined"
+              name="name"
+              value={name}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={6} >
+            <TextField
+              fullWidth
+              id="username"
+              label="E-Mail"
+              variant="outlined"
+              name="username"
+              value={username}
+              onChange={handleChange}
+            />
+          </Grid>
         </Grid>
-        <Grid item>
-          <div className="error">{uiState.currentError}</div>
-          <div style={{ color: 'green' }}>{successMsg}</div>
-        </Grid>
-        <Grid item>
-          <TextField
-            id="name"
-            label="Name"
-            variant="outlined"
-            name="name"
-            value={name}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            id="username"
-            label="E-Mail"
-            variant="outlined"
-            name="username"
-            value={username}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item>
-          <Button variant="contained" onClick={() => inviteUser()}>
-            Default
-      </Button>
-        </Grid>
-      </Grid>
-      <Container className={classes.tableContainer}>
-        <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>E-mail</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {employees.map((row) => (
-                <TableRow key={shortid.generate()}>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell>{row.username}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
+      </Box>
+      <Box display="flex" justifyContent="center" style={{ marginTop: '1em' }}>
+        <Button variant="contained" onClick={() => inviteUser()}>
+          Einladen
+        </Button>
+      </Box>
+      <Box spacing={1} style={{ marginTop: '2em', marginLeft: '0.5em', marginRight: '0.5em' }}>
+        {employees.map((row) => (
+          <Card key={shortid.generate()} className={classes.card}>
+            <CardHeader
+              avatar={
+                <Avatar aria-label="recipe" className={classes.avatar}>
+                  {row.name[0]}
+                </Avatar>
+              }
+              action={
+                <IconButton aria-label="settings">
+                  <MoreVertIcon />
+                </IconButton>
+              }
+              title={row.name}
+              subheader={row.username}
+            />
+          </Card>
+        ))}
+      </Box>
     </React.Fragment>
   );
 }
 
-
 const useStyles = makeStyles({
-  tableContainer: {
-    marginTop: '1em',
+  card: {
+    width: '100%',
+    marginTop: '0.5em'
   },
-  centeredContainer: {
-    textAlign: 'center',
-  },
-  table: {
-    // minWidth: 650,
+  avatar: {
+    backgroundColor: 'blueviolet',
   },
 });
 
