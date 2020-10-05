@@ -15,15 +15,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 
-const useStyles = makeStyles({
-  tableContainer: {
-    marginTop: '1em',
-  },
-  table: {
-    // minWidth: 650,
-  },
-});
 
 function Admin(props) {
   const [name, setName] = useState('');
@@ -172,39 +169,47 @@ function Admin(props) {
   }
 
   return (
-    <div>
-      <div className="error">{uiState.currentError}</div>
-      <div style={{ color: 'green' }}>{successMsg}</div>
-      <p>Mitarbeiter</p>
-      <div>
-        <div>
-          Name
-        </div>
-        <div>
-          <small>
-            <input size="20"
-              type="text"
-              name="name"
-              value={name}
-              onChange={handleChange}
-            /></small>
-        </div>
-        <div>
-          E-Mail
-        </div>
-        <div>
-          <small>
-            <input size="20"
-              type="text"
-              name="username"
-              value={username}
-              onChange={handleChange}
-            /></small>
-        </div>
-        <div style={{ marginTop: '0.5em' }}>
-          <button className="button" onClick={() => inviteUser()}>Einladen</button>
-        </div>
-      </div>
+    <React.Fragment>
+      <CssBaseline />
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
+        <Grid item>
+          <Typography>Mitarbeiter</Typography>
+        </Grid>
+        <Grid item>
+          <div className="error">{uiState.currentError}</div>
+          <div style={{ color: 'green' }}>{successMsg}</div>
+        </Grid>
+        <Grid item>
+          <TextField
+            id="name"
+            label="Name"
+            variant="outlined"
+            name="name"
+            value={name}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            id="username"
+            label="E-Mail"
+            variant="outlined"
+            name="username"
+            value={username}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item>
+          <Button variant="contained" onClick={() => inviteUser()}>
+            Default
+      </Button>
+        </Grid>
+      </Grid>
       <Container className={classes.tableContainer}>
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
@@ -216,7 +221,7 @@ function Admin(props) {
             </TableHead>
             <TableBody>
               {employees.map((row) => (
-                <TableRow key={row.name}>
+                <TableRow key={shortid.generate()}>
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
@@ -227,8 +232,21 @@ function Admin(props) {
           </Table>
         </TableContainer>
       </Container>
-    </div>
+    </React.Fragment>
   );
 }
+
+
+const useStyles = makeStyles({
+  tableContainer: {
+    marginTop: '1em',
+  },
+  centeredContainer: {
+    textAlign: 'center',
+  },
+  table: {
+    // minWidth: 650,
+  },
+});
 
 export default Admin;
