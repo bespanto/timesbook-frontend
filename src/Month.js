@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -11,7 +11,10 @@ import "./App.css";
 import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { DAY_FORMAT } from "./Const";
-
+// Material UI
+import Grid from '@material-ui/core/Grid';
+import Typography from "@material-ui/core/Typography";
+import Button from '@material-ui/core/Button';
 
 function Month(props) {
   const uiState = useSelector((state) =>
@@ -42,7 +45,6 @@ function Month(props) {
 
   /**
    * 
-   * @param {*} e 
    */
   function monthDown(e) {
     e.preventDefault();
@@ -53,7 +55,6 @@ function Month(props) {
 
   /**
    * 
-   * @param {*} e 
    */
   function monthUp(e) {
     e.preventDefault();
@@ -64,7 +65,6 @@ function Month(props) {
 
   /**
    * 
-   * @param {*} date 
    */
   function showPopup(date) {
     setBookingDateToEdit(date);
@@ -73,7 +73,6 @@ function Month(props) {
 
   /**
    * 
-   * @param {*} date 
    */
   function closePopup() {
     setPopupIsVisible(false);
@@ -81,40 +80,31 @@ function Month(props) {
 
   /**
  * 
- * @param {*} date 
  */
   function closeErrorPopup() {
     dispatch(UiStateSlice.setCurrentError(''));
   }
 
   return (
-    <div className="month">
-      <div>
-        <div className="row day">
-          <div className="col-2">
-            <button className="button" onClick={(e) => monthDown(e)}>
-              <FontAwesomeIcon icon={faArrowLeft} />
-            </button>
-          </div>
-          <div className="col-8">
+    <div style={{ marginLeft: '0.5em',  marginRight: '0.5em' }}>
+      <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
+        <Grid item xs={3} style={{ textAlign: 'right' }}>
+          <Button onClick={(e) => monthDown(e)}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Button>
+        </Grid>
+        <Grid item xs={6} style={{ textAlign: 'center' }} >
+          <Typography variant="h6">
             {DateUtils.getMonthName(moment(uiState.now).month())} {moment(uiState.now).year()}
-          </div>
-          <div className="col-2">
-            <button className="button" onClick={(e) => monthUp(e)}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </button>
-          </div>
-        </div>
-        <div className="row day">
-          <div className="col-2 text-center small">Start</div>
-          <div className="col-2 text-center day-item small">Ende</div>
-          <div className="col-2 text-center day-item small">Pause</div>
-          <div className="col-2 text-center day-item small">Ist</div>
-          <div className="col-2 text-center day-item small">+/-</div>
-          <div className="col-2 text-center day-item small"></div>
-        </div>
-      </div>
-      <div>{getDayComponents()}</div>
+          </Typography>
+        </Grid>
+        <Grid item xs={3} style={{ textAlign: 'left' }} >
+          <Button onClick={(e) => monthUp(e)}>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </Button>
+        </Grid>
+      </Grid>
+      {getDayComponents()}
       {popupIsVisible && (
         <Popup handleClose={closePopup}>
           <BookingDayForm

@@ -6,6 +6,9 @@ import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import "./App.css";
+// Material UI
+import Grid from '@material-ui/core/Grid';
+import Typography from "@material-ui/core/Typography";
 
 function Day(props) {
   const bookingEntry = useSelector((state) =>
@@ -35,38 +38,48 @@ function Day(props) {
   }
 
   return (
-    <div className={weekday === 6 || weekday === 0 ? 'text-muted': ''}>
-      <div className="row day" >
-        <div className="col-12 text-underline" >
-          <ins>{DateUtils.getWeekday(weekday)}, {moment(props.bookingDay).date()}.</ins>
-        </div>
-        <div className="col-2 text-center">
-          <small>{start}</small>
-        </div>
-        <div className="col-2 text-center day-item">
-          <small>{end}</small>
-        </div>
-        <div className="col-2 text-center day-item">
-          <small>{pause}</small>
-        </div>
-        <div className="col-2 text-center day-item">
-          <small>{workingTime}</small>
-        </div>
-        <div className="col-2 text-center day-item">
-          <small>{overtime}</small>
-        </div>
-        <div className="col-2 text-center day-item">
+    <div className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
+
+      <Grid container alignItems="center" style={{ border: '2px solid blueviolet', marginTop: '0.5em' }}>
+        <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
+          <Typography variant="button">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+        </Grid>
+        <Grid container>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Start</Typography>
+          </Grid>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Ende</Typography>
+          </Grid>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Pause</Typography>
+          </Grid>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Ist</Typography>
+          </Grid>
+          <Grid item xs={2} style={{ textAlign: 'center' }}>
+            <Typography variant="caption">+/-</Typography>
+          </Grid>
+        </Grid>
+        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }}>
+          <Typography variant="body2">{start}</Typography></Grid>
+        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
+          <Typography variant="body2">{end}</Typography></Grid>
+        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
+          <Typography variant="body2">{pause}</Typography></Grid>
+        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
+          <Typography variant="body2">{workingTime}</Typography></Grid>
+        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }}>
+          <Typography variant="body2">{overtime}</Typography></Grid>
+        <Grid item xs={2} style={{ textAlign: 'center' }} >
           <button className="button" onClick={() => props.showPopup(props.bookingDay)}>
             <FontAwesomeIcon icon={faEdit} />
           </button>
-          {/* <button className="button">
-          <FontAwesomeIcon icon={faEraser} />
-        </button> */}
-        </div>
-        <div className="col-12 text-left">
-          <small>{activities}</small>
-        </div>
-      </div>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <Typography variant="body2">{activities}</Typography>
+        </Grid>
+      </Grid>
     </div>
   );
 }
