@@ -49,7 +49,7 @@ function Header(props) {
 
   return (
     <header className="sticky-top">
-      {   uiState.loggedIn ? <nav className="navbar navbar-dark bg-dark">
+      <nav className="navbar navbar-dark bg-dark">
         <div className="dropdown">
           <button className="navbar-toggler" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span className="navbar-toggler-icon"></span>
@@ -87,9 +87,6 @@ function Header(props) {
           </Link>
         </div>
       </nav>
-        :
-        <h2>TimesBook</h2>
-      }
     </header>
   );
 }

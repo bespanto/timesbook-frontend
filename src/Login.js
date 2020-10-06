@@ -4,6 +4,13 @@ import { useHistory } from "react-router-dom";
 import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
+// Material UI
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 
 function Login(props) {
   const [orga, setOrga] = useState('');
@@ -166,86 +173,99 @@ function Login(props) {
    * Render output
    */
   return (
-    <div className="month">
-      <div className="error">{uiState.currentError}</div>
-      <div style={{ color: 'green' }}>{successMsg}</div>
-      { registerMode ?
-        <p><ins>Registrieren</ins></p>
-        :
-        <p><ins>Login</ins></p>
-      }
-      <div>
-        {registerMode && <span>
-          <div>Organisation</div>
-          <div>
-            <input
+    <React.Fragment>
+      <CssBaseline />
+      <Grid container spacing={1} direction="column" justify="center" alignItems="center">
+        <Grid item>
+          {registerMode ?
+            <Typography variant="h6">Registrieren</Typography>
+            :
+            <Typography variant="h6">Login</Typography>
+          }
+        </Grid>
+        <Grid item>
+          <div className="error">{uiState.currentError}</div>
+          <div style={{ color: 'green' }}>{successMsg}</div>
+        </Grid>
+        {registerMode &&
+          <Grid item>
+            <TextField
+              id="orga"
+              label="Organisation"
+              variant="outlined"
               name="orga"
-              type="text"
               value={orga}
               onChange={handleChange}
             />
-          </div>
-        </span>}
-        {registerMode && <span>
-          <div>Name</div>
-          <div>
-            <input
+          </Grid>}
+        {registerMode &&
+          <Grid item>
+            <TextField
+              id="name"
+              label="Name"
+              variant="outlined"
               name="name"
-              type="text"
               value={name}
               onChange={handleChange}
             />
-          </div>
-        </span>}
-        <div>Benutzername (E-Mail)</div>
-        <div>
-          <input
+          </Grid>}
+        <Grid item>
+          <TextField
+            id="username"
+            label="E-Mail"
+            variant="outlined"
             name="username"
-            type="email"
             value={username}
             onChange={handleChange}
           />
-        </div>
-        <div>Passwort</div>
-        <div>
-          <input
-            name="pass"
+        </Grid>
+        <Grid item>
+          <TextField
             type="password"
+            id="pass"
+            label="Passwort"
+            variant="outlined"
+            name="pass"
             value={pass}
             onChange={handleChange}
           />
-        </div>
-        {registerMode && <span>
-          <div>Passwort wiederholen</div>
-          <div>
-            <input
-              name="passRepeat"
+        </Grid>
+        {registerMode &&
+          <Grid item>
+            <TextField
               type="password"
+              id="passRepeat"
+              label="Passwort wiederholen"
+              variant="outlined"
+              name="passRepeat"
               value={passRepeat}
               onChange={handleChange}
             />
-          </div>
-        </span>}
-      </div>
-      { registerMode ?
-        <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
-          <button type="button" className="button" onClick={() => handleRegister()}>Senden</button>
-        </div>
-        :
-        <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
-          <button type="button" className="button" onClick={() => handleLogin()}>Senden</button>
-        </div>
-      }
-      {registerMode ?
-        <div style={{ marginBottom: '0.3em', marginTop: '0.3em', cursor: 'pointer' }} onClick={() => setRegisterMode(false)}>
-          <small><ins>Login</ins></small>
-        </div>
-        :
-        <div style={{ marginBottom: '0.3em', marginTop: '0.3em', cursor: 'pointer' }} onClick={() => setRegisterMode(true)}>
-          <small><ins>Registrieren</ins></small>
-        </div>
-      }
-    </div>
+          </Grid>}
+        <Grid item style={{ marginTop: '0.5em' }}>
+          {registerMode ?
+            <Button variant="contained" onClick={() => handleRegister()}>
+              Senden
+            </Button>
+            :
+            <Button variant="contained" onClick={() => handleLogin()}>
+              Senden
+            </Button>
+          }
+        </Grid>
+        <Grid item style={{ marginTop: '1em' }}>
+          {registerMode ?
+            <Link component="button" variant="body2" onClick={() => setRegisterMode(false)}>
+              Login
+            </Link>
+            :
+            <Link component="button" variant="body2" onClick={() => setRegisterMode(true)}>
+              Registrieren
+          </Link>
+          }
+        </Grid>
+      </Grid>
+    </React.Fragment>
   );
 }
 
