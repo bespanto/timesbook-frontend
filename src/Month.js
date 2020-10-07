@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
@@ -12,9 +10,12 @@ import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { DAY_FORMAT } from "./Const";
 // Material UI
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
 import Button from '@material-ui/core/Button';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 function Month(props) {
   const uiState = useSelector((state) =>
@@ -86,21 +87,22 @@ function Month(props) {
   }
 
   return (
-    <div style={{ marginLeft: '0.5em',  marginRight: '0.5em' }}>
-      <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
+    <React.Fragment>
+      <CssBaseline />
+      <Grid container alignItems="center" style={{ marginBottom: '1em' }}>
         <Grid item xs={3} style={{ textAlign: 'right' }}>
           <Button onClick={(e) => monthDown(e)}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <ChevronLeftIcon fontSize="large" />
           </Button>
         </Grid>
         <Grid item xs={6} style={{ textAlign: 'center' }} >
-          <Typography variant="h6">
+          <Typography variant="h5" style={{ textDecoration: 'underline' }}>
             {DateUtils.getMonthName(moment(uiState.now).month())} {moment(uiState.now).year()}
           </Typography>
         </Grid>
         <Grid item xs={3} style={{ textAlign: 'left' }} >
           <Button onClick={(e) => monthUp(e)}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            <ChevronRightIcon fontSize="large" />
           </Button>
         </Grid>
       </Grid>
@@ -121,7 +123,7 @@ function Month(props) {
           </div>
         </Popup>
       }
-    </div>
+    </React.Fragment>
   );
 }
 

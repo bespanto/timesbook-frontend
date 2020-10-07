@@ -1,19 +1,25 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import moment from "moment";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import "./App.css";
 // Material UI
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container';
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import EditIcon from '@material-ui/icons/Edit';
+
 
 function Day(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+  const classes = useStyles();
   const weekday = moment(props.bookingDay).weekday();
 
   const timeFormat = 'HH:mm';
@@ -38,50 +44,62 @@ function Day(props) {
   }
 
   return (
-    <div className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
-
-      <Grid container alignItems="center" style={{ border: '2px solid blueviolet', marginTop: '0.5em' }}>
-        <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
-          <Typography variant="button">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
-        </Grid>
-        <Grid container>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="caption">Start</Typography>
+    <React.Fragment>
+      <CssBaseline />
+      <Container className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
+        <Paper>
+          <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
+            <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
+              <Typography variant="h6">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+            </Grid>
+            <Grid container>
+              <Grid item xs={2} style={{ textAlign: 'center' }}>
+                <Typography variant="caption">Start</Typography>
+              </Grid>
+              <Grid item xs={2} style={{ textAlign: 'center' }}>
+                <Typography variant="caption">Ende</Typography>
+              </Grid>
+              <Grid item xs={2} style={{ textAlign: 'center' }}>
+                <Typography variant="caption">Pause</Typography>
+              </Grid>
+              <Grid item xs={2} style={{ textAlign: 'center' }}>
+                <Typography variant="caption">Ist</Typography>
+              </Grid>
+              <Grid item xs={2} style={{ textAlign: 'center' }}>
+                <Typography variant="caption">+/-</Typography>
+              </Grid>
+            </Grid>
+            <Grid item xs={2} className={classes.bookingRow}>
+              <Typography variant="body2">{start}</Typography></Grid>
+            <Grid item xs={2} className={classes.bookingRow}>
+              <Typography variant="body2">{end}</Typography></Grid>
+            <Grid item xs={2} className={classes.bookingRow}>
+              <Typography variant="body2">{pause}</Typography></Grid>
+            <Grid item xs={2} className={classes.bookingRow}>
+              <Typography variant="body2">{workingTime}</Typography></Grid>
+            <Grid item xs={2} className={classes.bookingRow}>
+              <Typography variant="body2">{overtime}</Typography></Grid>
+            <Grid item xs={2} style={{ textAlign: 'center' }} >
+              <Button onClick={() => props.showPopup(props.bookingDay)}>
+                <EditIcon />
+              </Button>
+            </Grid>
+            <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
+              <Typography variant="body2">{activities}</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="caption">Ende</Typography>
-          </Grid>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="caption">Pause</Typography>
-          </Grid>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="caption">Ist</Typography>
-          </Grid>
-          <Grid item xs={2} style={{ textAlign: 'center' }}>
-            <Typography variant="caption">+/-</Typography>
-          </Grid>
-        </Grid>
-        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }}>
-          <Typography variant="body2">{start}</Typography></Grid>
-        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
-          <Typography variant="body2">{end}</Typography></Grid>
-        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
-          <Typography variant="body2">{pause}</Typography></Grid>
-        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }} >
-          <Typography variant="body2">{workingTime}</Typography></Grid>
-        <Grid item xs={2} style={{ textAlign: 'center', borderRight: '1px solid blueviolet' }}>
-          <Typography variant="body2">{overtime}</Typography></Grid>
-        <Grid item xs={2} style={{ textAlign: 'center' }} >
-          <button className="button" onClick={() => props.showPopup(props.bookingDay)}>
-            <FontAwesomeIcon icon={faEdit} />
-          </button>
-        </Grid>
-        <Grid item xs={12} style={{ textAlign: 'center' }}>
-          <Typography variant="body2">{activities}</Typography>
-        </Grid>
-      </Grid>
-    </div>
+        </Paper>
+      </Container>
+    </React.Fragment>
   );
 }
+
+const useStyles = makeStyles((theme) => ({
+  bookingRow: {
+    borderRight: '1px solid',
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+}));
 
 export default Day;

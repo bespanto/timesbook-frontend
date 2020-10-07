@@ -46,7 +46,7 @@ function Profile(props) {
           alignItems="center"
         >
           <Grid xs={12} item style={{ textAlign: 'center', marginBottom: '0.5em' }}>
-            <Typography variant="h6">Benutzerprofil</Typography>
+            <Typography variant="h5">Benutzerprofil</Typography>
           </Grid>
           <Grid item xs={12}>
             <Box style={{ marginLeft: '1em', marginRight: '1em' }}>

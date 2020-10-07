@@ -19,6 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
 
 function Admin(props) {
   const [name, setName] = useState('');
@@ -142,13 +143,13 @@ function Admin(props) {
     <React.Fragment>
       <CssBaseline />
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
-        <Typography variant="h6">Mitarbeiter</Typography>
+        <Typography variant="h5">Mitarbeiter</Typography>
       </Box>
       <Box display="flex" justifyContent="center">
         <div className="error">{uiState.currentError}</div>
         <div style={{ color: 'green' }}>{successMsg}</div>
       </Box>
-      <Box display="flex" justifyContent="center" style={{ marginLeft: '0.5em', marginRight: '0.5em' }}>
+      <Container>
         <Grid container spacing={1}>
           <Grid item xs={6}>
             <TextField
@@ -173,13 +174,13 @@ function Admin(props) {
             />
           </Grid>
         </Grid>
-      </Box>
-      <Box display="flex" justifyContent="center" style={{ marginTop: '1em' }}>
-        <Button variant="contained" onClick={() => inviteUser()}>
-          Einladen
+        <Box display="flex" justifyContent="center" style={{ marginTop: '0.5em' }}>
+          <Button variant="contained" onClick={() => inviteUser()}>
+            Einladen
         </Button>
-      </Box>
-      <Box spacing={1} style={{ marginTop: '2em', marginLeft: '0.5em', marginRight: '0.5em' }}>
+        </Box>
+      </Container>
+      <Container style={{marginTop: '1.5em'}}>
         {employees.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
@@ -198,7 +199,7 @@ function Admin(props) {
             />
           </Card>
         ))}
-      </Box>
+      </Container>
     </React.Fragment>
   );
 }

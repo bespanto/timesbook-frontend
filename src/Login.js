@@ -178,9 +178,9 @@ function Login(props) {
       <Grid container spacing={1} direction="column" justify="center" alignItems="center">
         <Grid item>
           {registerMode ?
-            <Typography variant="h6">Registrieren</Typography>
+            <Typography variant="h5">Registrieren</Typography>
             :
-            <Typography variant="h6">Login</Typography>
+            <Typography variant="h5">Login</Typography>
           }
         </Grid>
         <Grid item>
