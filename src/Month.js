@@ -13,7 +13,7 @@ import { DAY_FORMAT } from "./Const";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
@@ -89,11 +89,11 @@ function Month(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Grid container alignItems="center" style={{ marginBottom: '1em' }}>
+      <Grid container alignItems="center" style={{ marginBottom: '1em', marginTop: '1em' }}>
         <Grid item xs={3} style={{ textAlign: 'right' }}>
-          <Button onClick={(e) => monthDown(e)}>
+          <IconButton size="small" onClick={(e) => monthDown(e)}>
             <ChevronLeftIcon fontSize="large" />
-          </Button>
+          </IconButton>
         </Grid>
         <Grid item xs={6} style={{ textAlign: 'center' }} >
           <Typography variant="h5" style={{ textDecoration: 'underline' }}>
@@ -101,9 +101,9 @@ function Month(props) {
           </Typography>
         </Grid>
         <Grid item xs={3} style={{ textAlign: 'left' }} >
-          <Button onClick={(e) => monthUp(e)}>
+          <IconButton size="small" onClick={(e) => monthUp(e)}>
             <ChevronRightIcon fontSize="large" />
-          </Button>
+          </IconButton>
         </Grid>
       </Grid>
       {getDayComponents()}

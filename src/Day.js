@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
 
 
@@ -80,9 +80,9 @@ function Day(props) {
             <Grid item xs={2} className={classes.bookingRow}>
               <Typography variant="body2">{overtime}</Typography></Grid>
             <Grid item xs={2} style={{ textAlign: 'center' }} >
-              <Button onClick={() => props.showPopup(props.bookingDay)}>
+              <IconButton size="small" onClick={() => props.showPopup(props.bookingDay)}>
                 <EditIcon />
-              </Button>
+              </IconButton>
             </Grid>
             <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
               <Typography variant="body2">{activities}</Typography>
