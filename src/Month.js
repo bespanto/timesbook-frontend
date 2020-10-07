@@ -12,6 +12,7 @@ import { DAY_FORMAT } from "./Const";
 // Material UI
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import Typography from "@material-ui/core/Typography";
 import IconButton from '@material-ui/core/IconButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -118,9 +119,9 @@ function Month(props) {
       )}
       {uiState.currentError !== '' &&
         <Popup handleClose={closeErrorPopup}>
-          <div style={{ marginLeft: '0.75em', marginRight: '0.75em', marginBottom: '2em', marginTop: '1em' }}>
-            <div className="error">{uiState.currentError}</div>
-          </div>
+          <Box style={{ marginLeft: '0.75em', marginRight: '0.75em', marginBottom: '2em', marginTop: '1em' }}>
+            <Typography className="error">{uiState.currentError}</Typography>
+          </Box>
         </Popup>
       }
     </React.Fragment>
