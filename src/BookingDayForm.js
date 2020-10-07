@@ -6,6 +6,11 @@ import moment from "moment";
 import { DAY_FORMAT } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
+// Material UI
+import Typography from "@material-ui/core/Typography";
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 function BookingDayForm(props) {
   const dispatch = useDispatch();
@@ -23,7 +28,6 @@ function BookingDayForm(props) {
 
   /**
    * 
-   * @param {*} item 
    */
   function saveEntryToBackend(item) {
     patchData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`, localStorage.getItem('jwt'), item)
@@ -70,7 +74,6 @@ function BookingDayForm(props) {
 
   /**
    * 
-   * @param {*} item 
    */
   function deleteEntryFromBackend(day) {
     deleteData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`, localStorage.getItem('jwt'))
@@ -159,59 +162,67 @@ function BookingDayForm(props) {
   }
 
   return (
-    <div style={{ marginLeft: '1.75em', marginRight: '1.75em' }}>
-      <div className="error">{error}</div>
-      <p>{moment(props.bookingDay).format('DD.MM.YYYY')}</p>
-      <div>
-        <div>Start</div>
-        <div>
-          <input
-            name="start"
-            type="time"
-            className="time-input"
-            value={start}
-            onChange={handleChange}
-          />
-        </div>
-        <div>Ende</div>
-        <div>
-          <input
-            name="end"
-            type="time"
-            className="time-input"
-            value={end}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-      <div>Pause</div>
-      <div>
-        <input
-          name="pause"
+    <Grid container spacing={2} direction="column" justify="center" alignItems="center">
+      <Grid item className="error">{error}</Grid>
+      <Grid item ><Typography variant="h6">{moment(props.bookingDay).format('DD.MM.YYYY')}</Typography></Grid>
+      <Grid item style={{ marginTop: '0.5em' }}>
+        <TextField
+          id="start"
+          label="Start"
           type="time"
-          className="time-input"
+          name="start"
+          value={start}
+          onChange={handleChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+      </Grid>
+      <Grid item style={{ marginTop: '0.5em' }}>
+        <TextField
+          id="ende"
+          label="Ende"
+          type="time"
+          name="end"
+          value={end}
+          onChange={handleChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+      </Grid>
+      <Grid item style={{ marginTop: '0.5em' }}>
+        <TextField
+          id="Pause"
+          label="Pause"
+          type="time"
+          name="pause"
           value={pause}
           onChange={handleChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
-      </div>
-      <div>Tätigkeiten</div>
-      <div>
-        <input
+      </Grid>
+      <Grid item style={{ marginTop: '0.5em' }}>
+        <TextField
+          id="activities"
+          label="Tätigkeiten"
+          type="text"
           name="activities"
-          type="textarea"
           value={activities}
           onChange={handleChange}
         />
-      </div>
-      <div style={{ marginBottom: '0.3em', marginTop: '0.3em' }}>
-        <button type="button" className="button" onClick={() => remove()}>
+      </Grid>
+      <Grid item style={{ marginTop: '0.5em' }}>
+        <Button variant="contained" onClick={() => remove()} style={{marginRight: '0.5em'}}>
           Löschen
-        </button>
-        <button type="button" className="button" onClick={(e) => save()}>
+        </Button>
+        <Button variant="contained" onClick={(e) => save()} style={{marginLeft: '0.5em'}}>
           {props.submitButtonValue}
-        </button>
-      </div>
-    </div >
+        </Button>
+      </Grid>
+    </Grid >
   );
 }
 
