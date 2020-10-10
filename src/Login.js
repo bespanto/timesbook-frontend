@@ -5,24 +5,23 @@ import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
 // Material UI
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Link from "@material-ui/core/Link";
+import Box from "@material-ui/core/Box";
 
 function Login(props) {
-  const [orga, setOrga] = useState('');
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [pass, setPass] = useState('');
-  const [passRepeat, setPassRepeat] = useState('');
-  const [registerMode, setRegisterMode] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const uiState = useSelector((state) =>
-    UiStateSlice.selectUiState(state)
-  );
+  const [orga, setOrga] = useState("");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [pass, setPass] = useState("");
+  const [passRepeat, setPassRepeat] = useState("");
+  const [registerMode, setRegisterMode] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const dispatch = useDispatch();
   let history = useHistory();
 
@@ -31,34 +30,35 @@ function Login(props) {
    */
   function handleLogin() {
     fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ username: username, password: pass }),
     })
       .then(function (response) {
-        if (response.ok)
-          return response.json();
-        else
-          throw response
-      }).then(json => {
-        localStorage.setItem('jwt', json.jwt)
+        if (response.ok) return response.json();
+        else throw response;
+      })
+      .then((json) => {
+        localStorage.setItem("jwt", json.jwt);
         dispatch(UiStateSlice.setLoggedIn(true));
-        history.push('/TimeBooking');
+        history.push("/TimeBooking");
       })
       .catch((err) => {
         if (err.status === 400)
-          dispatch(UiStateSlice.setCurrentError('Login ist gescheitert'));
+          dispatch(UiStateSlice.setCurrentError("Login ist gescheitert"));
         else
-          dispatch(UiStateSlice.setCurrentError('Serveranfrage ist gescheitert'));
+          dispatch(
+            UiStateSlice.setCurrentError("Serveranfrage ist gescheitert")
+          );
       });
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
+    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
 
   /**
-  * Handles register event
-  */
+   * Handles register event
+   */
   function handleRegister() {
     var constraints = {
       orga: {
@@ -74,7 +74,7 @@ function Login(props) {
         },
       },
       username: {
-        email: true
+        email: true,
       },
       pass: {
         presence: true,
@@ -90,58 +90,106 @@ function Login(props) {
       },
     };
 
+    const newAdminAccount = {
+      orga: orga,
+      username: username,
+      pass: pass,
+      passRepeat: passRepeat,
+      name: name,
+    };
+
     // Validate input fields
-    const result = validate({ orga: orga, username: username, pass: pass, passRepeat: passRepeat, name: name }, constraints);
+    const result = validate(newAdminAccount, constraints);
     if (result !== undefined) {
       if (result.orga)
-        dispatch(UiStateSlice.setCurrentError('Organisation muss angegeben werden'));
-      else
-        if (result.name)
-          dispatch(UiStateSlice.setCurrentError('Name muss angegeben werden'));
-        else
-          if (result.username)
-            dispatch(UiStateSlice.setCurrentError('Benutzername muss eine gültige E-Mail sein'));
-          else
-            if (result.pass || result.passRepeat)
-              dispatch(UiStateSlice.setCurrentError('Passwort muss mind. 6 Zeichen lang sein'));
-    }
-    else
-      if (pass !== passRepeat)
-        dispatch(UiStateSlice.setCurrentError('Passwörter stimmen nicht überein'));
-      else {
-        fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username: username, password: pass, name: name, organization: orga }),
+        dispatch(
+          UiStateSlice.setCurrentError("Organisation muss angegeben werden")
+        );
+      else if (result.name)
+        dispatch(UiStateSlice.setCurrentError("Name muss angegeben werden"));
+      else if (result.username)
+        dispatch(
+          UiStateSlice.setCurrentError(
+            "Die Benutzername muss eine gültige E-Mail sein"
+          )
+        );
+      else if (result.pass || result.passRepeat)
+        dispatch(
+          UiStateSlice.setCurrentError(
+            "Das Passwort muss mind. 6 Zeichen lang sein"
+          )
+        );
+    } else if (pass !== passRepeat)
+      dispatch(
+        UiStateSlice.setCurrentError("Passwörter stimmen nicht überein")
+      );
+    else {
+      fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: pass,
+          name: name,
+          organization: orga,
+        }),
+      })
+        .then(function (response) {
+          if (response.ok) {
+            resetRegisterFields();
+            setSuccessMsg("Registrierung erfolgreich");
+            setTimeout(() => setSuccessMsg(""), 5000);
+            setRegisterMode(false);
+          } else throw response;
         })
-          .then(function (response) {
-            if (response.ok) {
-              resetRegisterFields();
-              setSuccessMsg('Registrierung erfolgreich');
-              setTimeout(() => setSuccessMsg(''), 5000);
-              setRegisterMode(false);
-            }
-            else
-              throw response
-          })
-          .catch((err) => {
-            dispatch(UiStateSlice.setCurrentError('Registrierung ist nicht möglich.'));
-          });
-      }
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError('')), 5000);
+        .catch((err) => {
+          err
+            .json()
+            .then((data) => {
+              if (data.errorCode === 4001) {
+                dispatch(
+                  UiStateSlice.setCurrentError(
+                    "Registrierung ist nicht möglich. Der Benutzer '" +
+                      newAdminAccount.username +
+                      "' existiert bereits."
+                  )
+                );
+              }
+              if (data.errorCode === 4002)
+                dispatch(
+                  UiStateSlice.setCurrentError(
+                    "Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
+                      newAdminAccount.orga +
+                      "' ist bereits vorhanden."
+                  )
+                );
+              console.log(data);
+              dispatch(
+                UiStateSlice.setCurrentError("Registrierung ist nicht möglich.")
+              );
+            })
+            .catch((err) => {
+              console.log(err);
+              dispatch(
+                UiStateSlice.setCurrentError("Registrierung ist nicht möglich.")
+              );
+            });
+        });
+    }
+    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
 
   /**
    * Reset all state fields
    */
   function resetRegisterFields() {
-    setName('');
-    setUsername('');
-    setPass('');
-    setPassRepeat('');
-    setOrga('');
+    setName("");
+    setUsername("");
+    setPass("");
+    setPassRepeat("");
+    setOrga("");
   }
 
   /**
@@ -175,19 +223,29 @@ function Login(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Grid container spacing={1} direction="column" justify="center" alignItems="center">
+      <Grid
+        container
+        spacing={1}
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
         <Grid item>
-          {registerMode ?
+          {registerMode ? (
             <Typography variant="h5">Registrieren</Typography>
-            :
+          ) : (
             <Typography variant="h5">Login</Typography>
-          }
+          )}
         </Grid>
         <Grid item>
-          <div className="error">{uiState.currentError}</div>
-          <div style={{ color: 'green' }}>{successMsg}</div>
+          <Typography style={{ color: "red", textAlign: "center" }}>
+            {uiState.currentError}
+          </Typography>
+          <Typography style={{ color: "green", textAlign: "center" }}>
+            {successMsg}
+          </Typography>
         </Grid>
-        {registerMode &&
+        {registerMode && (
           <Grid item>
             <TextField
               id="orga"
@@ -197,8 +255,9 @@ function Login(props) {
               value={orga}
               onChange={handleChange}
             />
-          </Grid>}
-        {registerMode &&
+          </Grid>
+        )}
+        {registerMode && (
           <Grid item>
             <TextField
               id="name"
@@ -208,7 +267,8 @@ function Login(props) {
               value={name}
               onChange={handleChange}
             />
-          </Grid>}
+          </Grid>
+        )}
         <Grid item>
           <TextField
             id="username"
@@ -230,7 +290,7 @@ function Login(props) {
             onChange={handleChange}
           />
         </Grid>
-        {registerMode &&
+        {registerMode && (
           <Grid item>
             <TextField
               type="password"
@@ -241,28 +301,37 @@ function Login(props) {
               value={passRepeat}
               onChange={handleChange}
             />
-          </Grid>}
-        <Grid item style={{ marginTop: '0.5em' }}>
-          {registerMode ?
+          </Grid>
+        )}
+        <Grid item style={{ marginTop: "0.5em" }}>
+          {registerMode ? (
             <Button variant="contained" onClick={() => handleRegister()}>
               Senden
             </Button>
-            :
+          ) : (
             <Button variant="contained" onClick={() => handleLogin()}>
               Senden
             </Button>
-          }
+          )}
         </Grid>
-        <Grid item style={{ marginTop: '1em' }}>
-          {registerMode ?
-            <Link component="button" variant="body2" onClick={() => setRegisterMode(false)}>
+        <Grid item style={{ marginTop: "1em" }}>
+          {registerMode ? (
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => setRegisterMode(false)}
+            >
               Login
             </Link>
-            :
-            <Link component="button" variant="body2" onClick={() => setRegisterMode(true)}>
+          ) : (
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => setRegisterMode(true)}
+            >
               Registrieren
-          </Link>
-          }
+            </Link>
+          )}
         </Grid>
       </Grid>
     </React.Fragment>
