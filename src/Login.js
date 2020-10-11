@@ -46,12 +46,36 @@ function Login(props) {
         history.push("/TimeBooking");
       })
       .catch((err) => {
-        if (err.status === 400)
-          dispatch(UiStateSlice.setCurrentError("Login ist gescheitert"));
-        else
-          dispatch(
-            UiStateSlice.setCurrentError("Serveranfrage ist gescheitert")
-          );
+        err
+          .json()
+          .then((data) => {
+            if (data.errorCode === 4003) {
+              dispatch(
+                UiStateSlice.setCurrentError(
+                  "Login ist gescheitert. Der Benutzer '" +
+                    username +
+                    "' ist nicht registriert."
+                )
+              );
+            } else if (data.errorCode === 4004) {
+              dispatch(
+                UiStateSlice.setCurrentError(
+                  "Login ist gescheitert. Das Passwort ist falsch."
+                )
+              );
+            } else {
+              console.log(data);
+              dispatch(UiStateSlice.setCurrentError("Login ist gescheitert."));
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            dispatch(
+              UiStateSlice.setCurrentError(
+                "Login ist gescheitert. Serverfehler."
+              )
+            );
+          });
       });
     setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
@@ -156,8 +180,7 @@ function Login(props) {
                       "' existiert bereits."
                   )
                 );
-              }
-              if (data.errorCode === 4002)
+              } else if (data.errorCode === 4002)
                 dispatch(
                   UiStateSlice.setCurrentError(
                     "Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
@@ -165,15 +188,19 @@ function Login(props) {
                       "' ist bereits vorhanden."
                   )
                 );
-              console.log(data);
-              dispatch(
-                UiStateSlice.setCurrentError("Registrierung ist nicht möglich.")
-              );
+              else {
+                console.log(data);
+                dispatch(
+                  UiStateSlice.setCurrentError(
+                    "Registrierung ist nicht möglich."
+                  )
+                );
+              }
             })
             .catch((err) => {
               console.log(err);
               dispatch(
-                UiStateSlice.setCurrentError("Registrierung ist nicht möglich.")
+                UiStateSlice.setCurrentError("Registrierung ist nicht möglich. Serverfehler")
               );
             });
         });
