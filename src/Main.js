@@ -59,7 +59,7 @@ function Main(props) {
 
   return (
     <main >
-      <div className="position-relative overflow-hidden">
+      <div>
         <Switch>
           <Route path="/TimeBooking">
             <Month />
