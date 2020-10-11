@@ -8,9 +8,9 @@ import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
 function BookingDayForm(props) {
   const dispatch = useDispatch();
@@ -18,129 +18,156 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state))
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
-  const [start, setStart] = useState(bookingEntry === undefined || bookingEntry.start === undefined ? "" : moment(bookingEntry.start).format('HH:mm'));
-  const [end, setEnd] = useState(bookingEntry === undefined || bookingEntry.end === undefined ? "" : moment(bookingEntry.end).format('HH:mm'));
-  const [pause, setPause] = useState(bookingEntry === undefined || bookingEntry.pause === undefined ? "" : bookingEntry.pause);
-  const [activities, setActivities] = useState(bookingEntry === undefined || bookingEntry.activities === undefined ? "" : bookingEntry.activities);
-  const [error, setError] = useState('');
+  const [start, setStart] = useState(
+    bookingEntry === undefined || bookingEntry.start === undefined
+      ? ""
+      : moment(bookingEntry.start).format("HH:mm")
+  );
+  const [end, setEnd] = useState(
+    bookingEntry === undefined || bookingEntry.end === undefined
+      ? ""
+      : moment(bookingEntry.end).format("HH:mm")
+  );
+  const [pause, setPause] = useState(
+    bookingEntry === undefined || bookingEntry.pause === undefined
+      ? ""
+      : bookingEntry.pause
+  );
+  const [activities, setActivities] = useState(
+    bookingEntry === undefined || bookingEntry.activities === undefined
+      ? ""
+      : bookingEntry.activities
+  );
+  const [error, setError] = useState("");
 
   /**
-   * 
+   *
    */
   function saveEntryToBackend(item) {
-    patchData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`, localStorage.getItem('jwt'), item)
-      .then(response => {
-        if (response.ok)
-          return response.json()
-        else
-          if (response.status === 401) {
-            history.push('/Login')
-            throw response;
-          }
-          else
-            throw response;
+    patchData(
+      `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`,
+      localStorage.getItem("jwt"),
+      item
+    )
+      .then((response) => {
+        if (response.ok) return response.json();
+        else if (response.status === 401) {
+          history.push("/Login");
+          throw response;
+        } else throw response;
       })
       .then((data) => {
         dispatch(BookingEntriesSlice.editBookingEntry(data));
         props.handleClose();
       })
       .catch((error) => {
-        dispatch(UiStateSlice.setCurrentError('Speichern ist nicht möglich. Keine Verbindung zum Server.'));
-        throw new Exception('ERROR: ' + error);
+        dispatch(
+          UiStateSlice.setCurrentError(
+            "Speichern ist nicht möglich. Keine Verbindung zum Server."
+          )
+        );
+        throw new Exception("ERROR: " + error);
       });
   }
 
   /**
-   * 
+   *
    */
   function save() {
     const entryToEdit = {
       username: uiState.profile.username,
       day: moment.utc(props.bookingDay).format(),
-      start: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + start).toJSON(),
-      end: new Date(moment(props.bookingDay).format(DAY_FORMAT) + 'T' + end).toJSON(),
+      start: new Date(
+        moment(props.bookingDay).format(DAY_FORMAT) + "T" + start
+      ).toJSON(),
+      end: new Date(
+        moment(props.bookingDay).format(DAY_FORMAT) + "T" + end
+      ).toJSON(),
       pause: pause,
-      activities: activities
-    }
+      activities: activities,
+    };
     try {
       checkInputs(start, end, pause);
       saveEntryToBackend(entryToEdit);
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
   }
 
   /**
-   * 
+   *
    */
   function deleteEntryFromBackend(day) {
-    deleteData(`${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`, localStorage.getItem('jwt'))
-      .then(response => {
-        if (response.ok)
-          return response.json()
-        else
-          if (response.status === 401) {
-            history.push('/Login')
-            console.log(history)
-            throw response;
-          }
-          else
-            throw response;
+    deleteData(
+      `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`,
+      localStorage.getItem("jwt")
+    )
+      .then((response) => {
+        if (response.ok) return response.json();
+        else if (response.status === 401) {
+          history.push("/Login");
+          console.log(history);
+          throw response;
+        } else throw response;
       })
       .then((data) => {
         dispatch(BookingEntriesSlice.deleteBookingEntry(day));
         props.handleClose();
       })
       .catch((error) => {
-        dispatch(UiStateSlice.setCurrentError('Löschen ist nicht möglich. Keine Verbindung zum Server.'));
-        throw new Exception('ERROR: ' + error);
+        dispatch(
+          UiStateSlice.setCurrentError(
+            "Löschen ist nicht möglich. Keine Verbindung zum Server."
+          )
+        );
+        throw new Exception("ERROR: " + error);
       });
   }
 
   /**
- * 
- */
+   *
+   */
   function remove() {
     try {
       deleteEntryFromBackend(moment.utc(props.bookingDay).format());
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
   }
 
   /**
-   * 
+   *
    */
   function Exception(message) {
     this.message = message;
   }
 
   /**
-  * 
-  */
+   *
+   */
   function checkInputs(reqStart, reqEnd, reqPause) {
-    if (!moment(reqPause, 'HH:mm').isValid())
-      throw new Exception('\'Pause\' muss angegeben werden');
-    if (!moment(reqStart, 'HH:mm').isValid())
-      throw new Exception('Keine gültige Eingabe für \'Start\'')
-    if (!moment(reqEnd, 'HH:mm').isValid())
-      throw new Exception('Keine gültige Eingabe für  \'Ende\'')
-    const start = moment(reqStart, 'HH:mm');
-    const end = moment(reqEnd, 'HH:mm');
+    if (!moment(reqPause, "HH:mm").isValid())
+      throw new Exception("'Pause' muss angegeben werden");
+    if (!moment(reqStart, "HH:mm").isValid())
+      throw new Exception("Keine gültige Eingabe für 'Start'");
+    if (!moment(reqEnd, "HH:mm").isValid())
+      throw new Exception("Keine gültige Eingabe für  'Ende'");
+    const start = moment(reqStart, "HH:mm");
+    const end = moment(reqEnd, "HH:mm");
     if (!end.isAfter(start))
-      throw new Exception(' \'Ende\' kann nicht vor \'Start\' liegen');
+      throw new Exception(" 'Ende' kann nicht vor 'Start' liegen");
 
     const pause = moment.duration(reqPause);
     const workingTime = moment.duration(end.diff(start));
     if (workingTime - pause <= 0)
-      throw new Exception('Arbeitszeit muss größer als Pause sein');
+      throw new Exception("Arbeitszeit muss größer als Pause sein");
   }
 
   /**
-   * 
-   * @param {*} event 
+   *
+   * @param {*} event
    */
   function handleChange(event) {
     switch (event.target.name) {
@@ -162,10 +189,24 @@ function BookingDayForm(props) {
   }
 
   return (
-    <Grid container spacing={2} direction="column" justify="center" alignItems="center">
-      <Grid item className="error">{error}</Grid>
-      <Grid item ><Typography variant="h6">{moment(props.bookingDay).format('DD.MM.YYYY')}</Typography></Grid>
-      <Grid item style={{ marginTop: '0.5em' }}>
+    <Grid
+      container
+      spacing={2}
+      direction="column"
+      justify="center"
+      alignItems="center"
+    >
+      <Grid item>
+        <Typography style={{ color: "red", textAlign: "center" }}>
+          {error}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Typography variant="h6">
+          {moment(props.bookingDay).format("DD.MM.YYYY")}
+        </Typography>
+      </Grid>
+      <Grid item style={{ marginTop: "0.5em" }}>
         <TextField
           id="start"
           label="Start"
@@ -178,7 +219,7 @@ function BookingDayForm(props) {
           }}
         />
       </Grid>
-      <Grid item style={{ marginTop: '0.5em' }}>
+      <Grid item style={{ marginTop: "0.5em" }}>
         <TextField
           id="ende"
           label="Ende"
@@ -191,7 +232,7 @@ function BookingDayForm(props) {
           }}
         />
       </Grid>
-      <Grid item style={{ marginTop: '0.5em' }}>
+      <Grid item style={{ marginTop: "0.5em" }}>
         <TextField
           id="Pause"
           label="Pause"
@@ -204,7 +245,7 @@ function BookingDayForm(props) {
           }}
         />
       </Grid>
-      <Grid item style={{ marginTop: '0.5em' }}>
+      <Grid item style={{ marginTop: "0.5em" }}>
         <TextField
           id="activities"
           label="Tätigkeiten"
@@ -214,15 +255,23 @@ function BookingDayForm(props) {
           onChange={handleChange}
         />
       </Grid>
-      <Grid item style={{ marginTop: '0.5em' }}>
-        <Button variant="contained" onClick={() => remove()} style={{marginRight: '0.5em'}}>
+      <Grid item style={{ marginTop: "0.5em" }}>
+        <Button
+          variant="contained"
+          onClick={() => remove()}
+          style={{ marginRight: "0.5em" }}
+        >
           Löschen
         </Button>
-        <Button variant="contained" onClick={(e) => save()} style={{marginLeft: '0.5em'}}>
+        <Button
+          variant="contained"
+          onClick={(e) => save()}
+          style={{ marginLeft: "0.5em" }}
+        >
           {props.submitButtonValue}
         </Button>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }
 
