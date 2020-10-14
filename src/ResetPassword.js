@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import MUILink from "@material-ui/core/Link";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -149,9 +150,9 @@ function ResetPassword(props) {
       </Grid>
       {showLoginLink ? (
         <Grid item>
-          <Button component={Link} to="/Login">
+          <MUILink variant="body1" component={Link} to="/Login">
             Login
-          </Button>
+          </MUILink>
         </Grid>
       ) : (
         <Grid item>

@@ -199,7 +199,9 @@ function Login(props) {
             .catch((err) => {
               console.log(err);
               dispatch(
-                UiStateSlice.setCurrentError("Registrierung ist nicht möglich. Serverfehler")
+                UiStateSlice.setCurrentError(
+                  "Registrierung ist nicht möglich. Serverfehler"
+                )
               );
             });
         });
@@ -344,7 +346,7 @@ function Login(props) {
           {registerMode ? (
             <Link
               component="button"
-              variant="body2"
+              variant="body1"
               onClick={() => setRegisterMode(false)}
             >
               Login
@@ -352,7 +354,7 @@ function Login(props) {
           ) : (
             <Link
               component="button"
-              variant="body2"
+              variant="body1"
               onClick={() => setRegisterMode(true)}
             >
               Registrieren
