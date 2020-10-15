@@ -20,8 +20,6 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const [bookingDateToEdit, setBookingDateToEdit] = useState("");
-  const [popupIsVisible, setPopupIsVisible] = useState(false);
   const dispatch = useDispatch();
 
   /**
@@ -41,7 +39,6 @@ function Month(props) {
         <Day
           key={shortid.generate()}
           bookingDay={bookingDay}
-          showPopup={showPopup}
         />
       );
     }
@@ -66,21 +63,6 @@ function Month(props) {
 
     const month = moment(uiState.now).add(1, "months").format("YYYY-MM");
     dispatch(UiStateSlice.setNow(month));
-  }
-
-  /**
-   *
-   */
-  function showPopup(date) {
-    setBookingDateToEdit(date);
-    setPopupIsVisible(true);
-  }
-
-  /**
-   *
-   */
-  function closePopup() {
-    setPopupIsVisible(false);
   }
 
   /**
@@ -116,15 +98,6 @@ function Month(props) {
         </Grid>
       </Grid>
       {getDayComponents()}
-      {popupIsVisible && (
-        <Popup handleClose={closePopup}>
-          <BookingDayForm
-            bookingDay={bookingDateToEdit}
-            submitButtonValue="Speichern"
-            handleClose={closePopup}
-          />
-        </Popup>
-      )}
       {uiState.currentError !== "" && (
         <Popup handleClose={closeErrorPopup}>
           <Box
