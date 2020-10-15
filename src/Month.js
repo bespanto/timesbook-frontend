@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
-import BookingDayForm from "./BookingDayForm";
 import shortid from "shortid";
 import "./App.css";
 import moment from "moment";
