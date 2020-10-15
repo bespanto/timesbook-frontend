@@ -22,6 +22,7 @@ import Grid from "@material-ui/core/Grid";
 import Container from "@material-ui/core/Container";
 
 function Admin(props) {
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -55,7 +56,7 @@ function Admin(props) {
           );
         }
       });
-  }, [history, dispatch, uiState.loggedIn, loc.pathname]);
+  }, [history, dispatch, uiState.loggedIn, loc.pathname, loading]);
 
   /**
    * Sets state for changed fields on tap event
@@ -103,6 +104,7 @@ function Admin(props) {
           )
         );
     } else {
+      setLoading(true);
       patchData(
         `${process.env.REACT_APP_API_URL}/user/invite`,
         localStorage.getItem("jwt"),
@@ -143,7 +145,8 @@ function Admin(props) {
               )
             );
           }
-        });
+        })
+        .finally(() => { setLoading(false) });
     }
     setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
