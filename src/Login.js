@@ -162,7 +162,7 @@ function Login(props) {
         .then(function (response) {
           if (response.ok) {
             resetRegisterFields();
-            setSuccessMsg("Registrierung erfolgreich");
+            setSuccessMsg("Registrierung war erfolgreich. Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
             setTimeout(() => setSuccessMsg(""), 5000);
             setRegisterMode(false);
           } else throw response;

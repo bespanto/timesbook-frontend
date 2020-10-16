@@ -11,6 +11,7 @@ import Employee from "./Employee";
 import VacationRequests from "./VacationRequests";
 import Vacation from "./Vacation";
 import ResetPassword from "./ResetPassword";
+import ConfirmAccount from "./ConfirmAccount";
 import moment from "moment";
 import * as DateUtils from "./DateUtils";
 
@@ -21,7 +22,8 @@ function Main(props) {
   const loc = useLocation();
 
   useEffect(() => {
-    if (loc.pathname !== "/resetPassword") {
+    if (loc.pathname !== "/resetPassword" && loc.pathname !== '/confirmAccount') {
+      console.log('Login from Main');
       if (!uiState.loggedIn) history.push("/Login");
       else {
         const year = moment(uiState.now).format("YYYY");
@@ -85,6 +87,9 @@ function Main(props) {
         </Route>
         <Route path="/ResetPassword">
           <ResetPassword />
+        </Route>
+        <Route path="/ConfirmAccount">
+          <ConfirmAccount />
         </Route>
       </Switch>
     </main>

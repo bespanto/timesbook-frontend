@@ -35,7 +35,8 @@ function Header(props) {
   }
 
   useEffect(() => {
-    if (loc.pathname !== '/resetPassword') {
+    if (loc.pathname !== '/resetPassword' && loc.pathname !== '/confirmAccount') {
+      console.log('Login from Header: ' + loc.pathname);
       if (!uiState.loggedIn) {
         history.push('/Login');
       }
