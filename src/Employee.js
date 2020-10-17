@@ -49,14 +49,14 @@ function Admin(props) {
       })
       .catch((error) => {
         if (error.status === 401) {
-          dispatch(UiStateSlice.setLoggedIn(false));
+           history.push('/Login');
         } else {
           dispatch(
             UiStateSlice.setCurrentError("Fehler! Der Server antwortet nicht.")
           );
         }
       });
-  }, [history, dispatch, uiState.loggedIn, loc.pathname, loading]);
+  }, [history, dispatch, loc.pathname, loading]);
 
   /**
    * Sets state for changed fields on tap event

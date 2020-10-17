@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import "./App.css";
@@ -22,16 +22,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Profile(props) {
-  const dispatch = useDispatch();
   let history = useHistory();
   const classes = useStyles();
-  const uiState = useSelector((state) =>
-    UiStateSlice.selectUiState(state)
-  );
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
   function logout() {
     localStorage.removeItem('jwt');
-    dispatch(UiStateSlice.setLoggedIn(false));
     history.push('/Login')
   }
 

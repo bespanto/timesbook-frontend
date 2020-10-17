@@ -26,7 +26,6 @@ function ResetPassword(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(UiStateSlice.setLoggedIn(false));
     localStorage.removeItem("jwt");
   }, [dispatch]);
 

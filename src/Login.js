@@ -41,7 +41,6 @@ function Login(props) {
       })
       .then((json) => {
         localStorage.setItem("jwt", json.jwt);
-        dispatch(UiStateSlice.setLoggedIn(true));
         history.push("/TimeBooking");
       })
       .catch((err) => {
