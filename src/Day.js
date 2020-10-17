@@ -56,8 +56,8 @@ function Day(props) {
   }
 
   return (
-    <Container className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
-      <Paper>
+    <Container>
+      <Paper style={weekday === 6 || weekday === 0 ? {backgroundColor: '#49516b'} : {backgroundColor: '#424242'} }>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
             <Typography variant="h6">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>

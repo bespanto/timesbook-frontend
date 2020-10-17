@@ -14,7 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Person from '@material-ui/icons/Person';
-import MUILink from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 
 function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -46,35 +46,35 @@ function Header(props) {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}>
-              <MenuItem component={Link} to="/Home" onClick={handleClose}>Home</MenuItem>
+              <MenuItem component={Link} to="/Home" onClick={handleClose} style={{ color: '#ffffff' }}>Home</MenuItem>
               {localStorage.getItem('jwt') &&
                 <span>
-                  <MenuItem component={Link} to="/TimeBooking" onClick={handleClose} style={{ textDecoration: 'none' }}>Zeitbuchungen</MenuItem>
-                  <MenuItem component={Link} to="/Vacation" onClick={handleClose}>Urlaub</MenuItem>
+                  <MenuItem component={Link} to="/TimeBooking" onClick={handleClose} style={{ color: '#ffffff' }}>Zeitbuchungen</MenuItem>
+                  <MenuItem component={Link} to="/Vacation" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaub</MenuItem>
                 </span>
               }
               {localStorage.getItem('jwt') && uiState.profile.role === 'admin' &&
                 <span>
                   <Divider />
-                  <MenuItem component={Link} to="/Employees" onClick={handleClose}>Mitarbeiter</MenuItem>
-                  <MenuItem component={Link} to="/VacationRequests" onClick={handleClose}>Urlaubsanträge</MenuItem>
+                  <MenuItem component={Link} to="/Employees" onClick={handleClose} style={{ color: '#ffffff' }}>Mitarbeiter</MenuItem>
+                  <MenuItem component={Link} to="/VacationRequests" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaubsanträge</MenuItem>
                   <Divider />
-                  <MenuItem component={Link} to="/Profile" onClick={handleClose}>Profil</MenuItem>
+                  <MenuItem component={Link} to="/Profile" onClick={handleClose} style={{ color: '#ffffff' }}>Profil</MenuItem>
                 </span>
               }
-               <Divider />
-              {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login</MenuItem>}
+              <Divider />
+              {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>}
             </Menu>
             <Box className={classes.grow} >
-              <MUILink component={Link} to="/home">
-                <Typography variant="h6" color="inherit" style={{ marginLeft: '1em' }}>
-                  TimesBook
+              <Button component={Link} to="/home" color="inherit" style={{ textTransform: 'none', color: '#ffffff' }}>
+                <Typography variant="h5" >
+                TimesBook
                 </Typography>
-              </MUILink>
+                </Button>
             </Box>
             {localStorage.getItem('jwt') &&
               <span style={{ textAlign: 'center' }}>
-                <IconButton component={Link} to="/Profile" size="small">
+                <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
                   <Person fontSize="large" />
                 </IconButton>
                 <Typography variant="body2">{uiState.profile.name}</Typography>
