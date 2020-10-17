@@ -5,6 +5,7 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import Month from "./Month";
 import Login from "./Login";
+import Register from "./Register";
 import Profile from "./Profile";
 import Employee from "./Employee";
 import VacationRequests from "./VacationRequests";
@@ -22,7 +23,7 @@ function Main(props) {
   const loc = useLocation();
 
   useEffect(() => {
-    if (loc.pathname !== "/resetPassword" && loc.pathname !== '/confirmAccount' && loc.pathname !== '/home')
+    if (loc.pathname !== "/resetPassword" && loc.pathname !== '/confirmAccount' && loc.pathname !== '/Home' && loc.pathname !== '/Register')
       if (!localStorage.getItem("jwt"))
         history.push("/Login");
       else {
@@ -88,6 +89,9 @@ function Main(props) {
         </Route>
         <Route path="/Login">
           <Login />
+        </Route>
+        <Route path="/Register">
+          <Register />
         </Route>
         <Route path="/Profile">
           <Profile />

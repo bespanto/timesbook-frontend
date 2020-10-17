@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import validate from "validate.js";
+import { useHistory, Link } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Link from "@material-ui/core/Link";
+import MUILink from "@material-ui/core/Link";
 
 function Login(props) {
-  const [orga, setOrga] = useState("");
-  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
-  const [passRepeat, setPassRepeat] = useState("");
-  const [registerMode, setRegisterMode] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const dispatch = useDispatch();
   let history = useHistory();
@@ -49,8 +43,8 @@ function Login(props) {
               dispatch(
                 UiStateSlice.setCurrentError(
                   "Login ist gescheitert. Der Benutzer '" +
-                    username +
-                    "' ist nicht registriert."
+                  username +
+                  "' ist nicht registriert."
                 )
               );
             } else if (data.errorCode === 4004) {
@@ -77,147 +71,6 @@ function Login(props) {
   }
 
   /**
-   * Handles register event
-   */
-  function handleRegister() {
-    var constraints = {
-      orga: {
-        presence: true,
-        length: {
-          minimum: 1,
-        },
-      },
-      name: {
-        presence: true,
-        length: {
-          minimum: 1,
-        },
-      },
-      username: {
-        email: true,
-      },
-      pass: {
-        presence: true,
-        length: {
-          minimum: 6,
-        },
-      },
-      passRepeat: {
-        presence: true,
-        length: {
-          minimum: 1,
-        },
-      },
-    };
-
-    const newAdminAccount = {
-      orga: orga,
-      username: username,
-      pass: pass,
-      passRepeat: passRepeat,
-      name: name,
-    };
-
-    // Validate input fields
-    const result = validate(newAdminAccount, constraints);
-    if (result !== undefined) {
-      if (result.orga)
-        dispatch(
-          UiStateSlice.setCurrentError("Organisation muss angegeben werden")
-        );
-      else if (result.name)
-        dispatch(UiStateSlice.setCurrentError("Name muss angegeben werden"));
-      else if (result.username)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Die Benutzername muss eine gültige E-Mail sein"
-          )
-        );
-      else if (result.pass || result.passRepeat)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Das Passwort muss mind. 6 Zeichen lang sein"
-          )
-        );
-    } else if (pass !== passRepeat)
-      dispatch(
-        UiStateSlice.setCurrentError("Passwörter stimmen nicht überein")
-      );
-    else {
-      fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: pass,
-          name: name,
-          organization: orga,
-        }),
-      })
-        .then(function (response) {
-          if (response.ok) {
-            resetRegisterFields();
-            setSuccessMsg("Registrierung war erfolgreich. Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
-            setTimeout(() => setSuccessMsg(""), 5000);
-            setRegisterMode(false);
-          } else throw response;
-        })
-        .catch((err) => {
-          err
-            .json()
-            .then((data) => {
-              if (data.errorCode === 4001) {
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich. Der Benutzer '" +
-                      newAdminAccount.username +
-                      "' existiert bereits."
-                  )
-                );
-              } else if (data.errorCode === 4002)
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
-                      newAdminAccount.orga +
-                      "' ist bereits vorhanden."
-                  )
-                );
-              else {
-                console.log(data);
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich."
-                  )
-                );
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Registrierung ist nicht möglich. Serverfehler"
-                )
-              );
-            });
-        });
-    }
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
-  }
-
-  /**
-   * Reset all state fields
-   */
-  function resetRegisterFields() {
-    setName("");
-    setUsername("");
-    setPass("");
-    setPassRepeat("");
-    setOrga("");
-  }
-
-  /**
    * Sets state for changed fields on tap event
    */
   function handleChange(event) {
@@ -227,15 +80,6 @@ function Login(props) {
         break;
       case "pass":
         setPass(event.target.value);
-        break;
-      case "orga":
-        setOrga(event.target.value);
-        break;
-      case "name":
-        setName(event.target.value);
-        break;
-      case "passRepeat":
-        setPassRepeat(event.target.value);
         break;
       default:
         break;
@@ -255,44 +99,13 @@ function Login(props) {
         alignItems="center"
       >
         <Grid item>
-          {registerMode ? (
-            <Typography variant="h5">Registrieren</Typography>
-          ) : (
-            <Typography variant="h5">Login</Typography>
-          )}
+          <Typography variant="h5">Login</Typography>
         </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
             {uiState.currentError}
           </Typography>
-          <Typography style={{ color: "green", textAlign: "center" }}>
-            {successMsg}
-          </Typography>
         </Grid>
-        {registerMode && (
-          <Grid item>
-            <TextField
-              id="orga"
-              label="Organisation"
-              variant="outlined"
-              name="orga"
-              value={orga}
-              onChange={handleChange}
-            />
-          </Grid>
-        )}
-        {registerMode && (
-          <Grid item>
-            <TextField
-              id="name"
-              label="Name"
-              variant="outlined"
-              name="name"
-              value={name}
-              onChange={handleChange}
-            />
-          </Grid>
-        )}
         <Grid item>
           <TextField
             id="username"
@@ -314,48 +127,15 @@ function Login(props) {
             onChange={handleChange}
           />
         </Grid>
-        {registerMode && (
-          <Grid item>
-            <TextField
-              type="password"
-              id="passRepeat"
-              label="Passwort wiederholen"
-              variant="outlined"
-              name="passRepeat"
-              value={passRepeat}
-              onChange={handleChange}
-            />
-          </Grid>
-        )}
         <Grid item style={{ marginTop: "0.5em" }}>
-          {registerMode ? (
-            <Button variant="contained" onClick={() => handleRegister()}>
-              Senden
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={() => handleLogin()}>
-              Senden
-            </Button>
-          )}
+          <Button variant="contained" onClick={() => handleLogin()}>
+            Senden
+          </Button>
         </Grid>
         <Grid item style={{ marginTop: "1em" }}>
-          {registerMode ? (
-            <Link
-              component="button"
-              variant="body1"
-              onClick={() => setRegisterMode(false)}
-            >
-              Login
-            </Link>
-          ) : (
-            <Link
-              component="button"
-              variant="body1"
-              onClick={() => setRegisterMode(true)}
-            >
-              Registrieren
-            </Link>
-          )}
+          <MUILink component={Link} to="/Register" variant="body1">
+            Registrieren
+          </MUILink>
         </Grid>
       </Grid>
     </React.Fragment>
