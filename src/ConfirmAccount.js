@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useLocation, Link } from "react-router-dom";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -12,11 +10,13 @@ function useQuery() {
 }
 
 function ConfirmAccount(props) {
-  const query = useQuery();
-  const [successMsg, setSuccessMsg] = useState("");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [accountConfirmed, setAccountConfirmed] = useState(false);
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const dispatch = useDispatch();
+
+  const query = useQuery();
+  const username = query.get("username");
+  const regKey = query.get("regKey");
 
   useEffect(() => {
     if (!accountConfirmed)
@@ -26,29 +26,30 @@ function ConfirmAccount(props) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: query.get("username"),
-          registrationKey: query.get("regKey"),
+          username: username,
+          registrationKey: regKey,
         }),
       })
         .then(function (response) {
           if (response.ok) {
-            setSuccessMsg("Das Konto wurde erfolgreich bestätigt");
+            setSuccess("Das Konto wurde erfolgreich bestätigt");
             setAccountConfirmed(true);
-            setTimeout(() => setSuccessMsg(""), 5000);
           } else throw response;
         })
         .catch((err) => {
           err
             .json().then((data) => {
               if (data.errorCode === 4003)
-                dispatch(UiStateSlice.setCurrentError("Falsche Bestätigungsanfrage."));
+                setError("Falsche Bestätigungsanfrage");
             })
             .catch((err) => {
               console.log(err);
-              dispatch(UiStateSlice.setCurrentError("Fehler auf dem Server. Das Konto wurde nicht bestätigt."));
+              setError("Fehler auf dem Server. Das Konto wurde nicht bestätigt");
             });
         });
-  }, [dispatch, query, accountConfirmed]);
+    setTimeout(() => setError(""), 5000);
+    setTimeout(() => setSuccess(""), 5000);
+  }, [accountConfirmed, username, regKey]);
 
 
   return (
@@ -66,10 +67,10 @@ function ConfirmAccount(props) {
       </Grid>
       <Grid item>
         <Typography style={{ color: "red", textAlign: "center" }}>
-          {uiState.currentError}
+          {error}
         </Typography>
         <Typography style={{ color: "green", textAlign: "center" }}>
-          {successMsg}
+          {success}
         </Typography>
       </Grid>
       {accountConfirmed &&
