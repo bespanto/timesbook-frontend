@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Person from '@material-ui/icons/Person';
+import MUILink from '@material-ui/core/Link';
 
 function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -63,9 +64,13 @@ function Header(props) {
               }
               {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login/Registrieung</MenuItem>}
             </Menu>
-            <Typography variant="h6" color="inherit" className={classes.grow} style={{ marginLeft: '1em' }}>
-              TimesBook
-            </Typography>
+            <Box className={classes.grow} >
+              <MUILink component={Link} to="/home">
+                <Typography variant="h6" color="inherit" style={{ marginLeft: '1em' }}>
+                  TimesBook
+                </Typography>
+              </MUILink>
+            </Box>
             {localStorage.getItem('jwt') &&
               <span style={{ textAlign: 'center' }}>
                 <IconButton component={Link} to="/Profile" size="small">
