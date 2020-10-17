@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
@@ -9,31 +9,29 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import MUILink from "@material-ui/core/Link";
 
-function Login(props) {
+function ForgotPass(props) {
   const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const dispatch = useDispatch();
-  let history = useHistory();
 
   /**
    * Handles login event
    */
-  function handleLogin() {
-    fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+  function handleRecoverPass() {
+    fetch(`${process.env.REACT_APP_API_URL}/auth/recoverPass`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: username, password: pass }),
+      body: JSON.stringify({ username: username }),
     })
       .then(function (response) {
         if (response.ok) return response.json();
         else throw response;
       })
       .then((json) => {
-        localStorage.setItem("jwt", json.jwt);
-        history.push("/TimeBooking");
+        setSuccessMsg("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
       })
       .catch((err) => {
         err
@@ -41,30 +39,13 @@ function Login(props) {
           .then((data) => {
             if (data.errorCode === 4003) {
               dispatch(
-                UiStateSlice.setCurrentError(
-                  "Login ist gescheitert. Der Benutzer '" +
-                  username +
-                  "' ist nicht registriert."
-                )
-              );
-            } else if (data.errorCode === 4004) {
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Login ist gescheitert. Das Passwort ist falsch."
-                )
-              );
-            } else {
-              console.log(data);
-              dispatch(UiStateSlice.setCurrentError("Login ist gescheitert."));
-            }
+                UiStateSlice.setCurrentError("Der Benutzer '" + username + "' ist nicht registriert."));
+            } else
+              console.log(data)
           })
           .catch((err) => {
             console.log(err);
-            dispatch(
-              UiStateSlice.setCurrentError(
-                "Login ist gescheitert. Serverfehler."
-              )
-            );
+            dispatch(UiStateSlice.setCurrentError("Die Passwortwiederherstellung ist gescheitert. Serverfehler"));
           });
       });
     setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
@@ -77,9 +58,6 @@ function Login(props) {
     switch (event.target.name) {
       case "username":
         setUsername(event.target.value);
-        break;
-      case "pass":
-        setPass(event.target.value);
         break;
       default:
         break;
@@ -99,11 +77,14 @@ function Login(props) {
         alignItems="center"
       >
         <Grid item>
-          <Typography variant="h5">Login</Typography>
+          <Typography variant="h5">Passwort wiederherstellen</Typography>
         </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
             {uiState.currentError}
+          </Typography>
+          <Typography style={{ color: "green", textAlign: "center" }}>
+            {successMsg}
           </Typography>
         </Grid>
         <Grid item>
@@ -116,29 +97,18 @@ function Login(props) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item>
-          <TextField
-            type="password"
-            id="pass"
-            label="Passwort"
-            variant="outlined"
-            name="pass"
-            value={pass}
-            onChange={handleChange}
-          />
-        </Grid>
         <Grid item style={{ marginTop: "0.5em" }}>
-          <Button variant="contained" onClick={() => handleLogin()}>
+          <Button variant="contained" onClick={() => handleRecoverPass()}>
             Senden
           </Button>
         </Grid>
-        <Grid item style={{ marginTop: "1em", textAlign: 'center'}}>
-          <MUILink component={Link} to="/Register"  variant="body1">
+        <Grid item style={{ marginTop: "1em", textAlign: 'center' }}>
+          <MUILink component={Link} to="/Register" variant="body1">
             Registrieren
           </MUILink>
-          <br/>
-          <MUILink component={Link} to="/RecoverPass"  variant="body1">
-            Passwort vergessen
+          <br />
+          <MUILink component={Link} to="/Login" variant="body1">
+            Login
           </MUILink>
         </Grid>
       </Grid>
@@ -146,4 +116,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default ForgotPass;

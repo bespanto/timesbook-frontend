@@ -62,7 +62,8 @@ function Header(props) {
                   <MenuItem component={Link} to="/Profile" onClick={handleClose}>Profil</MenuItem>
                 </span>
               }
-              {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login/Registrieung</MenuItem>}
+               <Divider />
+              {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login</MenuItem>}
             </Menu>
             <Box className={classes.grow} >
               <MUILink component={Link} to="/home">

@@ -218,7 +218,7 @@ function Register(props) {
             onChange={handleChange}
           />
         </Grid>
-          <Grid item>
+        <Grid item>
           <TextField
             id="name"
             label="Name"
@@ -265,9 +265,13 @@ function Register(props) {
             Senden
           </Button>
         </Grid>
-        <Grid item style={{ marginTop: "1em" }}>
+        <Grid item style={{ marginTop: "1em", textAlign: 'center' }}>
           <MUILink component={Link} to="/Login" variant="body1">
             Login
+          </MUILink>
+          <br />
+          <MUILink component={Link} to="/RecoverPass" variant="body1">
+            Passwort vergessen
           </MUILink>
         </Grid>
       </Grid>
