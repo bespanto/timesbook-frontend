@@ -6,7 +6,6 @@ import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as DateUtils from "./DateUtils";
 import "./App.css";
 // Material UI
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -57,75 +56,72 @@ function Day(props) {
   }
 
   return (
-    <React.Fragment>
-      <CssBaseline />
-      <Container className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
-        <Paper>
-          <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
-            <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
-              <Typography variant="h6">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+    <Container className={weekday === 6 || weekday === 0 ? 'text-muted' : ''}>
+      <Paper>
+        <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
+          <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
+            <Typography variant="h6">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+          </Grid>
+          <Grid container>
+            <Grid item xs={2} style={{ textAlign: 'center' }}>
+              <Typography variant="caption">Start</Typography>
             </Grid>
-            <Grid container>
-              <Grid item xs={2} style={{ textAlign: 'center' }}>
-                <Typography variant="caption">Start</Typography>
-              </Grid>
-              <Grid item xs={2} style={{ textAlign: 'center' }}>
-                <Typography variant="caption">Ende</Typography>
-              </Grid>
-              <Grid item xs={2} style={{ textAlign: 'center' }}>
-                <Typography variant="caption">Pause</Typography>
-              </Grid>
-              <Grid item xs={2} style={{ textAlign: 'center' }}>
-                <Typography variant="caption">Ist</Typography>
-              </Grid>
-              <Grid item xs={2} style={{ textAlign: 'center' }}>
-                <Typography variant="caption">+/-</Typography>
-              </Grid>
+            <Grid item xs={2} style={{ textAlign: 'center' }}>
+              <Typography variant="caption">Ende</Typography>
             </Grid>
-            <Grid item xs={2} className={classes.bookingRow}>
-              <Typography variant="body2">{start}</Typography></Grid>
-            <Grid item xs={2} className={classes.bookingRow}>
-              <Typography variant="body2">{end}</Typography></Grid>
-            <Grid item xs={2} className={classes.bookingRow}>
-              <Typography variant="body2">{pause}</Typography></Grid>
-            <Grid item xs={2} className={classes.bookingRow}>
-              <Typography variant="body2">{workingTime}</Typography></Grid>
-            <Grid item xs={2} className={classes.bookingRow}>
-              <Typography variant="body2">{overtime}</Typography></Grid>
-            <Grid item xs={2} style={{ textAlign: 'center' }} >
-              <IconButton size="small" onClick={() => handleOpen()}>
-                <EditIcon />
-              </IconButton>
-              <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                className={classes.modal}
-                open={open}
-                onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={open}>
-                  <Box className={classes.paper}>
-                    <BookingDayForm
-                      bookingDay={props.bookingDay}
-                      submitButtonValue="Speichern"
-                      handleClose={handleClose}
-                    />
-                  </Box>
-                </Fade>
-              </Modal>
+            <Grid item xs={2} style={{ textAlign: 'center' }}>
+              <Typography variant="caption">Pause</Typography>
             </Grid>
-            <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
-              <Typography variant="body2">{activities}</Typography>
+            <Grid item xs={2} style={{ textAlign: 'center' }}>
+              <Typography variant="caption">Ist</Typography>
+            </Grid>
+            <Grid item xs={2} style={{ textAlign: 'center' }}>
+              <Typography variant="caption">+/-</Typography>
             </Grid>
           </Grid>
-        </Paper>
-      </Container>
-    </React.Fragment>
+          <Grid item xs={2} className={classes.bookingRow}>
+            <Typography variant="body2">{start}</Typography></Grid>
+          <Grid item xs={2} className={classes.bookingRow}>
+            <Typography variant="body2">{end}</Typography></Grid>
+          <Grid item xs={2} className={classes.bookingRow}>
+            <Typography variant="body2">{pause}</Typography></Grid>
+          <Grid item xs={2} className={classes.bookingRow}>
+            <Typography variant="body2">{workingTime}</Typography></Grid>
+          <Grid item xs={2} className={classes.bookingRow}>
+            <Typography variant="body2">{overtime}</Typography></Grid>
+          <Grid item xs={2} style={{ textAlign: 'center' }} >
+            <IconButton size="small" onClick={() => handleOpen()}>
+              <EditIcon />
+            </IconButton>
+            <Modal
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              className={classes.modal}
+              open={open}
+              onClose={handleClose}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+            >
+              <Fade in={open}>
+                <Box className={classes.paper}>
+                  <BookingDayForm
+                    bookingDay={props.bookingDay}
+                    submitButtonValue="Speichern"
+                    handleClose={handleClose}
+                  />
+                </Box>
+              </Fade>
+            </Modal>
+          </Grid>
+          <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
+            <Typography variant="body2">{activities}</Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 }
 

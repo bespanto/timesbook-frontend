@@ -6,7 +6,6 @@ import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
 import store from "./redux/store";
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
   palette: {
@@ -18,7 +17,6 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
         <App />
       </ThemeProvider>
     </Provider>

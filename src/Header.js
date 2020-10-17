@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import "./App.css";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -34,7 +33,7 @@ function Header(props) {
       <Box className={classes.root}>
         <AppBar position="static" color="default">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={handleClick}>
+            <IconButton className={classes.menuButton} aria-label="Menu" onClick={handleClick}>
               <MenuIcon />
             </IconButton>
             <Menu id="simple-menu"
@@ -59,15 +58,15 @@ function Header(props) {
               }
               {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login/Registrieung</MenuItem>}
             </Menu>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
+            <Typography variant="h6" color="inherit" className={classes.grow} style={{marginLeft: '1em'}}>
               TimesBook
             </Typography>
             {localStorage.getItem('jwt') &&
-              <span>
-                <Typography variant="body2">{uiState.profile.name}</Typography>
-                <IconButton component={Link} to="/Profile">
+              <span style={{textAlign: 'center'}}>
+                <IconButton component={Link} to="/Profile" size="small">
                   <Person fontSize="large" />
                 </IconButton>
+                <Typography variant="body2">{uiState.profile.name}</Typography>
               </span>
             }
           </Toolbar>

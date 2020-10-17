@@ -2,16 +2,20 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
-import "./App.css";
+// Material UI
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 function App() {
 
   return (
     <BrowserRouter>
-      <div className="App app-width">
-        <Header />
-        <Main />
-      </div>
+      <React.Fragment>
+        <CssBaseline />
+        <div className="app-width">
+          <Header />
+          <Main />
+        </div>
+      </React.Fragment>
     </BrowserRouter>
   );
 }

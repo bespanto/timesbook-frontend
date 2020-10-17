@@ -3,9 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import validate from "validate.js";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import "./App.css";
 // Material UI
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -249,7 +247,6 @@ function Login(props) {
    */
   return (
     <React.Fragment>
-      <CssBaseline />
       <Grid
         container
         spacing={1}

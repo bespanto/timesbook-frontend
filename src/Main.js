@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Switch, Route, useHistory, useLocation } from "react-router-dom";
-import Month from "./Month";
-import "./App.css";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
+import Month from "./Month";
 import Login from "./Login";
 import Profile from "./Profile";
 import Employee from "./Employee";
@@ -23,7 +22,6 @@ function Main(props) {
   const loc = useLocation();
 
   useEffect(() => {
-    console.log('useEffect from Main');
     if (loc.pathname !== "/resetPassword" && loc.pathname !== '/confirmAccount' && loc.pathname !== '/home')
       if (!localStorage.getItem("jwt"))
         history.push("/Login");

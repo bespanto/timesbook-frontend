@@ -5,11 +5,9 @@ import shortid from "shortid";
 import validate from "validate.js";
 import { patchData } from "./serverConnections/connect";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import "./App.css";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
@@ -44,12 +42,11 @@ function Admin(props) {
         else throw response;
       })
       .then((json) => {
-        console.log(json);
         setEmployees(json);
       })
       .catch((error) => {
         if (error.status === 401) {
-           history.push('/Login');
+          history.push('/Login');
         } else {
           dispatch(
             UiStateSlice.setCurrentError("Fehler! Der Server antwortet nicht.")
@@ -153,7 +150,6 @@ function Admin(props) {
 
   return (
     <React.Fragment>
-      <CssBaseline />
       <Box
         display="flex"
         justifyContent="center"

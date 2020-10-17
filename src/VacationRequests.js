@@ -2,14 +2,12 @@ import React from "react";
 import "./App.css";
 //Material UI
 import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 
 function VacationRequests(props) {
 
   return (
     <React.Fragment>
-      <CssBaseline />
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaubsanträge</Typography>
       </Box>

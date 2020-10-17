@@ -4,12 +4,10 @@ import * as DateUtils from "./DateUtils";
 import Day from "./Day";
 import Popup from "./Popup";
 import shortid from "shortid";
-import "./App.css";
 import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { DAY_FORMAT } from "./Const";
 // Material UI
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
@@ -73,7 +71,6 @@ function Month(props) {
 
   return (
     <React.Fragment>
-      <CssBaseline />
       <Grid
         container
         alignItems="center"
