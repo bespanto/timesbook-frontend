@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -19,6 +19,11 @@ function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
+
+  useEffect(() => {
+    // refresh the AppBar
+  }, [uiState.profile])
+
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -49,7 +54,7 @@ function Header(props) {
               }
               {localStorage.getItem('jwt') && uiState.profile.role === 'admin' &&
                 <span>
-                  <Divider/>
+                  <Divider />
                   <MenuItem component={Link} to="/Employees" onClick={handleClose}>Mitarbeiter</MenuItem>
                   <MenuItem component={Link} to="/VacationRequests" onClick={handleClose}>Urlaubsanträge</MenuItem>
                   <Divider />
@@ -58,11 +63,11 @@ function Header(props) {
               }
               {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose}>Login/Registrieung</MenuItem>}
             </Menu>
-            <Typography variant="h6" color="inherit" className={classes.grow} style={{marginLeft: '1em'}}>
+            <Typography variant="h6" color="inherit" className={classes.grow} style={{ marginLeft: '1em' }}>
               TimesBook
             </Typography>
             {localStorage.getItem('jwt') &&
-              <span style={{textAlign: 'center'}}>
+              <span style={{ textAlign: 'center' }}>
                 <IconButton component={Link} to="/Profile" size="small">
                   <Person fontSize="large" />
                 </IconButton>

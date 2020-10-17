@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
@@ -21,11 +21,13 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile(props) {
   let history = useHistory();
+  const dispatch = useDispatch();
   const classes = useStyles();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
   function logout() {
     localStorage.removeItem('jwt');
+    dispatch(UiStateSlice.setProfile({}));
     history.push('/Login')
   }
 
