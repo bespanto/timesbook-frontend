@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -13,8 +11,6 @@ function Login(props) {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const dispatch = useDispatch();
   let history = useHistory();
 
   /**
