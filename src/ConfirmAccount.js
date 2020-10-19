@@ -20,7 +20,7 @@ function ConfirmAccount(props) {
 
   useEffect(() => {
     if (!accountConfirmed)
-      fetch(`${process.env.REACT_APP_API_URL}/auth/confirmation`, {
+      fetch(`${process.env.REACT_APP_API_URL}/auth/confirmAdminAccount`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

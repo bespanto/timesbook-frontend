@@ -12,6 +12,7 @@ import MUILink from "@material-ui/core/Link";
 function Login(props) {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const dispatch = useDispatch();
   let history = useHistory();
@@ -40,34 +41,23 @@ function Login(props) {
           .json()
           .then((data) => {
             if (data.errorCode === 4003) {
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Login ist gescheitert. Der Benutzer '" +
-                  username +
-                  "' ist nicht registriert."
-                )
-              );
+              setError("Login ist gescheitert. Der Benutzer '" + username + "' ist nicht registriert.");
             } else if (data.errorCode === 4004) {
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Login ist gescheitert. Das Passwort ist falsch."
-                )
-              );
-            } else {
+              setError("Login ist gescheitert. Das Passwort ist falsch.");
+            } else if (data.errorCode === 4011) {
+              setError("Das Konto ist noch nicht bestätigt");
+            }
+            else {
               console.log(data);
-              dispatch(UiStateSlice.setCurrentError("Login ist gescheitert."));
+              setError("Login ist gescheitert.");
             }
           })
           .catch((err) => {
             console.log(err);
-            dispatch(
-              UiStateSlice.setCurrentError(
-                "Login ist gescheitert. Serverfehler."
-              )
-            );
+            setError("Login ist gescheitert. Serverfehler.");
           });
       });
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
+    setTimeout(() => setError(""), 5000);
   }
 
   /**
@@ -103,7 +93,7 @@ function Login(props) {
         </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
-            {uiState.currentError}
+            {error}
           </Typography>
         </Grid>
         <Grid item>
@@ -132,12 +122,12 @@ function Login(props) {
             Senden
           </Button>
         </Grid>
-        <Grid item style={{ marginTop: "1em", textAlign: 'center'}}>
-          <MUILink component={Link} to="/Register"  variant="body1">
+        <Grid item style={{ marginTop: "1em", textAlign: 'center' }}>
+          <MUILink component={Link} to="/Register" variant="body1">
             Registrieren
           </MUILink>
-          <br/>
-          <MUILink component={Link} to="/RecoverPass"  variant="body1">
+          <br />
+          <MUILink component={Link} to="/RecoverPass" variant="body1">
             Passwort vergessen
           </MUILink>
         </Grid>

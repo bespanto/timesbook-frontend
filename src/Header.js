@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,16 +15,24 @@ import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Person from '@material-ui/icons/Person';
 import Button from '@material-ui/core/Button';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles();
+  const dispatch = useDispatch();
+  let history = useHistory();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
   useEffect(() => {
     // refresh the AppBar
   }, [uiState.profile])
 
+  function logout() {
+    localStorage.removeItem('jwt');
+    dispatch(UiStateSlice.setProfile({}));
+    history.push('/Login')
+  }
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -39,7 +47,7 @@ function Header(props) {
       <Box className={classes.root}>
         <AppBar position="static" color="default">
           <Toolbar>
-            <IconButton className={classes.menuButton} aria-label="Menu" onClick={handleClick}>
+          <IconButton className={classes.menuButton} aria-label="Menu" onClick={handleClick}>
               <MenuIcon />
             </IconButton>
             <Menu id="simple-menu"
@@ -68,17 +76,22 @@ function Header(props) {
             <Box className={classes.grow} >
               <Button component={Link} to="/home" color="inherit" style={{ textTransform: 'none', color: '#ffffff' }}>
                 <Typography variant="h5" >
-                TimesBook
+                  TimesBook
                 </Typography>
-                </Button>
+              </Button>
             </Box>
             {localStorage.getItem('jwt') &&
-              <span style={{ textAlign: 'center' }}>
-                <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
-                  <Person fontSize="large" />
+              <React.Fragment>
+                <span style={{ textAlign: 'center' }}>
+                  <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
+                    <Person fontSize="large" />
+                  </IconButton>
+                  <Typography variant="body2">{uiState.profile.name}</Typography>
+                </span>
+                <IconButton onClick={() => logout()} size="small" style={{ color: '#ffffff' }}>
+                  <ExitToAppIcon />
                 </IconButton>
-                <Typography variant="body2">{uiState.profile.name}</Typography>
-              </span>
+              </React.Fragment>
             }
           </Toolbar>
         </AppBar>

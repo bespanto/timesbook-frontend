@@ -78,7 +78,7 @@ function ResetPassword(props) {
         UiStateSlice.setCurrentError("Passwörter stimmen nicht überein")
       );
     else {
-      fetch(`${process.env.REACT_APP_API_URL}/auth/setpass`, {
+      fetch(`${process.env.REACT_APP_API_URL}/auth/setPass`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
