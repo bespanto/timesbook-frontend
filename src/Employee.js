@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
-import { patchData } from "./serverConnections/connect";
+import { patchData, deleteData } from "./serverConnections/connect";
 import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,10 +14,13 @@ import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import Container from "@material-ui/core/Container";
+import DeleteIcon from '@material-ui/icons/Delete';
+import Modal from "@material-ui/core/Modal";
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
 
 function Admin(props) {
   const [loading, setLoading] = useState(false);
@@ -29,7 +32,9 @@ function Admin(props) {
   const dispatch = useDispatch();
   let history = useHistory();
   const loc = useLocation();
+
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/user`, {
@@ -148,6 +153,44 @@ function Admin(props) {
     setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
 
+  function deleteUser(username) {
+    setLoading(true);
+    deleteData(
+      `${process.env.REACT_APP_API_URL}/user/${username}`,
+      localStorage.getItem("jwt"),
+    )
+      .then((response) => {
+        if (response.ok) return response.json();
+        else throw response;
+      })
+      .then(() => {
+        setSuccessMsg("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt")
+        setTimeout(() => setSuccessMsg(""), 5000);
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          history.push('/Login');
+        } else {
+          dispatch(
+            UiStateSlice.setCurrentError("Fehler beim entfernen des Benutzers.")
+          );
+        }
+      })
+      .finally(() => { setLoading(false) });
+
+    handleClose();
+  }
+
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
   return (
     <React.Fragment>
       <Box
@@ -210,13 +253,36 @@ function Admin(props) {
                 </Avatar>
               }
               action={
-                <IconButton aria-label="settings">
-                  <MoreVertIcon />
+                <IconButton aria-label="settings" onClick={handleOpen}>
+                  <DeleteIcon />
                 </IconButton>
               }
               title={row.name}
               subheader={row.username}
             />
+            <Modal
+              style={{ marginLeft: '1em', marginRight: '1em' }}
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              className={classes.modal}
+              open={open}
+              onClose={handleClose}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+            >
+              <Fade in={open}>
+                <Box className={classes.paper} style={{ textAlign: 'center' }}>
+                  <Typography variant="h6">Achtung!</Typography>
+                  <Typography style={{ marginTop: '1em' }}>Durch diese Aktion löschen Sie unwiederruflich den Benutzer und alle seine Buchungen.</Typography>
+                  <Container style={{ textAlign: 'center', marginTop: '1em' }}>
+                    <Button variant="contained" onClick={() => deleteUser(row.username)}>Löschen</Button>
+                  </Container>
+                </Box>
+              </Fade>
+            </Modal>
           </Card>
         ))}
       </Container>
@@ -224,7 +290,7 @@ function Admin(props) {
   );
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
@@ -232,6 +298,18 @@ const useStyles = makeStyles({
   avatar: {
     backgroundColor: "blueviolet",
   },
-});
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: '#bf8221',
+    color: '#000000',
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
 
 export default Admin;
