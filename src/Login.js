@@ -28,7 +28,6 @@ function Login(props) {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         if (data.errorCode === 4003) {
           setError("Login ist gescheitert. Der Benutzer '" + username + "' ist nicht registriert.");
         } else if (data.errorCode === 4004) {
@@ -42,7 +41,6 @@ function Login(props) {
         }
       })
       .catch((err) => {
-        console.log(err);
         setError("Login ist gescheitert. Der Server antwortet nicht.");
       });
     setTimeout(() => setError(""), 5000);
