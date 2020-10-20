@@ -25,33 +25,25 @@ function Login(props) {
       body: JSON.stringify({ username: username, password: pass }),
     })
       .then(function (response) {
-        if (response.ok) return response.json();
-        else throw response;
+        return response.json();
       })
-      .then((json) => {
-        localStorage.setItem("jwt", json.jwt);
-        history.push("/TimeBooking");
+      .then((data) => {
+        console.log(data);
+        if (data.errorCode === 4003) {
+          setError("Login ist gescheitert. Der Benutzer '" + username + "' ist nicht registriert.");
+        } else if (data.errorCode === 4004) {
+          setError("Login ist gescheitert. Das Passwort ist falsch.");
+        } else if (data.errorCode === 4011) {
+          setError("Das Konto ist noch nicht bestätigt");
+        }
+        else {
+          localStorage.setItem("jwt", data.jwt);
+          history.push("/TimeBooking");
+        }
       })
       .catch((err) => {
-        err
-          .json()
-          .then((data) => {
-            if (data.errorCode === 4003) {
-              setError("Login ist gescheitert. Der Benutzer '" + username + "' ist nicht registriert.");
-            } else if (data.errorCode === 4004) {
-              setError("Login ist gescheitert. Das Passwort ist falsch.");
-            } else if (data.errorCode === 4011) {
-              setError("Das Konto ist noch nicht bestätigt");
-            }
-            else {
-              console.log(data);
-              setError("Login ist gescheitert.");
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            setError("Login ist gescheitert. Serverfehler.");
-          });
+        console.log(err);
+        setError("Login ist gescheitert. Der Server antwortet nicht.");
       });
     setTimeout(() => setError(""), 5000);
   }

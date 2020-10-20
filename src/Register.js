@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import validate from "validate.js";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -16,9 +14,8 @@ function Register(props) {
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const dispatch = useDispatch();
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   /**
    * Handles register event
@@ -66,27 +63,15 @@ function Register(props) {
     const result = validate(newAdminAccount, constraints);
     if (result !== undefined) {
       if (result.orga)
-        dispatch(
-          UiStateSlice.setCurrentError("Organisation muss angegeben werden")
-        );
+        setError("Organisation muss angegeben werden")
       else if (result.name)
-        dispatch(UiStateSlice.setCurrentError("Name muss angegeben werden"));
+        setError("Name muss angegeben werden");
       else if (result.username)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Die Benutzername muss eine gültige E-Mail sein"
-          )
-        );
+        setError("Die Benutzername muss eine gültige E-Mail sein");
       else if (result.pass || result.passRepeat)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Das Passwort muss mind. 6 Zeichen lang sein"
-          )
-        );
+        setError("Das Passwort muss mind. 6 Zeichen lang sein");
     } else if (pass !== passRepeat)
-      dispatch(
-        UiStateSlice.setCurrentError("Passwörter stimmen nicht überein")
-      );
+      setError("Passwörter stimmen nicht überein");
     else {
       fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
         method: "POST",
@@ -100,53 +85,26 @@ function Register(props) {
           organization: orga,
         }),
       })
-        .then(function (response) {
-          if (response.ok) {
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.errorCode === 4001) {
+            setError("Registrierung ist nicht möglich. Der Benutzer '" +
+              newAdminAccount.username + "' existiert bereits.");
+          } else if (data.errorCode === 4002)
+            setError("Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
+              newAdminAccount.orga + "' ist bereits vorhanden.");
+          else {
             resetRegisterFields();
-            setSuccessMsg("Registrierung war erfolgreich. Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
-            setTimeout(() => setSuccessMsg(""), 5000);
-          } else throw response;
+            setSuccess("Registrierung war erfolgreich. Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
+            setTimeout(() => setSuccess(""), 5000);
+          }
         })
         .catch((err) => {
-          err
-            .json()
-            .then((data) => {
-              if (data.errorCode === 4001) {
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich. Der Benutzer '" +
-                    newAdminAccount.username +
-                    "' existiert bereits."
-                  )
-                );
-              } else if (data.errorCode === 4002)
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
-                    newAdminAccount.orga +
-                    "' ist bereits vorhanden."
-                  )
-                );
-              else {
-                console.log(data);
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Registrierung ist nicht möglich."
-                  )
-                );
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Registrierung ist nicht möglich. Serverfehler"
-                )
-              );
-            });
+          console.log(err);
+          setError("Registrierung ist nicht möglich. Der Server antwortet nicht.");
         });
+      setTimeout(() => setError(""), 5000);
     }
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
   }
 
   /**
@@ -202,10 +160,10 @@ function Register(props) {
         </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
-            {uiState.currentError}
+            {error}
           </Typography>
           <Typography style={{ color: "green", textAlign: "center" }}>
-            {successMsg}
+            {success}
           </Typography>
         </Grid>
         <Grid item>

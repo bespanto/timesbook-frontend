@@ -63,7 +63,8 @@ function Main(props) {
               .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
               .catch((error) => {
                 if (error.status === 401) {
-                  history.push('/Login');
+                  if(loc.pathname !== '/Login') 
+                    history.push('/Login');
                 } else
                   dispatch(
                     UiStateSlice.setCurrentError(
