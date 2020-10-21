@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import 'date-fns';
+import moment from "moment";
 import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
+import { DAY_FORMAT } from "./Const";
 //Material UI
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -16,8 +18,8 @@ import {
 function Vacation(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [vacationFrom, setVacationFrom] = React.useState(new Date());
-  const [vacationTill, setVacationTill] = React.useState(new Date());
+  const [vacationFrom, setVacationFrom] = useState(new Date());
+  const [vacationTill, setVacationTill] = useState(new Date());
 
   const handleVacationFrom = (date) => {
     setVacationFrom(date);
@@ -28,7 +30,15 @@ function Vacation(props) {
   };
 
   function requestVacation() {
-    console.log('requestVacation');
+    const start = moment(vacationFrom);
+    const end = moment(vacationTill);
+    if (!end.isAfter(start))
+      setError(" 'Ende' kann nicht vor 'Start' liegen");
+
+    console.log("from: " + vacationFrom.toISOString().slice(0, 10));
+    console.log("till: " + vacationTill.toISOString().slice(0, 10));
+
+    setTimeout(() => setError(""), 5000);
   }
 
   return (
@@ -45,7 +55,7 @@ function Vacation(props) {
         <Typography variant="h5">Urlaub</Typography>
       </Box>
       <Container>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}  locale={de} >
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de} >
           <Grid container justify="space-around">
             <KeyboardDatePicker
               disableToolbar
@@ -84,6 +94,9 @@ function Vacation(props) {
             Einreichen
           </Button>
         </Box>
+      </Container>
+      <Container style={{ textAlign: 'center', marginTop: '2em' }}>
+        <Typography variant="h6">Eingereichte Urlaubsanträge</Typography>
       </Container>
     </React.Fragment>
   );
