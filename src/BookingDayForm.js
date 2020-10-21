@@ -52,22 +52,20 @@ function BookingDayForm(props) {
       item
     )
       .then((response) => {
-        if (response.ok) return response.json();
-        else if (response.status === 401) {
+        if (response.status === 401) {
           history.push("/Login");
           throw response;
-        } else throw response;
+        }
+        else
+          return response.json();
       })
       .then((data) => {
         dispatch(BookingEntriesSlice.editBookingEntry(data));
         props.handleClose();
       })
-      .catch((error) => {
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Speichern ist nicht möglich. Keine Verbindung zum Server."
-          )
-        );
+      .catch((err) => {
+        console.log(err);
+        setError("Speichern ist nicht möglich. Keine Verbindung zum Server.");
         throw new Exception("ERROR: " + error);
       });
   }
@@ -105,23 +103,19 @@ function BookingDayForm(props) {
       localStorage.getItem("jwt")
     )
       .then((response) => {
-        if (response.ok) return response.json();
-        else if (response.status === 401) {
+
+        if (response.status === 401) {
           history.push("/Login");
           console.log(history);
-          throw response;
-        } else throw response;
+        } else return response.json();
       })
       .then((data) => {
         dispatch(BookingEntriesSlice.deleteBookingEntry(day));
         props.handleClose();
       })
-      .catch((error) => {
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Löschen ist nicht möglich. Keine Verbindung zum Server."
-          )
-        );
+      .catch((err) => {
+        console.log(err);
+        setError("Löschen ist nicht möglich. Keine Verbindung zum Server.");
         throw new Exception("ERROR: " + error);
       });
   }
