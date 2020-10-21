@@ -2,14 +2,12 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as DateUtils from "./DateUtils";
 import Day from "./Day";
-import Popup from "./Popup";
 import shortid from "shortid";
 import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { DAY_FORMAT } from "./Const";
 // Material UI
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -62,13 +60,6 @@ function Month(props) {
     dispatch(UiStateSlice.setNow(month));
   }
 
-  /**
-   *
-   */
-  function closeErrorPopup() {
-    dispatch(UiStateSlice.setCurrentError(""));
-  }
-
   return (
     <React.Fragment>
       <Grid
@@ -94,22 +85,6 @@ function Month(props) {
         </Grid>
       </Grid>
       {getDayComponents()}
-      {uiState.currentError !== "" && (
-        <Popup handleClose={closeErrorPopup}>
-          <Box
-            style={{
-              marginLeft: "0.75em",
-              marginRight: "0.75em",
-              marginBottom: "2em",
-              marginTop: "1em",
-            }}
-          >
-            <Typography style={{ color: "red", textAlign: "center" }}>
-              {uiState.currentError}
-            </Typography>
-          </Box>
-        </Popup>
-      )}
     </React.Fragment>
   );
 }
