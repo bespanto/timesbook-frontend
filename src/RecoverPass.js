@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -11,9 +9,8 @@ import MUILink from "@material-ui/core/Link";
 
 function ForgotPass(props) {
   const [username, setUsername] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const dispatch = useDispatch();
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   /**
    * Handles login event
@@ -27,28 +24,19 @@ function ForgotPass(props) {
       body: JSON.stringify({ username: username }),
     })
       .then(function (response) {
-        if (response.ok) return response.json();
-        else throw response;
+        if (response.success)
+          return response.json();
+        if (response.errorCode === 4003)
+          setError("Der Benutzer '" + username + "' ist nicht registriert.");
       })
       .then((json) => {
-        setSuccessMsg("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
+        setSuccess("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
       })
       .catch((err) => {
-        err
-          .json()
-          .then((data) => {
-            if (data.errorCode === 4003) {
-              dispatch(
-                UiStateSlice.setCurrentError("Der Benutzer '" + username + "' ist nicht registriert."));
-            } else
-              console.log(data)
-          })
-          .catch((err) => {
-            console.log(err);
-            dispatch(UiStateSlice.setCurrentError("Die Passwortwiederherstellung ist gescheitert. Serverfehler"));
-          });
+        console.log(err);
+        setError("Die Passwortwiederherstellung ist gescheitert. Serverfehler");
       });
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
+    setTimeout(() => setError(""), 5000);
   }
 
   /**
@@ -81,10 +69,10 @@ function ForgotPass(props) {
         </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
-            {uiState.currentError}
+            {error}
           </Typography>
           <Typography style={{ color: "green", textAlign: "center" }}>
-            {successMsg}
+            {success}
           </Typography>
         </Grid>
         <Grid item>
