@@ -75,7 +75,7 @@ function Header(props) {
             </Menu>
             <Box className={classes.grow} >
               <Button component={Link} to="/home" color="inherit" style={{ textTransform: 'none', color: '#ffffff' }}>
-                <Typography variant="h5" >
+                <Typography variant="h6" >
                   TimesBook
                 </Typography>
               </Button>
