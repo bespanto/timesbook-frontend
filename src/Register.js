@@ -156,15 +156,15 @@ function Register(props) {
         alignItems="center"
       >
         <Grid item>
-          <Typography variant="h5">Registrieren</Typography>
-        </Grid>
-        <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
             {error}
           </Typography>
           <Typography style={{ color: "green", textAlign: "center" }}>
             {success}
           </Typography>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5">Registrieren</Typography>
         </Grid>
         <Grid item>
           <TextField

@@ -112,16 +112,16 @@ function ResetPassword(props) {
       alignItems="center"
     >
       <Grid item>
-        <Typography variant="h5">
-          Passwort für '{query.get("username")}' setzen
-        </Typography>
-      </Grid>
-      <Grid item>
         <Typography style={{ color: "red", textAlign: "center" }}>
           {error}
         </Typography>
         <Typography style={{ color: "green", textAlign: "center" }}>
           {success}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Typography variant="h5">
+          Passwort für '{query.get("username")}' setzen
         </Typography>
       </Grid>
       {showLoginLink ? (

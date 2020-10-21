@@ -82,7 +82,7 @@ function Profile(props) {
       if (result.pass || result.passRepeat)
         setError("Passwort muss mind. 6 Zeichen lang sein");
     } else if (pass !== passRepeat)
-    setError("Passwörter stimmen nicht überein");
+      setError("Passwörter stimmen nicht überein");
     else {
       fetch(`${process.env.REACT_APP_API_URL}/user/changePass/${uiState.profile.username}`, {
         method: "PATCH",
@@ -118,9 +118,6 @@ function Profile(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid xs={12} item style={{ textAlign: 'center', marginBottom: '0.5em' }}>
-          <Typography variant="h5">Benutzerprofil</Typography>
-        </Grid>
         <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
             {error}
@@ -128,6 +125,9 @@ function Profile(props) {
           <Typography style={{ color: "green", textAlign: "center" }}>
             {success}
           </Typography>
+        </Grid>
+        <Grid xs={12} item style={{ textAlign: 'center', marginBottom: '0.5em' }}>
+          <Typography variant="h5">Benutzerprofil</Typography>
         </Grid>
         <Container>
           <Grid container spacing={1}>
@@ -148,7 +148,7 @@ function Profile(props) {
                 fullWidth
                 id="passRepeat"
                 type="password"
-                label="Passwort wiederholen"
+                label="Passwort wiederh."
                 variant="outlined"
                 name="passRepeat"
                 value={passRepeat}

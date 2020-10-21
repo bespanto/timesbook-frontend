@@ -75,13 +75,14 @@ function Login(props) {
         alignItems="center"
       >
         <Grid item>
-          <Typography variant="h5">Login</Typography>
-        </Grid>
-        <Grid item>
           <Typography style={{ color: "red", textAlign: "center" }}>
             {error}
           </Typography>
         </Grid>
+        <Grid item>
+          <Typography variant="h5">Login</Typography>
+        </Grid>
+
         <Grid item>
           <TextField
             id="username"

@@ -176,13 +176,6 @@ function Admin(props) {
 
   return (
     <React.Fragment>
-      <Box
-        display="flex"
-        justifyContent="center"
-        style={{ marginBottom: "1em" }}
-      >
-        <Typography variant="h5">Mitarbeiter</Typography>
-      </Box>
       <Box display="flex" justifyContent="center">
         <Typography style={{ color: "red", textAlign: "center" }}>
           {error}
@@ -190,6 +183,13 @@ function Admin(props) {
         <Typography style={{ color: "green", textAlign: "center" }}>
           {success}
         </Typography>
+      </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        style={{ marginBottom: "1em" }}
+      >
+        <Typography variant="h5">Mitarbeiter</Typography>
       </Box>
       <Container>
         <Grid container spacing={1}>

@@ -1,22 +1,92 @@
-import React from "react";
-import "./App.css";
+import React, { useState } from "react";
+import 'date-fns';
+import de from "date-fns/locale/de";
+import DateFnsUtils from '@date-io/date-fns';
 //Material UI
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
+import Button from '@material-ui/core/Button';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
-function Admin(props) {
+function Vacation(props) {
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [vacationFrom, setVacationFrom] = React.useState(new Date());
+  const [vacationTill, setVacationTill] = React.useState(new Date());
+
+  const handleVacationFrom = (date) => {
+    setVacationFrom(date);
+  };
+
+  const handleVacationTill = (date) => {
+    setVacationTill(date);
+  };
+
+  function requestVacation() {
+    console.log('requestVacation');
+  }
 
   return (
     <React.Fragment>
+      <Box display="flex" justifyContent="center">
+        <Typography style={{ color: "red", textAlign: "center" }}>
+          {error}
+        </Typography>
+        <Typography style={{ color: "green", textAlign: "center" }}>
+          {success}
+        </Typography>
+      </Box>
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaub</Typography>
       </Box>
-      <ul>
-        <li className="text-left">Antrag einreichen</li>
-        <li className="text-left">Urlaubszeiten</li>
-      </ul>
+      <Container>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}  locale={de} >
+          <Grid container justify="space-around">
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="dd.MM.yyyy"
+              margin="normal"
+              id="vacationFrom"
+              label="Vom"
+              value={vacationFrom}
+              onChange={handleVacationFrom}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="dd.MM.yyyy"
+              margin="normal"
+              id="vacationTill"
+              label="Bis"
+              value={vacationTill}
+              onChange={handleVacationTill}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+          </Grid>
+        </MuiPickersUtilsProvider>
+        <Box
+          display="flex"
+          justifyContent="center"
+          style={{ marginTop: "0.5em" }}
+        >
+          <Button variant="contained" onClick={() => requestVacation()}>
+            Einreichen
+          </Button>
+        </Box>
+      </Container>
     </React.Fragment>
   );
 }
 
-export default Admin;
+export default Vacation;
