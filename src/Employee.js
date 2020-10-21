@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
@@ -21,15 +21,16 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from "@material-ui/core/Modal";
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import WarningIcon from '@material-ui/icons/Warning';
 
 function Admin(props) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [employees, setEmployees] = useState([]);
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const dispatch = useDispatch();
   let history = useHistory();
   const loc = useLocation();
 
@@ -43,39 +44,21 @@ function Admin(props) {
       },
     })
       .then((response) => {
-        if (response.ok) return response.json();
-        else throw response;
-      })
-      .then((json) => {
-        setEmployees(json);
-      })
-      .catch((error) => {
-        if (error.status === 401) {
+        if (response.status === 401)
           history.push('/Login');
-        } else {
-          dispatch(
-            UiStateSlice.setCurrentError("Fehler! Der Server antwortet nicht.")
-          );
-        }
+        else
+          return response.json();
+      })
+      .then((json) => setEmployees(json))
+      .catch((err) => {
+        console.log(err)
+        setError("Die Benutzerliste kann nicht abgerufen werden. Der Server antwortet nicht.");
       });
-  }, [history, dispatch, loc.pathname, loading]);
+  }, [history, error, loc.pathname, loading]);
 
   /**
-   * Sets state for changed fields on tap event
+   * 
    */
-  function handleChange(event) {
-    switch (event.target.name) {
-      case "username":
-        setUsername(event.target.value);
-        break;
-      case "name":
-        setName(event.target.value);
-        break;
-      default:
-        break;
-    }
-  }
-
   function inviteUser() {
     var constraints = {
       name: {
@@ -98,13 +81,9 @@ function Admin(props) {
     const result = validate(userInfo, constraints);
     if (result !== undefined) {
       if (result.name)
-        dispatch(UiStateSlice.setCurrentError("Name muss angegeben werden"));
+        setError("Name muss angegeben werden");
       else if (result.username)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Benutzername muss eine gültige E-Mail sein"
-          )
-        );
+        setError("Benutzername muss eine gültige E-Mail sein");
     } else {
       setLoading(true);
       patchData(
@@ -113,46 +92,39 @@ function Admin(props) {
         userInfo
       )
         .then((response) => {
-          if (response.ok) return response.json();
-          else throw response;
+          if (response.status === 403)
+            setError("Sie sind nicht berechtigt Benutzer einzuladen.");
+          else
+            return response.json();
         })
-        .then((json) => {
-          dispatch(UiStateSlice.setCurrentError(""));
-          setSuccessMsg(
-            `Der Benutzer ${username} wurde erfolgreich eingeladen`
-          );
-          setName("");
-          setUsername("");
-          setTimeout(() => setSuccessMsg(""), 5000);
+        .then((data) => {
+          if (data.success) {
+            setError("");
+            setSuccess(`Der Benutzer ${username} wurde erfolgreich eingeladen`);
+            setName("");
+            setUsername("");
+            setTimeout(() => setSuccess(""), 5000);
+          }
+          else
+            if (data.errorCode === 5002)
+              setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: E-Mail-Error.");
+            else
+              if (data.errorCode === 5001)
+                setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: DB-Error");
+
         })
         .catch((error) => {
-          if (error.status === 403) {
-            dispatch(
-              UiStateSlice.setCurrentError(
-                "Sie sind nicht berechtigt Benutzer einzuladen."
-              )
-            );
-          }
-          if (error.status === 500) {
-            dispatch(
-              UiStateSlice.setCurrentError(
-                "Einladen ist fehlgeschlagen. Fehler beim senden der Nachricht."
-              )
-            );
-          } else {
-            console.log(error);
-            dispatch(
-              UiStateSlice.setCurrentError(
-                "Fehler! Der Server antwortet nicht."
-              )
-            );
-          }
+          console.log(error);
+          setError("Der Benutzer konnte nicht eingeladen werden. Der Server antwortet nicht.");
         })
         .finally(() => { setLoading(false) });
     }
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
+    setTimeout(() => setError(""), 5000);
   }
 
+  /**
+   * 
+   */
   function deleteUser(username) {
     setLoading(true);
     deleteData(
@@ -160,27 +132,39 @@ function Admin(props) {
       localStorage.getItem("jwt"),
     )
       .then((response) => {
-        if (response.ok) return response.json();
-        else throw response;
+        if (response.status === 401) {
+          history.push('/Login');
+        } else
+          return response.json();
       })
       .then(() => {
-        setSuccessMsg("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt")
-        setTimeout(() => setSuccessMsg(""), 5000);
+        setSuccess("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt")
+        setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
-        if (error.status === 401) {
-          history.push('/Login');
-        } else {
-          dispatch(
-            UiStateSlice.setCurrentError("Fehler beim entfernen des Benutzers.")
-          );
-        }
+        console.log(error)
+        setError("Fehler beim entfernen des Benutzers.");
       })
       .finally(() => { setLoading(false) });
 
     handleClose();
   }
 
+  /**
+   * Sets state for changed fields on tap event
+   */
+  function handleChange(event) {
+    switch (event.target.name) {
+      case "username":
+        setUsername(event.target.value);
+        break;
+      case "name":
+        setName(event.target.value);
+        break;
+      default:
+        break;
+    }
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -189,7 +173,6 @@ function Admin(props) {
   const handleClose = () => {
     setOpen(false);
   };
-
 
   return (
     <React.Fragment>
@@ -202,10 +185,10 @@ function Admin(props) {
       </Box>
       <Box display="flex" justifyContent="center">
         <Typography style={{ color: "red", textAlign: "center" }}>
-          {uiState.currentError}
+          {error}
         </Typography>
         <Typography style={{ color: "green", textAlign: "center" }}>
-          {successMsg}
+          {success}
         </Typography>
       </Box>
       <Container>
@@ -275,7 +258,7 @@ function Admin(props) {
             >
               <Fade in={open}>
                 <Box className={classes.paper} style={{ textAlign: 'center' }}>
-                  <Typography variant="h6">Achtung!</Typography>
+                  <WarningIcon fontSize="large" />
                   <Typography style={{ marginTop: '1em' }}>Durch diese Aktion löschen Sie unwiederruflich den Benutzer und alle seine Buchungen.</Typography>
                   <Container style={{ textAlign: 'center', marginTop: '1em' }}>
                     <Button variant="contained" onClick={() => deleteUser(row.username)}>Löschen</Button>
@@ -304,8 +287,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   paper: {
-    backgroundColor: '#bf8221',
-    color: '#000000',
+    backgroundColor: theme.palette.background.paper,
+    color: '#f57c00',
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
