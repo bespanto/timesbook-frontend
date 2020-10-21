@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import validate from "validate.js";
 import { useLocation, Link } from "react-router-dom";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -20,9 +19,9 @@ function ResetPassword(props) {
   const [passRepeat, setPassRepeat] = useState("");
   const [regKey] = useState(query.get("regKey"));
   const [username] = useState(query.get("username"));
-  const [successMsg, setSuccessMsg] = useState("");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [showLoginLink, setShowLoginLink] = useState(false);
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -68,62 +67,40 @@ function ResetPassword(props) {
     );
     if (result !== undefined) {
       if (result.pass || result.passRepeat)
-        dispatch(
-          UiStateSlice.setCurrentError(
-            "Passwort muss mind. 6 Zeichen lang sein"
-          )
-        );
-    } else if (pass !== passRepeat)
-      dispatch(
-        UiStateSlice.setCurrentError("Passwörter stimmen nicht überein")
-      );
-    else {
-      fetch(`${process.env.REACT_APP_API_URL}/auth/setPass`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: pass,
-          registrationKey: regKey,
-        }),
-      })
-        .then(function (response) {
-          if (response.ok) {
-            setSuccessMsg("Das Passwort wurde erfolgreich gesetzt");
-            setShowLoginLink(true);
-            setTimeout(() => setSuccessMsg(""), 5000);
-          } else throw response;
+        setError("Passwort muss mind. 6 Zeichen lang sein");
+    } else
+      if (pass !== passRepeat)
+        setError("Passwörter stimmen nicht überein");
+      else {
+        fetch(`${process.env.REACT_APP_API_URL}/auth/setPass`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: pass,
+            registrationKey: regKey,
+          }),
         })
-        .catch((err) => {
-          err
-            .json()
-            .then((data) => {
-              if (data.errorCode === 4005)
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Das Passwort ist bereits gesetzt."
-                  )
-                );
-              else if (data.errorCode === 4006)
-                dispatch(
-                  UiStateSlice.setCurrentError(
-                    "Das Setzen des Passwortes ist nicht möglich. Falscher Registrierungsschlüssel."
-                  )
-                );
-            })
-            .catch((err) => {
-              console.log(err);
-              dispatch(
-                UiStateSlice.setCurrentError(
-                  "Das Setzen des Passwortes ist fehlgeschlagen."
-                )
-              );
-            });
-        });
-    }
-    setTimeout(() => dispatch(UiStateSlice.setCurrentError("")), 5000);
+          .then(function (response) {
+            if (response.success) {
+              setSuccess("Das Passwort wurde erfolgreich gesetzt");
+              setShowLoginLink(true);
+              setTimeout(() => setSuccess(""), 5000);
+            }
+            else
+              if (response.errorCode === 4005)
+                setError("Das Passwort ist bereits gesetzt.");
+              else if (response.errorCode === 4006)
+                setError("Das Setzen des Passwortes ist nicht möglich. Falscher Registrierungsschlüssel.");
+          })
+          .catch((err) => {
+            console.log(err);
+            setError("Das Setzen des Passwortes ist fehlgeschlagen.");
+          });
+      }
+    setTimeout(() => setError(""), 5000);
   }
 
   return (
@@ -141,10 +118,10 @@ function ResetPassword(props) {
       </Grid>
       <Grid item>
         <Typography style={{ color: "red", textAlign: "center" }}>
-          {uiState.currentError}
+          {error}
         </Typography>
         <Typography style={{ color: "green", textAlign: "center" }}>
-          {successMsg}
+          {success}
         </Typography>
       </Grid>
       {showLoginLink ? (
@@ -154,44 +131,44 @@ function ResetPassword(props) {
           </MUILink>
         </Grid>
       ) : (
-        <Grid item>
-          <Grid
-            container
-            spacing={1}
-            direction="column"
-            justify="center"
-            alignItems="center"
-          >
-            <Grid item>
-              <TextField
-                id="pass"
-                type="password"
-                label="Passwort"
-                variant="outlined"
-                name="pass"
-                value={pass}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                id="passRepeat"
-                type="password"
-                label="Passwort wiederholen"
-                variant="outlined"
-                name="passRepeat"
-                value={passRepeat}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item style={{ marginBottom: "0.3em", marginTop: "0.3em" }}>
-              <Button variant="contained" onClick={() => submitPass()}>
-                Senden
+          <Grid item>
+            <Grid
+              container
+              spacing={1}
+              direction="column"
+              justify="center"
+              alignItems="center"
+            >
+              <Grid item>
+                <TextField
+                  id="pass"
+                  type="password"
+                  label="Passwort"
+                  variant="outlined"
+                  name="pass"
+                  value={pass}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  id="passRepeat"
+                  type="password"
+                  label="Passwort wiederholen"
+                  variant="outlined"
+                  name="passRepeat"
+                  value={passRepeat}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item style={{ marginBottom: "0.3em", marginTop: "0.3em" }}>
+                <Button variant="contained" onClick={() => submitPass()}>
+                  Senden
               </Button>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      )}
+        )}
     </Grid>
   );
 }
