@@ -32,11 +32,13 @@ function Vacation(props) {
   function requestVacation() {
     const start = moment(vacationFrom);
     const end = moment(vacationTill);
-    if (!end.isAfter(start))
+    if (end.isSameOrAfter(start)) {
+      console.log("from: " + vacationFrom.toISOString().slice(0, 10));
+      console.log("till: " + vacationTill.toISOString().slice(0, 10));
+    }
+    else
       setError(" 'Ende' kann nicht vor 'Start' liegen");
 
-    console.log("from: " + vacationFrom.toISOString().slice(0, 10));
-    console.log("till: " + vacationTill.toISOString().slice(0, 10));
 
     setTimeout(() => setError(""), 5000);
   }
