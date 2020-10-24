@@ -54,7 +54,7 @@ function Admin(props) {
         console.log(err)
         setError("Die Benutzerliste kann nicht abgerufen werden. Der Server antwortet nicht.");
       });
-  }, [history, error, loc.pathname, loading]);
+  });
 
   /**
    * 
