@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import 'date-fns';
 import moment from "moment";
@@ -18,6 +18,8 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -75,35 +77,44 @@ function Vacation(props) {
     setTimeout(() => setSuccess(""), 5000);
   }
 
-  const innerFunction = useCallback(() => {
+  const fetchVacationData = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'auth-token': localStorage.getItem('jwt')
-          }
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setVacations(data.success.vacations);
-            console.log(data.success.vacations);
-          }
-          else if (data.errorCode)
-            setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'auth-token': localStorage.getItem('jwt')
+        }
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setVacations(data.success.vacations);
+          console.log(data.success.vacations);
+        }
+        else if (data.errorCode)
+          setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
 
-        })
-        .catch((err) => {
-          console.log(err);
-          setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
-        });
+      })
+      .catch((err) => {
+        console.log(err);
+        setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
+      });
 
-  },[]);
+  }, []);
 
   useEffect(() => {
-    innerFunction()
-  }, [innerFunction])
+    fetchVacationData()
+  }, [fetchVacationData])
+
+  function getStatus(status) {
+    switch (status) {
+      case "pending":
+        return "beantragt";
+      default:
+        return '';
+    }
+  }
 
   return (
     <React.Fragment>
@@ -163,28 +174,37 @@ function Vacation(props) {
         <Typography variant="h6">Eingereichte Urlaubsanträge</Typography>
       </Container>
       <Container style={{ marginTop: "1.5em" }}>
-        {/* {vacations.map((row) => (
+        {vacations.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
+              avatar={
+                <Avatar aria-label="recipe" className={classes.avatar}>
+                  <FlightTakeoffIcon />
+                </Avatar>
+              }
               action={
                 <IconButton aria-label="settings">
                   <DeleteIcon />
                 </IconButton>
               }
-              title={row.from + "-" + row.till}
-              subheader={"Status: " + row.status}
+              title={moment(row.from).format("DD.MM.YYYY") + "-" + moment(row.till).format("DD.MM.YYYY")}
+              subheader={"Status: " + getStatus(row.status)}
             />
           </Card>
-        ))} */}
+        ))}
       </Container>
     </React.Fragment>
   );
 }
 
+
 const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
+  },
+  avatar: {
+    backgroundColor: "blueviolet",
   },
 }));
 
