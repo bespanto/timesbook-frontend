@@ -42,6 +42,9 @@ function Vacation(props) {
     setVacationTill(date);
   };
 
+  /**
+   * 
+   */
   function requestVacation() {
     const start = moment(vacationFrom);
     const end = moment(vacationTill);
@@ -68,7 +71,6 @@ function Vacation(props) {
           console.log(err);
           setError("Die Urlaubsanfrage konnte nicht verarbeitet werden. Der Server antwortet nicht.");
         })
-
     }
     else
       setError(" 'Ende' kann nicht vor 'Start' liegen");
@@ -77,6 +79,9 @@ function Vacation(props) {
     setTimeout(() => setSuccess(""), 5000);
   }
 
+  /**
+   * 
+   */
   const fetchVacationData = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
       {
@@ -90,7 +95,6 @@ function Vacation(props) {
       .then((data) => {
         if (data.success) {
           setVacations(data.success.vacations);
-          console.log(data.success.vacations);
         }
         else if (data.errorCode)
           setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
@@ -103,10 +107,16 @@ function Vacation(props) {
 
   }, []);
 
+  /**
+   * 
+   */
   useEffect(() => {
     fetchVacationData()
   }, [fetchVacationData])
 
+  /**
+   * 
+   */
   function getStatus(status) {
     switch (status) {
       case "pending":
