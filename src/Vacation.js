@@ -88,7 +88,7 @@ function Vacation(props) {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          // setVacations(data.success.vacations);
+          setVacations(data.success.vacations);
           console.log(data.success.vacations);
         }
         else if (data.errorCode)
@@ -100,7 +100,7 @@ function Vacation(props) {
         setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
       });
 
-  })
+  }, [vacations])
 
   return (
     <React.Fragment>
