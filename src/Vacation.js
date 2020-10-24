@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { useSelector } from "react-redux";
 import 'date-fns';
 import moment from "moment";
@@ -75,32 +75,35 @@ function Vacation(props) {
     setTimeout(() => setSuccess(""), 5000);
   }
 
-  useEffect(() => {
-
+  const innerFunction = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          'auth-token': localStorage.getItem('jwt')
-        }
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setVacations(data.success.vacations);
-          console.log(data.success.vacations);
-        }
-        else if (data.errorCode)
-          setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'auth-token': localStorage.getItem('jwt')
+          }
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setVacations(data.success.vacations);
+            console.log(data.success.vacations);
+          }
+          else if (data.errorCode)
+            setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
 
-      })
-      .catch((err) => {
-        console.log(err);
-        setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+          setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
+        });
 
-  }, [vacations])
+  },[]);
+
+  useEffect(() => {
+    innerFunction()
+  }, [innerFunction])
 
   return (
     <React.Fragment>
