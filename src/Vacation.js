@@ -170,9 +170,6 @@ function Vacation(props) {
           </Button>
         </Box>
       </Container>
-      <Container style={{ textAlign: 'center', marginTop: '2em' }}>
-        <Typography variant="h6">Eingereichte Urlaubsanträge</Typography>
-      </Container>
       <Container style={{ marginTop: "1.5em" }}>
         {vacations.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
@@ -187,7 +184,7 @@ function Vacation(props) {
                   <DeleteIcon />
                 </IconButton>
               }
-              title={moment(row.from).format("DD.MM.YYYY") + "-" + moment(row.till).format("DD.MM.YYYY")}
+              title={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
               subheader={"Status: " + getStatus(row.status)}
             />
           </Card>
