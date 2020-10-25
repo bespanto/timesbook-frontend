@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
 // Material UI
@@ -9,10 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 
@@ -23,19 +18,42 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Profile(props) {
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
+  const [orga, setOrga] = useState(uiState.profile.organization);
+  const [name, setName] = useState(uiState.profile.name);
+  const [username, setUsername] = useState(uiState.profile.username);
   const [pass, setPass] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  let history = useHistory();
-  const dispatch = useDispatch();
   const classes = useStyles();
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
-  function logout() {
-    localStorage.removeItem('jwt');
-    dispatch(UiStateSlice.setProfile({}));
-    history.push('/Login')
+  function save() {
+    fetch(`${process.env.REACT_APP_API_URL}/user/${uiState.profile.username}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        'auth-token': localStorage.getItem('jwt')
+      },
+      body: JSON.stringify({
+        name: name,
+        organization: orga
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setSuccess("Das Profil wurde erfolgreich geändert");
+        else
+          setError("Das Profil konnte nicht geändert werden. Serverfehler " + data.errorCode);
+      })
+      .catch((err) => {
+        console.log(err);
+        setError("Das Passwort konnte nicht geändert werden. Der Server antwortet nicht.");
+      });
+
+    setTimeout(() => setSuccess("",), 5000)
+    setTimeout(() => setError("",), 5000)
   }
 
   /**
@@ -48,6 +66,15 @@ function Profile(props) {
         break;
       case "passRepeat":
         setPassRepeat(event.target.value);
+        break;
+      case "username":
+        setUsername(event.target.value);
+        break;
+      case "orga":
+        setOrga(event.target.value);
+        break;
+      case "name":
+        setName(event.target.value);
         break;
       default:
         break;
@@ -167,31 +194,62 @@ function Profile(props) {
           </Box>
         </Container>
         <Grid item xs={12}>
-          <Box style={{ marginLeft: '1em', marginRight: '1em' }}>
-            <List className={classes.root}>
-              <ListItem>
-                <ListItemText primary="Name" secondary={uiState.profile.name} />
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText primary="Benutzername" secondary={uiState.profile.username} />
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText primary="Organisation" secondary={uiState.profile.organization} />
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText primary="Role" secondary={uiState.profile.role} />
-              </ListItem>
-              <Divider />
-            </List>
-          </Box>
+          <Grid
+            container
+            spacing={1}
+            direction="column"
+            justify="center"
+            alignItems="center"
+            style={{ marginTop: '2em' }}
+          >
+            <Grid item>
+              <TextField
+                id="name"
+                label="Name"
+                variant="outlined"
+                name="name"
+                value={name}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                id="orga"
+                label="Organisation"
+                variant="outlined"
+                name="orga"
+                value={orga}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                disabled
+                id="username"
+                label="E-Mail"
+                variant="outlined"
+                name="username"
+                value={username}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                disabled
+                type="role"
+                id="role"
+                label="Rolle"
+                variant="outlined"
+                name="role"
+                value={uiState.profile.role}
+              />
+            </Grid>
+          </Grid>
         </Grid>
         <Grid xs={12} item style={{ marginTop: '0.5em', textAlign: 'center' }}>
-          <Button variant="contained" onClick={() => logout()}>
-            Logout
-            </Button>
+          <Button variant="contained" onClick={() => save()}>
+            Speichern
+          </Button>
         </Grid>
       </Grid>
     </div>
