@@ -33,11 +33,11 @@ function Admin(props) {
   const [open, setOpen] = React.useState(false);
   let history = useHistory();
   const classes = useStyles();
-  
+
   /**
    * 
    */
-  const fetchEmployeeData = useCallback( ()=> {
+  const fetchEmployeeData = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_URL}/user`, {
       headers: {
         "auth-token": localStorage.getItem("jwt"),
@@ -55,7 +55,7 @@ function Admin(props) {
         setError("Die Benutzerliste kann nicht abgerufen werden. Der Server antwortet nicht.");
       });
   }, [history])
-  
+
   /**
    * 
    */
@@ -112,11 +112,16 @@ function Admin(props) {
             setTimeout(() => setSuccess(""), 5000);
           }
           else
-            if (data.errorCode === 5002)
-              setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: E-Mail-Error.");
+            if (data.errorCode === 4008)
+              setError("Sie sind nicht eingeloggt.");
             else
-              if (data.errorCode === 5001)
-                setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: DB-Error");
+              if (data.errorCode === 5002)
+                setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: E-Mail-Error.");
+              else
+                if (data.errorCode === 5001)
+                  setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: DB-Error");
+                else
+                  setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: " + data.errorCode);
 
         })
         .catch((error) => {

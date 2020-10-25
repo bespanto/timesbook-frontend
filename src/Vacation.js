@@ -65,7 +65,7 @@ function Vacation(props) {
             fetchVacationData();
           }
           if (data.errorCode === 4008)
-            history.push('/Login');
+            setError("ISie sind nicht eingeloggt.");
           if (data.errorCode === 4015)
             setError("Ihr Urlaubswusch überschneidet sich mit einer anderen Urlaubsperiode.");
           else if (data.errorCode)
@@ -102,7 +102,7 @@ function Vacation(props) {
           setVacations(data.success.vacations);
         }
         if (data.errorCode === 4008)
-          history.push('/Login');
+          setError("ISie sind nicht eingeloggt.");
         else if (data.errorCode)
           setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
 
@@ -149,7 +149,7 @@ function Vacation(props) {
           fetchVacationData();
         }
         if (data.errorCode === 4008)
-          history.push('/Login');
+          setError("ISie sind nicht eingeloggt.");
         else if (data.errorCode)
           setError("Der Urlaubseintrag konnte nicht gelöscht werden. Serverfehler " + data.errorCode);
 
