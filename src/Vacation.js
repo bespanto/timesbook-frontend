@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import 'date-fns';
 import moment from "moment";
@@ -31,6 +32,7 @@ function Vacation(props) {
   const [vacationFrom, setVacationFrom] = useState(new Date());
   const [vacationTill, setVacationTill] = useState(new Date());
   const [vacations, setVacations] = useState([]);
+  let history = useHistory();
   const classes = useStyles();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
@@ -62,6 +64,8 @@ function Vacation(props) {
             setSuccess("Ihre Urlaubsanfrage wurde erfolgreich eingereicht.");
             fetchVacationData();
           }
+          if (data.errorCode === 4008)
+            history.push('/Login');
           if (data.errorCode === 4015)
             setError("Ihr Urlaubswusch überschneidet sich mit einer anderen Urlaubsperiode.");
           else if (data.errorCode)
@@ -97,6 +101,8 @@ function Vacation(props) {
         if (data.success) {
           setVacations(data.success.vacations);
         }
+        if (data.errorCode === 4008)
+          history.push('/Login');
         else if (data.errorCode)
           setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
 
@@ -105,7 +111,7 @@ function Vacation(props) {
         console.log(err);
         setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
       });
-      setTimeout(() => setError(""), 5000);
+    setTimeout(() => setError(""), 5000);
   }, []);
 
   /**
@@ -127,32 +133,34 @@ function Vacation(props) {
     }
   }
 
-function deleteVacation(id){
-  fetch(`${process.env.REACT_APP_API_URL}/vacation/${id}`,
-  {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      'auth-token': localStorage.getItem('jwt')
-    }
-  })
-  .then((res) => res.json())
-  .then((data) => {
-    if (data.success) {
-      setSuccess("Der Urlaubseintrag wurde erfolgreich gelöscht");
-      fetchVacationData();
-    }
-    else if (data.errorCode)
-      setError("Der Urlaubseintrag konnte nicht gelöscht werden. Serverfehler " + data.errorCode);
+  function deleteVacation(id) {
+    fetch(`${process.env.REACT_APP_API_URL}/vacation/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          'auth-token': localStorage.getItem('jwt')
+        }
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setSuccess("Der Urlaubseintrag wurde erfolgreich gelöscht");
+          fetchVacationData();
+        }
+        if (data.errorCode === 4008)
+          history.push('/Login');
+        else if (data.errorCode)
+          setError("Der Urlaubseintrag konnte nicht gelöscht werden. Serverfehler " + data.errorCode);
 
-  })
-  .catch((err) => {
-    console.log(err);
-    setError("Der Urlaubseintrag konnte nicht gelöscht werden. Der Server antwortet nicht");
-  });
-  setTimeout(() => setError(""), 5000);
-  setTimeout(() => setSuccess(""), 5000);
-}
+      })
+      .catch((err) => {
+        console.log(err);
+        setError("Der Urlaubseintrag konnte nicht gelöscht werden. Der Server antwortet nicht");
+      });
+    setTimeout(() => setError(""), 5000);
+    setTimeout(() => setSuccess(""), 5000);
+  }
 
   return (
     <React.Fragment>
@@ -218,7 +226,7 @@ function deleteVacation(id){
                 </Avatar>
               }
               action={
-                <IconButton aria-label="settings" onClick={()=>deleteVacation(row._id)}>
+                <IconButton aria-label="settings" onClick={() => deleteVacation(row._id)}>
                   <DeleteIcon />
                 </IconButton>
               }
