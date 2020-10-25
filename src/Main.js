@@ -73,7 +73,16 @@ function Main(props) {
                 else
                   return response.json();
               })
-              .then((json) => dispatch(BookingEntriesSlice.setBookingEntries(json)))
+              .then((data) => {
+                if (data.success) {
+                  dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
+                }
+                if (data.errorCode === 4008)
+                  setError("Sie sind nicht eingeloggt.");
+                else if (data.errorCode)
+                  setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
+
+              })
               .catch((err) => {
                 console.log(err)
                 setError('Fehler! Der Server antwortet nicht.');

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import 'date-fns';
 import moment from "moment";
@@ -32,7 +31,6 @@ function Vacation(props) {
   const [vacationFrom, setVacationFrom] = useState(new Date());
   const [vacationTill, setVacationTill] = useState(new Date());
   const [vacations, setVacations] = useState([]);
-  let history = useHistory();
   const classes = useStyles();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
@@ -65,7 +63,7 @@ function Vacation(props) {
             fetchVacationData();
           }
           if (data.errorCode === 4008)
-            setError("ISie sind nicht eingeloggt.");
+            setError("Sie sind nicht eingeloggt.");
           if (data.errorCode === 4015)
             setError("Ihr Urlaubswusch überschneidet sich mit einer anderen Urlaubsperiode.");
           else if (data.errorCode)
@@ -102,7 +100,7 @@ function Vacation(props) {
           setVacations(data.success.vacations);
         }
         if (data.errorCode === 4008)
-          setError("ISie sind nicht eingeloggt.");
+          setError("Sie sind nicht eingeloggt.");
         else if (data.errorCode)
           setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
 
@@ -149,7 +147,7 @@ function Vacation(props) {
           fetchVacationData();
         }
         if (data.errorCode === 4008)
-          setError("ISie sind nicht eingeloggt.");
+          setError("Sie sind nicht eingeloggt.");
         else if (data.errorCode)
           setError("Der Urlaubseintrag konnte nicht gelöscht werden. Serverfehler " + data.errorCode);
 
