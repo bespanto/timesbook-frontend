@@ -1,18 +1,13 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import 'date-fns';
 import moment from "moment";
-import shortid from "shortid";
 import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
 import { postData } from "./serverConnections/connect";
 import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -75,35 +70,33 @@ function Vacation(props) {
     setTimeout(() => setSuccess(""), 5000);
   }
 
-  const innerFunction = useCallback(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'auth-token': localStorage.getItem('jwt')
-          }
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setVacations(data.success.vacations);
-            console.log(data.success.vacations);
-          }
-          else if (data.errorCode)
-            setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
-
-        })
-        .catch((err) => {
-          console.log(err);
-          setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
-        });
-
-  },[]);
 
   useEffect(() => {
-    innerFunction()
-  }, [innerFunction])
+      fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
+          {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json",
+                  'auth-token': localStorage.getItem('jwt')
+              }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+              if (data.success) {
+                  console.log(data.success.vacations);
+                  setVacations(prevState => {
+                      return{...prevState, ...data.success.vacations}
+                  });
+              }
+              else if (data.errorCode)
+                  setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
+
+          })
+          .catch((err) => {
+              console.log(err);
+              setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
+          });
+  }, [])
 
   return (
     <React.Fragment>
@@ -181,7 +174,7 @@ function Vacation(props) {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
