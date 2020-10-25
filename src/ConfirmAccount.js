@@ -55,7 +55,6 @@ function ConfirmAccount(props) {
    * 
    */
   useEffect(() => {
-    console.log('Confirm')
     confirmAdminAccount();
   }, [confirmAdminAccount]);
 
