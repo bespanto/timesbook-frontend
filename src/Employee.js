@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
 import { patchData, deleteData } from "./serverConnections/connect";
@@ -24,20 +24,20 @@ import Fade from '@material-ui/core/Fade';
 import WarningIcon from '@material-ui/icons/Warning';
 
 function Admin(props) {
-  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [employees, setEmployees] = useState([]);
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  let history = useHistory();
-  const loc = useLocation();
-
-  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
-  useEffect(() => {
+  let history = useHistory();
+  const classes = useStyles();
+  
+  /**
+   * 
+   */
+  const fetchEmployeeData = useCallback( ()=> {
     fetch(`${process.env.REACT_APP_API_URL}/user`, {
       headers: {
         "auth-token": localStorage.getItem("jwt"),
@@ -54,7 +54,14 @@ function Admin(props) {
         console.log(err)
         setError("Die Benutzerliste kann nicht abgerufen werden. Der Server antwortet nicht.");
       });
-  });
+  }, [history])
+  
+  /**
+   * 
+   */
+  useEffect(() => {
+    fetchEmployeeData();
+  }, [fetchEmployeeData]);
 
   /**
    * 
@@ -85,7 +92,6 @@ function Admin(props) {
       else if (result.username)
         setError("Benutzername muss eine gültige E-Mail sein");
     } else {
-      setLoading(true);
       patchData(
         `${process.env.REACT_APP_API_URL}/user/invite`,
         localStorage.getItem("jwt"),
@@ -117,7 +123,6 @@ function Admin(props) {
           console.log(error);
           setError("Der Benutzer konnte nicht eingeladen werden. Der Server antwortet nicht.");
         })
-        .finally(() => { setLoading(false) });
     }
     setTimeout(() => setError(""), 5000);
   }
@@ -126,7 +131,6 @@ function Admin(props) {
    * 
    */
   function deleteUser(username) {
-    setLoading(true);
     deleteData(
       `${process.env.REACT_APP_API_URL}/user/${username}`,
       localStorage.getItem("jwt"),
@@ -145,7 +149,6 @@ function Admin(props) {
         console.log(error)
         setError("Fehler beim entfernen des Benutzers.");
       })
-      .finally(() => { setLoading(false) });
 
     handleClose();
   }

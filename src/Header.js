@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -23,10 +23,6 @@ function Header(props) {
   const dispatch = useDispatch();
   let history = useHistory();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-
-  useEffect(() => {
-    // refresh the AppBar
-  }, [uiState.profile])
 
   function logout() {
     localStorage.removeItem('jwt');

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 // Material UI
 import Typography from "@material-ui/core/Typography";
@@ -18,7 +18,7 @@ function ConfirmAccount(props) {
   const username = query.get("username");
   const regKey = query.get("regKey");
 
-  useEffect(() => {
+  const confirmAdminAccount = useCallback(() => {
     if (!accountConfirmed)
       fetch(`${process.env.REACT_APP_API_URL}/auth/confirmAdminAccount`, {
         method: "PATCH",
@@ -49,7 +49,15 @@ function ConfirmAccount(props) {
         });
     setTimeout(() => setError(""), 5000);
     setTimeout(() => setSuccess(""), 5000);
-  }, [accountConfirmed, username, regKey]);
+  }, [accountConfirmed, username, regKey])
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    console.log('Confirm')
+    confirmAdminAccount();
+  }, [confirmAdminAccount]);
 
 
   return (

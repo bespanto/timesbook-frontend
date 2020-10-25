@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Switch, Route, useHistory, useLocation } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -27,7 +27,10 @@ function Main(props) {
   let history = useHistory();
   const loc = useLocation();
 
-  useEffect(() => {
+  /**
+   * 
+   */
+  const fetchData = useCallback(() => {
     if (loc.pathname !== "/ResetPassword" &&
       loc.pathname !== '/confirmAccount' &&
       loc.pathname !== '/Home' &&
@@ -85,6 +88,14 @@ function Main(props) {
         setTimeout(() => setError(""), 5000);
       }
   }, [history, loc.pathname, dispatch, uiState.now]);
+
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    fetchData()
+  }, [fetchData]);
 
   return (
     <main>
