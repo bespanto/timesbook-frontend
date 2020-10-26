@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
 // Material UI
@@ -19,14 +19,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const [orga, setOrga] = useState(uiState.profile.organization);
-  const [name, setName] = useState(uiState.profile.name);
-  const [username, setUsername] = useState(uiState.profile.username);
   const [pass, setPass] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const classes = useStyles();
+  const dispatch = useDispatch()
 
   function save() {
     fetch(`${process.env.REACT_APP_API_URL}/user/${uiState.profile.username}`, {
@@ -36,8 +34,8 @@ function Profile(props) {
         'auth-token': localStorage.getItem('jwt')
       },
       body: JSON.stringify({
-        name: name,
-        organization: orga
+        name: uiState.profile.name,
+        organization: uiState.profile.orga
       }),
     })
       .then((response) => response.json())
@@ -56,10 +54,22 @@ function Profile(props) {
     setTimeout(() => setError("",), 5000)
   }
 
+  function getRole(r) {
+    switch (r) {
+      case "admin":
+        return "Administrator";
+      case "user":
+        return "Benutzer";
+      default:
+        return "";
+    }
+  }
+
   /**
  * Sets state for changed fields on tap event
  */
   function handleChange(event) {
+    const profile = { ...uiState.profile }
     switch (event.target.name) {
       case "pass":
         setPass(event.target.value);
@@ -68,17 +78,18 @@ function Profile(props) {
         setPassRepeat(event.target.value);
         break;
       case "username":
-        setUsername(event.target.value);
+        profile.username = event.target.value;
         break;
       case "orga":
-        setOrga(event.target.value);
+        profile.orga = event.target.value;
         break;
       case "name":
-        setName(event.target.value);
+        profile.name = event.target.value;
         break;
       default:
         break;
     }
+    dispatch(UiStateSlice.setProfile(profile));
   }
 
   /**
@@ -186,7 +197,7 @@ function Profile(props) {
           <Box
             display="flex"
             justifyContent="center"
-            style={{ marginTop: "0.5em" }}
+            style={{ marginTop: "1em" }}
           >
             <Button variant="contained" onClick={() => changePass()}>
               Passwort ändern
@@ -208,40 +219,41 @@ function Profile(props) {
                 label="Name"
                 variant="outlined"
                 name="name"
-                value={name}
+                value={uiState.profile.name}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
+                disabled={uiState.profile.role === "admin" ? false : true}
                 id="orga"
                 label="Organisation"
                 variant="outlined"
                 name="orga"
-                value={orga}
+                value={uiState.profile.organization}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
-                disabled
+                disabled="true"
                 id="username"
                 label="E-Mail"
                 variant="outlined"
                 name="username"
-                value={username}
+                value={uiState.profile.username}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
-                disabled
+                disabled="true"
                 type="role"
                 id="role"
                 label="Rolle"
                 variant="outlined"
                 name="role"
-                value={uiState.profile.role}
+                value={getRole(uiState.profile.role)}
               />
             </Grid>
           </Grid>
