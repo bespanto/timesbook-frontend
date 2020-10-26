@@ -53,7 +53,8 @@ function Main(props) {
               return response.json();
           })
           .then((json) => {
-            dispatch(UiStateSlice.setProfile(json));
+              dispatch(UiStateSlice.setProfile(json.success));
+
 
             // fetch BookingEntries
             const year = moment(uiState.now).format("YYYY");
