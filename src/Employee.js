@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
-import { patchData, deleteData } from "./serverConnections/connect";
+import { postData, deleteData } from "./serverConnections/connect";
 import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,29 +32,36 @@ function Admin(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [open, setOpen] = React.useState(false);
   let history = useHistory();
+  const loc = useLocation();
   const classes = useStyles();
 
   /**
    * 
    */
   const fetchEmployeeData = useCallback(() => {
+    const errorMsg = "Die Benutzerliste kann nicht abgerufen werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user`, {
       headers: {
         "auth-token": localStorage.getItem("jwt"),
       },
     })
-      .then((response) => {
-        if (response.status === 401)
-          history.push('/Login');
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.success)
+          setEmployees(json.success.users)
+        else if (json.errorCode) {
+          console.error(errorMsg + " Fehler: ", json.errorCode);
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
         else
-          return response.json();
+          setError(errorMsg + " Unerwarteter Fehler.");
       })
-      .then((json) => setEmployees(json))
       .catch((err) => {
         console.log(err)
-        setError("Die Benutzerliste kann nicht abgerufen werden. Der Server antwortet nicht.");
+        setError(errorMsg + " Der Server antwortet nicht.");
       });
-  }, [history])
+  }, [history, loc.pathname])
 
   /**
    * 
@@ -92,41 +99,34 @@ function Admin(props) {
       else if (result.username)
         setError("Benutzername muss eine gültige E-Mail sein");
     } else {
-      patchData(
-        `${process.env.REACT_APP_API_URL}/user/invite`,
+      const errorMsg = "Der Benutzer konnte nicht eingeladen werden.";
+      postData(
+        `${process.env.REACT_APP_API_URL}/auth/invite`,
         localStorage.getItem("jwt"),
         userInfo
       )
-        .then((response) => {
-          if (response.status === 403)
-            setError("Sie sind nicht berechtigt Benutzer einzuladen.");
-          else
-            return response.json();
-        })
+        .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            setError("");
             setSuccess(`Der Benutzer ${username} wurde erfolgreich eingeladen`);
+            fetchEmployeeData();
             setName("");
             setUsername("");
             setTimeout(() => setSuccess(""), 5000);
           }
           else
-            if (data.errorCode === 4008)
-              setError("Sie sind nicht eingeloggt.");
-            else
-              if (data.errorCode === 5002)
-                setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: E-Mail-Error.");
-              else
-                if (data.errorCode === 5001)
-                  setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: DB-Error");
-                else
-                  setError("Der Benutzer konnte nicht eingeladen werden. Interner Serverfehler: " + data.errorCode);
+            if (data.errorCode === 4018)
+              setError(`Der Benutzer mit der E-Mail-Adresse ${username} existiert bereits.`);
+            else {
+              console.error(errorMsg, "Fehler: " + data.errorCode)
+              if (loc.pathname !== '/Login')
+                history.push('/Login');
+            }
 
         })
         .catch((error) => {
           console.log(error);
-          setError("Der Benutzer konnte nicht eingeladen werden. Der Server antwortet nicht.");
+          setError(errorMsg + " Der Server antwortet nicht.");
         })
     }
     setTimeout(() => setError(""), 5000);
@@ -136,23 +136,29 @@ function Admin(props) {
    * 
    */
   function deleteUser(username) {
+    const errorMsg = "Der Benutzer konnte nicht entfernt werden.";
     deleteData(
       `${process.env.REACT_APP_API_URL}/user/${username}`,
       localStorage.getItem("jwt"),
     )
-      .then((response) => {
-        if (response.status === 401) {
-          history.push('/Login');
-        } else
-          return response.json();
-      })
-      .then(() => {
-        setSuccess("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt")
-        setTimeout(() => setSuccess(""), 5000);
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.success) {
+          setSuccess("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt.");
+          fetchEmployeeData();
+          setTimeout(() => setSuccess(""), 5000);
+        }
+        else if (json.errorCode) {
+          console.error(errorMsg + " Fehler: ", json.errorCode);
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else
+          setError(errorMsg + " Unerwarteter Fehler.");
       })
       .catch((error) => {
-        console.log(error)
-        setError("Fehler beim entfernen des Benutzers.");
+        console.error(error)
+        setError(errorMsg + " Der Server antwortet nicht.");
       })
 
     handleClose();

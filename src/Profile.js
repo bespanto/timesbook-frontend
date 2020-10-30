@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
 // Material UI
@@ -25,8 +26,14 @@ function Profile(props) {
   const [error, setError] = useState("");
   const classes = useStyles();
   const dispatch = useDispatch()
+  let history = useHistory();
+  const loc = useLocation();
 
+  /**
+   * 
+   */
   function save() {
+    const errorMsg = "Das Profil konnte nicht geändert werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user/${uiState.profile.username}`, {
       method: "PATCH",
       headers: {
@@ -42,54 +49,21 @@ function Profile(props) {
       .then((data) => {
         if (data.success)
           setSuccess("Das Profil wurde erfolgreich geändert");
+        else if (data.errorCode) {
+          console.error(errorMsg + " Fehler: " + data.errorCode);
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
         else
-          setError("Das Profil konnte nicht geändert werden. Serverfehler " + data.errorCode);
+          setError(errorMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
         console.log(err);
-        setError("Das Passwort konnte nicht geändert werden. Der Server antwortet nicht.");
+        setError(errorMsg + " Der Server antwortet nicht.");
       });
 
     setTimeout(() => setSuccess("",), 5000)
     setTimeout(() => setError("",), 5000)
-  }
-
-  function getRole(r) {
-    switch (r) {
-      case "admin":
-        return "Administrator";
-      case "user":
-        return "Benutzer";
-      default:
-        return "";
-    }
-  }
-
-  /**
- * Sets state for changed fields on tap event
- */
-  function handleChange(event) {
-    const profile = { ...uiState.profile }
-    switch (event.target.name) {
-      case "pass":
-        setPass(event.target.value);
-        break;
-      case "passRepeat":
-        setPassRepeat(event.target.value);
-        break;
-      case "username":
-        profile.username = event.target.value;
-        break;
-      case "orga":
-        profile.orga = event.target.value;
-        break;
-      case "name":
-        profile.name = event.target.value;
-        break;
-      default:
-        break;
-    }
-    dispatch(UiStateSlice.setProfile(profile));
   }
 
   /**
@@ -122,7 +96,8 @@ function Profile(props) {
     } else if (pass !== passRepeat)
       setError("Passwörter stimmen nicht überein");
     else {
-      fetch(`${process.env.REACT_APP_API_URL}/user/changePass/${uiState.profile.username}`, {
+      const errorMsg = "Das Passwort konnte nicht geändert werden.";
+      fetch(`${process.env.REACT_APP_API_URL}/auth/changePass`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -132,21 +107,78 @@ function Profile(props) {
           password: pass,
         }),
       })
-        .then(function (response) {
-          if (response.ok) {
+        .then((response) => response.json())
+        .then((json) => {
+          if (json.success) {
             setSuccess("Das Passwort wurde erfolgreich geändert");
             setPass("");
             setPassRepeat("")
-          } else throw response;
+          }
+          else if (json.errorCode) {
+            console.error(errorMsg + " Fehler: " + json.errorCode);
+            if (loc.pathname !== '/Login')
+              history.push('/Login');
+          }
+          else
+            setError(errorMsg + " Unerwarteter Fehler.");
         })
         .catch((err) => {
           console.log(err);
-          setError("Das Passwort konnte nicht geändert werden. Serverfehler.");
+          setError(errorMsg + " Der Server antwortet nicht.");
         });
     }
     setTimeout(() => setSuccess(""), 5000);
     setTimeout(() => setError(""), 5000);
   }
+
+  /**
+   * Sets state for changed fields on tap event
+   */
+  function handleChange(event) {
+    const profile = { ...uiState.profile }
+    switch (event.target.name) {
+      case "pass":
+        setPass(event.target.value);
+        break;
+      case "passRepeat":
+        setPassRepeat(event.target.value);
+        break;
+      case "username":
+        profile.username = event.target.value;
+        break;
+      case "orga":
+        profile.orga = event.target.value;
+        break;
+      case "name":
+        profile.name = event.target.value;
+        break;
+      default:
+        break;
+    }
+    dispatch(UiStateSlice.setProfile(profile));
+  }
+
+  /**
+   * 
+   */
+  function getRole(r) {
+    switch (r) {
+      case "admin":
+        return "Administrator";
+      case "user":
+        return "Benutzer";
+      default:
+        return "";
+    }
+  }
+
+  /**
+   * 
+   */
+  const getDisabled = val => {
+    if (!uiState.profile || uiState.profile.role !== 'admin') return { disabled: true };
+    return {};
+  };
 
   return (
     <div className={classes.root}>
@@ -219,41 +251,41 @@ function Profile(props) {
                 label="Name"
                 variant="outlined"
                 name="name"
-                value={uiState.profile.name}
+                value={uiState.profile ? uiState.profile.name : ''}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
-                disabled={uiState.profile.role === "admin" ? false : true}
+                {...getDisabled()}
                 id="orga"
                 label="Organisation"
                 variant="outlined"
                 name="orga"
-                value={uiState.profile.organization}
+                value={uiState.profile ? uiState.profile.organization : ''}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
-                disabled="true"
+                disabled
                 id="username"
                 label="E-Mail"
                 variant="outlined"
                 name="username"
-                value={uiState.profile.username}
+                value={uiState.profile ? uiState.profile.username : ''}
                 onChange={handleChange}
               />
             </Grid>
             <Grid item>
               <TextField
-                disabled="true"
+                disabled
                 type="role"
                 id="role"
                 label="Rolle"
                 variant="outlined"
                 name="role"
-                value={getRole(uiState.profile.role)}
+                value={uiState.profile ? getRole(uiState.profile.role) : ''}
               />
             </Grid>
           </Grid>

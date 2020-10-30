@@ -67,30 +67,28 @@ function Main(props) {
                   if (data.success)
                     dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
                   else if (data.errorCode) {
-                    console.error(errMsg + " Fehler: ", data.message);
-                    setError(errMsg);
+                    console.error(errMsg + " Fehler: ", data.errorCode);
                     if (loc.pathname !== '/Login')
                       history.push('/Login');
                   }
                   else
-                    setError("Unerwarteter Fehler. " + errMsg);
+                    setError(errMsg + " Unerwarteter Fehler.");
 
                 })
                 .catch((err) => {
                   console.error(err)
                   setError(errMsg + ' Der Server antwortet nicht.');
                 });
-                //end fetch BookingEntries
+              //end fetch BookingEntries
             }
             else if (json.errorCode) {
-              console.error(errorMsg + " Fehler: ", json.message)
-              // setError(errorMsg);
+              console.error(errorMsg + " Fehler: ", json.errorCode)
               dispatch(UiStateSlice.setProfile(null));
               if (loc.pathname !== '/Login')
                 history.push('/Login');
             }
             else
-              setError("Unerwarteter Fehler. " + errorMsg);
+              setError(errorMsg + " Unerwarteter Fehler.");
           })
           .catch((err) => {
             console.error(err)
