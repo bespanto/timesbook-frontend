@@ -33,7 +33,7 @@ function Login(props) {
         } else if (data.errorCode === 4004) {
           setError("Login ist gescheitert. Das Passwort ist falsch.");
         } else if (data.errorCode === 4011) {
-          setError("Das Konto ist noch nicht bestätigt");
+          setError("Das Konto ist noch nicht bestätigt. Bitte prüfen Sie Ihr E-Mails und schließen Sie die Registrierung ab.");
         }
         else {
           localStorage.setItem("jwt", data.jwt);

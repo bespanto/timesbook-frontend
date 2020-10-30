@@ -43,7 +43,7 @@ function Header(props) {
       <Box className={classes.root}>
         <AppBar position="static" color="default">
           <Toolbar>
-          <IconButton className={classes.menuButton} aria-label="Menu" onClick={handleClick}>
+            <IconButton className={classes.menuButton} aria-label="Menu" onClick={handleClick}>
               <MenuIcon />
             </IconButton>
             <Menu id="simple-menu"
@@ -66,8 +66,12 @@ function Header(props) {
                   <MenuItem component={Link} to="/Profile" onClick={handleClose} style={{ color: '#ffffff' }}>Profil</MenuItem>
                 </span>
               }
-              <Divider />
-              {!uiState.profile && <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>}
+              {!uiState.profile &&
+                <span>
+                  <Divider />
+                  <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>
+                </span>
+              }
             </Menu>
             <Box className={classes.grow} >
               <Button component={Link} to="/home" color="inherit" style={{ textTransform: 'none', color: '#ffffff' }}>
