@@ -39,66 +39,67 @@ function Main(props) {
       if (!localStorage.getItem("jwt"))
         history.push("/Login");
       else {
+        const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
         fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
           headers: {
             'auth-token': localStorage.getItem('jwt')
           }
         })
-          .then((response) => {
-            if (response.status === 401) {
+          .then((response) => response.json())
+          .then((json) => {
+            if (json.success) {
+              dispatch(UiStateSlice.setProfile(json.success.user));
+
+              // fetch BookingEntries
+              const year = moment(uiState.now).format("YYYY");
+              const month = moment(uiState.now).format("MM");
+              const daysInMonth = DateUtils.getDaysInMonth(year, month);
+              const from = uiState.now + "-01";
+              const till = uiState.now + "-" + daysInMonth;
+
+              const errMsg = "Zeitbuchungen können nicht abgefragt werden.";
+              fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${json.success.user.username}/${from}/${till}`,
+                {
+                  headers: { "auth-token": localStorage.getItem("jwt") },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success)
+                    dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
+                  else if (data.errorCode) {
+                    console.error(errMsg + " Fehler: ", data.message);
+                    setError(errMsg);
+                    if (loc.pathname !== '/Login')
+                      history.push('/Login');
+                  }
+                  else
+                    setError("Unerwarteter Fehler. " + errMsg);
+
+                })
+                .catch((err) => {
+                  console.error(err)
+                  setError(errMsg + ' Der Server antwortet nicht.');
+                });
+                //end fetch BookingEntries
+            }
+            else if (json.errorCode) {
+              console.error(errorMsg + " Fehler: ", json.message)
+              // setError(errorMsg);
+              dispatch(UiStateSlice.setProfile(null));
               if (loc.pathname !== '/Login')
                 history.push('/Login');
             }
             else
-              return response.json();
-          })
-          .then((json) => {
-              dispatch(UiStateSlice.setProfile(json.success));
-
-
-            // fetch BookingEntries
-            const year = moment(uiState.now).format("YYYY");
-            const month = moment(uiState.now).format("MM");
-            const daysInMonth = DateUtils.getDaysInMonth(year, month);
-            const from = uiState.now + "-01";
-            const till = uiState.now + "-" + daysInMonth;
-            fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${json.username}/${from}/${till}`,
-              {
-                headers: { "auth-token": localStorage.getItem("jwt") },
-              })
-              .then((response) => {
-                if (response.status === 401) {
-                  if (loc.pathname !== '/Login')
-                    history.push('/Login');
-                }
-                else
-                  return response.json();
-              })
-              .then((data) => {
-                if (data.success) {
-                  dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
-                }
-                if (data.errorCode === 4008)
-                  setError("Sie sind nicht eingeloggt.");
-                else if (data.errorCode)
-                  setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
-
-              })
-              .catch((err) => {
-                console.log(err)
-                setError('Fehler! Der Server antwortet nicht.');
-
-              });
+              setError("Unerwarteter Fehler. " + errorMsg);
           })
           .catch((err) => {
-            console.log(err)
-            setError('Fehler! Der Server antwortet nicht.');
+            console.error(err)
+            setError(errorMsg + ' Der Server antwortet nicht.');
 
           });
         setTimeout(() => setError(""), 5000);
       }
   }, [history, loc.pathname, dispatch, uiState.now]);
-
 
   /**
    * 

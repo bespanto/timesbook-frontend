@@ -8,12 +8,7 @@ export const initialState = {
     now: moment().format('YYYY-MM'),
     activeMenuItem: localStorage.getItem('jwt') ? 'TimeBooking' : 'Login',
     currentError: '',
-    profile: {
-        name: '',
-        username: '',
-        organization: '',
-        role: ''
-    }
+    profile: null
 }
 
 //slice
@@ -31,14 +26,7 @@ export const uiStateSlice = createSlice({
             state.now = action.payload;
         },
         setProfile: (state, action) => {
-            if (action.payload === null)
-                state.profile = null
-            else {
-                state.profile.name = action.payload.name;
-                state.profile.username = action.payload.username;
-                state.profile.organization = action.payload.organization;
-                state.profile.role = action.payload.role;
-            }
+            state.profile = action.payload;
         }
     }
 })

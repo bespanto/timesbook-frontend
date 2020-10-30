@@ -51,13 +51,13 @@ function Header(props) {
               open={Boolean(anchorEl)}
               onClose={handleClose}>
               <MenuItem component={Link} to="/Home" onClick={handleClose} style={{ color: '#ffffff' }}>Home</MenuItem>
-              {localStorage.getItem('jwt') &&
+              {uiState.profile &&
                 <span>
                   <MenuItem component={Link} to="/TimeBooking" onClick={handleClose} style={{ color: '#ffffff' }}>Zeitbuchungen</MenuItem>
                   <MenuItem component={Link} to="/Vacation" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaub</MenuItem>
                 </span>
               }
-              {localStorage.getItem('jwt') && uiState.profile.role === 'admin' &&
+              {uiState.profile && uiState.profile.role === 'admin' &&
                 <span>
                   <Divider />
                   <MenuItem component={Link} to="/Employees" onClick={handleClose} style={{ color: '#ffffff' }}>Mitarbeiter</MenuItem>
@@ -67,7 +67,7 @@ function Header(props) {
                 </span>
               }
               <Divider />
-              {!localStorage.getItem('jwt') && <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>}
+              {!uiState.profile && <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>}
             </Menu>
             <Box className={classes.grow} >
               <Button component={Link} to="/home" color="inherit" style={{ textTransform: 'none', color: '#ffffff' }}>
@@ -76,13 +76,13 @@ function Header(props) {
                 </Typography>
               </Button>
             </Box>
-            {localStorage.getItem('jwt') &&
+            {uiState.profile &&
               <React.Fragment>
                 <span style={{ textAlign: 'center' }}>
                   <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
                     <Person fontSize="large" />
                   </IconButton>
-                  <Typography variant="body2">{uiState.profile.name}</Typography>
+                  <Typography variant="body2">{uiState.profile ? uiState.profile.name : ''}</Typography>
                 </span>
                 <IconButton onClick={() => logout()} size="small" style={{ color: '#ffffff' }}>
                   <ExitToAppIcon />
