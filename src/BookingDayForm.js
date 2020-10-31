@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { patchData, deleteData } from "./serverConnections/connect";
 import moment from "moment";
 import { DAY_FORMAT } from "./Const";
@@ -13,6 +13,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 function BookingDayForm(props) {
+  const loc = useLocation();
   const dispatch = useDispatch();
   let history = useHistory();
   const bookingEntry = useSelector((state) =>
@@ -98,37 +99,29 @@ function BookingDayForm(props) {
    *
    */
   function deleteEntryFromBackend(day) {
+    const errMsg = "Löschen ist nicht möglich.";
     deleteData(
       `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`,
       localStorage.getItem("jwt")
     )
-      .then((response) => {
-
-        if (response.status === 401) {
-          history.push("/Login");
-          console.log(history);
-        } else return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        dispatch(BookingEntriesSlice.deleteBookingEntry(day));
-        props.handleClose();
+        if (data.success) {
+          dispatch(BookingEntriesSlice.deleteBookingEntry(day));
+          props.handleClose();
+        }
+        else if (data.errorCode) {
+          console.error(errMsg + " Fehler: ", data.errorCode);
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else
+          setError(errMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
-        console.log(err);
-        setError("Löschen ist nicht möglich. Keine Verbindung zum Server.");
-        throw new Exception("ERROR: " + error);
+        console.error(err);
+        setError(errMsg + "Der Server antwortet nicht.");
       });
-  }
-
-  /**
-   *
-   */
-  function remove() {
-    try {
-      deleteEntryFromBackend(moment.utc(props.bookingDay).format());
-    } catch (error) {
-      setError(error.message);
-    }
   }
 
   /**
@@ -252,7 +245,7 @@ function BookingDayForm(props) {
       <Grid item style={{ marginTop: "0.5em" }}>
         <Button
           variant="contained"
-          onClick={() => remove()}
+          onClick={() =>  deleteEntryFromBackend(moment.utc(props.bookingDay).format())}
           style={{ marginRight: "0.5em" }}
         >
           Löschen
