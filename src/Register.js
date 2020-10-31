@@ -73,6 +73,7 @@ function Register(props) {
     } else if (pass !== passRepeat)
       setError("Passwörter stimmen nicht überein");
     else {
+      const errorMsg = "Registrierung ist nicht möglich.";
       fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
         method: "POST",
         headers: {
@@ -87,21 +88,21 @@ function Register(props) {
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.errorCode === 4001) {
-            setError("Registrierung ist nicht möglich. Der Benutzer '" +
-              newAdminAccount.username + "' existiert bereits.");
-          } else if (data.errorCode === 4002)
-            setError("Registrierung ist nicht möglich. Das Admin-Konto für die Organisation '" +
-              newAdminAccount.orga + "' ist bereits vorhanden.");
-          else {
+          if (data.success) {
             resetRegisterFields();
-            setSuccess("Registrierung war erfolgreich. Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
+            setSuccess(errorMsg + " Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
             setTimeout(() => setSuccess(""), 5000);
           }
+          else if (data.errorCode === 4001) {
+            setError(errorMsg + " Der Benutzer '" + newAdminAccount.username + "' existiert bereits.");
+          } else if (data.errorCode === 4002)
+            setError(errorMsg + " Das Admin-Konto für die Organisation '" + newAdminAccount.orga + "' ist bereits vorhanden.");
+          else
+            setError(errorMsg + " Unerwarteter Fehler.");
         })
         .catch((err) => {
           console.log(err);
-          setError("Registrierung ist nicht möglich. Der Server antwortet nicht.");
+          setError(errorMsg + " Der Server antwortet nicht.");
         });
       setTimeout(() => setError(""), 5000);
     }

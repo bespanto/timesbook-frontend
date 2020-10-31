@@ -72,6 +72,7 @@ function ResetPassword(props) {
       if (pass !== passRepeat)
         setError("Passwörter stimmen nicht überein");
       else {
+        const errorMsg = "Das Setzen des Passwortes ist nicht möglich.";
         fetch(`${process.env.REACT_APP_API_URL}/auth/setPass`, {
           method: "POST",
           headers: {
@@ -83,21 +84,26 @@ function ResetPassword(props) {
             registrationKey: regKey,
           }),
         })
-          .then(function (response) {
-            if (response.success) {
+          .then((response) => response.json())
+          .then((json) => {
+            if (json.success) {
               setSuccess("Das Passwort wurde erfolgreich gesetzt");
               setShowLoginLink(true);
               setTimeout(() => setSuccess(""), 5000);
             }
             else
-              if (response.errorCode === 4005)
+              if (json.errorCode === 4003)
+                setError("Der Benutzer ist nicht im System vorhanden.");
+              else if (json.errorCode === 4005)
                 setError("Das Passwort ist bereits gesetzt.");
-              else if (response.errorCode === 4006)
-                setError("Das Setzen des Passwortes ist nicht möglich. Falscher Registrierungsschlüssel.");
+              else if (json.errorCode === 4006)
+                setError(errorMsg + " Falscher Registrierungsschlüssel.");
+              else
+                setError(errorMsg + " Unerwarteter Fehler.");
           })
           .catch((err) => {
             console.log(err);
-            setError("Das Setzen des Passwortes ist fehlgeschlagen.");
+            setError(errorMsg + "Der Server antwortet nicht.");
           });
       }
     setTimeout(() => setError(""), 5000);

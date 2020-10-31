@@ -16,6 +16,7 @@ function ForgotPass(props) {
    * Handles login event
    */
   function handleRecoverPass() {
+    const errorMsg = "Die Passwortwiederherstellung ist nicht möglich."
     fetch(`${process.env.REACT_APP_API_URL}/auth/recoverPass`, {
       method: "POST",
       headers: {
@@ -23,18 +24,18 @@ function ForgotPass(props) {
       },
       body: JSON.stringify({ username: username }),
     })
-      .then(function (response) {
-        if (response.success)
-          return response.json();
-        if (response.errorCode === 4003)
-          setError("Der Benutzer '" + username + "' ist nicht registriert.");
-      })
+      .then((response) => response.json())
       .then((json) => {
-        setSuccess("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
+        if (json.success)
+          setSuccess("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
+        else if (json.errorCode === 4003)
+          setError("Der Benutzer '" + username + "' ist nicht registriert.");
+        else
+          setError(errorMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
         console.log(err);
-        setError("Die Passwortwiederherstellung ist gescheitert. Serverfehler");
+        setError(errorMsg + "Der Server antwortet nicht");
       });
     setTimeout(() => setError(""), 5000);
   }
