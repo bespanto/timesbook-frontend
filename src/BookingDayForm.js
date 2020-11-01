@@ -47,6 +47,7 @@ function BookingDayForm(props) {
    *
    */
   function saveEntryToBackend(item) {
+    const errMsg = "Speichern ist nicht möglich.";
     patchData(
       `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`,
       localStorage.getItem("jwt"),
@@ -61,12 +62,25 @@ function BookingDayForm(props) {
           return response.json();
       })
       .then((data) => {
-        dispatch(BookingEntriesSlice.editBookingEntry(data));
-        props.handleClose();
+        if (data.success) {
+          dispatch(BookingEntriesSlice.editBookingEntry(data.success.bookingEntry));
+          props.handleClose();
+        }
+        else if (data.errorCode === 4019) {
+          console.error(errMsg + " Fehler: ", data.message);
+          setError(errMsg + " Fehler: " + data.message)
+        }
+        else if (data.errorCode) {
+          console.error(errMsg + " Fehler: ", data.errorCode);
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else
+          setError(errMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
-        console.log(err);
-        setError("Speichern ist nicht möglich. Keine Verbindung zum Server.");
+        console.error(err);
+        setError(errMsg + " Keine Verbindung zum Server.");
         throw new Exception("ERROR: " + error);
       });
   }
@@ -245,7 +259,7 @@ function BookingDayForm(props) {
       <Grid item style={{ marginTop: "0.5em" }}>
         <Button
           variant="contained"
-          onClick={() =>  deleteEntryFromBackend(moment.utc(props.bookingDay).format())}
+          onClick={() => deleteEntryFromBackend(moment.utc(props.bookingDay).format())}
           style={{ marginRight: "0.5em" }}
         >
           Löschen
