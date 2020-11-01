@@ -35,6 +35,25 @@ function Admin(props) {
   const loc = useLocation();
   const classes = useStyles();
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
   /**
    * 
    */
@@ -46,22 +65,25 @@ function Admin(props) {
       },
     })
       .then((response) => response.json())
-      .then((json) => {
-        if (json.success)
-          setEmployees(json.success.users)
-        else if (json.errorCode) {
-          console.error(errorMsg + " Fehler: ", json.errorCode);
+      .then((data) => {
+        if (data.success)
+          setEmployees(data.success.users)
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
             history.push('/Login');
         }
-        else
-          setError(errorMsg + " Unerwarteter Fehler.");
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((err) => {
-        console.log(err)
-        setError(errorMsg + " Der Server antwortet nicht.");
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
       });
   }, [history, loc.pathname])
+
 
   /**
    * 
@@ -69,6 +91,7 @@ function Admin(props) {
   useEffect(() => {
     fetchEmployeeData();
   }, [fetchEmployeeData]);
+
 
   /**
    * 
@@ -95,9 +118,9 @@ function Admin(props) {
     const result = validate(userInfo, constraints);
     if (result !== undefined) {
       if (result.name)
-        setError("Name muss angegeben werden");
+        showError("Name muss angegeben werden");
       else if (result.username)
-        setError("Benutzername muss eine gültige E-Mail sein");
+        showError("Benutzername muss eine gültige E-Mail sein");
     } else {
       const errorMsg = "Der Benutzer konnte nicht eingeladen werden.";
       postData(
@@ -108,28 +131,29 @@ function Admin(props) {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            setSuccess(`Der Benutzer ${username} wurde erfolgreich eingeladen`);
+            showSuccess(`Der Benutzer ${username} wurde erfolgreich eingeladen`);
             fetchEmployeeData();
             setName("");
             setUsername("");
-            setTimeout(() => setSuccess(""), 5000);
           }
-          else
-            if (data.errorCode === 4018)
-              setError(`Der Benutzer mit der E-Mail-Adresse ${username} existiert bereits.`);
-            else {
-              console.error(errorMsg, "Fehler: " + data.errorCode)
-              if (loc.pathname !== '/Login')
-                history.push('/Login');
-            }
+          else if (data.errorCode === 4018)
+            showError(`Der Benutzer mit der E-Mail-Adresse ${username} existiert bereits.`);
+          else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+            console.error(errorMsg, data)
+            if (loc.pathname !== '/Login')
+              history.push('/Login');
+          }
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
 
         })
         .catch((error) => {
-          console.log(error);
-          setError(errorMsg + " Der Server antwortet nicht.");
+          console.error(errorMsg + " Der Server antwortet nicht.", error);
+          showError(errorMsg + " Der Server antwortet nicht.");
         })
     }
-    setTimeout(() => setError(""), 5000);
   }
 
   /**
@@ -142,23 +166,24 @@ function Admin(props) {
       localStorage.getItem("jwt"),
     )
       .then((response) => response.json())
-      .then((json) => {
-        if (json.success) {
-          setSuccess("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt.");
+      .then((data) => {
+        if (data.success) {
+          showSuccess("Der Benutzer '" + username + "' wurde erfolgreich aus Ihrer Organisation entfernt.");
           fetchEmployeeData();
-          setTimeout(() => setSuccess(""), 5000);
         }
-        else if (json.errorCode) {
-          console.error(errorMsg + " Fehler: ", json.errorCode);
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
             history.push('/Login');
         }
-        else
-          setError(errorMsg + " Unerwarteter Fehler.");
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((error) => {
         console.error(error)
-        setError(errorMsg + " Der Server antwortet nicht.");
+        showError(errorMsg + " Der Server antwortet nicht.");
       })
 
     handleClose();

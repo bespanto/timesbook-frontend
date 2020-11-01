@@ -32,6 +32,24 @@ function Profile(props) {
   /**
    * 
    */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
   function save() {
     const errorMsg = "Das Profil konnte nicht geändert werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user/${uiState.profile.username}`, {
@@ -48,24 +66,24 @@ function Profile(props) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success)
-          setSuccess("Das Profil wurde erfolgreich geändert");
-        else if (data.errorCode) {
-          console.error(errorMsg + " Fehler: " + data.errorCode);
+          showSuccess("Das Profil wurde erfolgreich geändert");
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
             history.push('/Login');
         }
-        else
-          setError(errorMsg + " Unerwarteter Fehler.");
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((err) => {
-        console.log(err);
-        setError(errorMsg + " Der Server antwortet nicht.");
+        console.error(errorMsg + " Der Server antwortet nicht.", err);
+        showError(errorMsg + " Der Server antwortet nicht.");
       });
-
-    setTimeout(() => setSuccess("",), 5000)
-    setTimeout(() => setError("",), 5000)
   }
 
+  
   /**
    * 
    */
@@ -92,9 +110,9 @@ function Profile(props) {
     );
     if (result !== undefined) {
       if (result.pass || result.passRepeat)
-        setError("Passwort muss mind. 6 Zeichen lang sein");
+        showError("Passwort muss mind. 6 Zeichen lang sein");
     } else if (pass !== passRepeat)
-      setError("Passwörter stimmen nicht überein");
+      showError("Passwörter stimmen nicht überein");
     else {
       const errorMsg = "Das Passwort konnte nicht geändert werden.";
       fetch(`${process.env.REACT_APP_API_URL}/auth/changePass`, {
@@ -108,28 +126,29 @@ function Profile(props) {
         }),
       })
         .then((response) => response.json())
-        .then((json) => {
-          if (json.success) {
-            setSuccess("Das Passwort wurde erfolgreich geändert");
+        .then((data) => {
+          if (data.success) {
+            showSuccess("Das Passwort wurde erfolgreich geändert");
             setPass("");
             setPassRepeat("")
           }
-          else if (json.errorCode) {
-            console.error(errorMsg + " Fehler: " + json.errorCode);
+          else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+            console.error(errorMsg, data)
             if (loc.pathname !== '/Login')
               history.push('/Login');
           }
-          else
-            setError(errorMsg + " Unerwarteter Fehler.");
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
         })
         .catch((err) => {
-          console.log(err);
-          setError(errorMsg + " Der Server antwortet nicht.");
+          console.error(errorMsg + " Der Server antwortet nicht.", err);
+          showError(errorMsg + " Der Server antwortet nicht.");
         });
     }
-    setTimeout(() => setSuccess(""), 5000);
-    setTimeout(() => setError(""), 5000);
   }
+
 
   /**
    * Sets state for changed fields on tap event
@@ -158,6 +177,7 @@ function Profile(props) {
     dispatch(UiStateSlice.setProfile(profile));
   }
 
+
   /**
    * 
    */
@@ -171,6 +191,7 @@ function Profile(props) {
         return "";
     }
   }
+
 
   /**
    * 

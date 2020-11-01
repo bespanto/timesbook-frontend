@@ -13,10 +13,21 @@ function Login(props) {
   const [error, setError] = useState("");
   let history = useHistory();
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
   /**
    * Handles login event
    */
   function handleLogin() {
+    const errorMsg = "Login ist gescheitert.";
     fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
       method: "POST",
       headers: {
@@ -28,22 +39,27 @@ function Login(props) {
         return response.json();
       })
       .then((data) => {
-        if (data.errorCode === 4003) {
-          setError("Login ist gescheitert. Der Benutzer '" + username + "' ist nicht registriert.");
-        } else if (data.errorCode === 4004) {
-          setError("Login ist gescheitert. Das Passwort ist falsch.");
-        } else if (data.errorCode === 4011) {
-          setError("Das Konto ist noch nicht bestätigt. Bitte prüfen Sie Ihr E-Mails und schließen Sie die Registrierung ab.");
-        }
-        else {
-          localStorage.setItem("jwt", data.jwt);
+        if (data.success) {
+          localStorage.setItem("jwt", data.success.jwt);
           history.push("/TimeBooking");
         }
+        else if (data.errorCode === 4003) {
+          showError(errorMsg + " Der Benutzer '" + username + "' ist nicht registriert.");
+        } else if (data.errorCode === 4004) {
+          showError(errorMsg + " Das Passwort ist falsch.");
+        } else if (data.errorCode === 4011) {
+          showError("Das Konto ist noch nicht bestätigt. Bitte prüfen Sie Ihr E-Mails und schließen Sie die Registrierung ab.");
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+
       })
       .catch((err) => {
-        setError("Login ist gescheitert. Der Server antwortet nicht.");
+        console.error(errorMsg + " Der Server antwortet nicht.", err);
+        showError(errorMsg + " Der Server antwortet nicht.");
       });
-    setTimeout(() => setError(""), 5000);
   }
 
   /**

@@ -74,7 +74,7 @@ function Vacation(props) {
           setVacations(data.success.vacations);
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-          console.error(errorMsg, data.message)
+          console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
             history.push('/Login');
         }
@@ -120,7 +120,7 @@ function Vacation(props) {
             fetchVacationData();
           }
           else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-            console.error(errorMsg, data.message)
+            console.error(errorMsg, data)
             if (loc.pathname !== '/Login')
               history.push('/Login');
           }
@@ -161,7 +161,7 @@ function Vacation(props) {
           fetchVacationData();
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-          console.error(errorMsg, data.message)
+          console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
             history.push('/Login');
         }

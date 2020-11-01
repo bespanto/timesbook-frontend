@@ -17,6 +17,25 @@ function Register(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
   /**
    * Handles register event
    */
@@ -63,15 +82,15 @@ function Register(props) {
     const result = validate(newAdminAccount, constraints);
     if (result !== undefined) {
       if (result.orga)
-        setError("Organisation muss angegeben werden")
+        showError("Organisation muss angegeben werden")
       else if (result.name)
-        setError("Name muss angegeben werden");
+        showError("Name muss angegeben werden");
       else if (result.username)
-        setError("Die Benutzername muss eine gültige E-Mail sein");
+        showError("Die Benutzername muss eine gültige E-Mail sein");
       else if (result.pass || result.passRepeat)
-        setError("Das Passwort muss mind. 6 Zeichen lang sein");
+        showError("Das Passwort muss mind. 6 Zeichen lang sein");
     } else if (pass !== passRepeat)
-      setError("Passwörter stimmen nicht überein");
+      showError("Passwörter stimmen nicht überein");
     else {
       const errorMsg = "Registrierung ist nicht möglich.";
       fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
@@ -90,21 +109,21 @@ function Register(props) {
         .then((data) => {
           if (data.success) {
             resetRegisterFields();
-            setSuccess(errorMsg + " Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
-            setTimeout(() => setSuccess(""), 5000);
+            showSuccess("Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
           }
           else if (data.errorCode === 4001) {
-            setError(errorMsg + " Der Benutzer '" + newAdminAccount.username + "' existiert bereits.");
+            showError(errorMsg + " Der Benutzer '" + newAdminAccount.username + "' existiert bereits.");
           } else if (data.errorCode === 4002)
-            setError(errorMsg + " Das Admin-Konto für die Organisation '" + newAdminAccount.orga + "' ist bereits vorhanden.");
-          else
-            setError(errorMsg + " Unerwarteter Fehler.");
+            showError(errorMsg + " Das Admin-Konto für die Organisation '" + newAdminAccount.orga + "' ist bereits vorhanden.");
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
         })
         .catch((err) => {
-          console.log(err);
-          setError(errorMsg + " Der Server antwortet nicht.");
+          console.log(errorMsg + " Der Server antwortet nicht.", err);
+          showError(errorMsg + " Der Server antwortet nicht.");
         });
-      setTimeout(() => setError(""), 5000);
     }
   }
 

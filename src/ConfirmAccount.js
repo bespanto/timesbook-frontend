@@ -5,10 +5,18 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import MUILink from "@material-ui/core/Link";
 
+
+/**
+ * 
+ */
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
+
+/**
+ * 
+ */
 function ConfirmAccount(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -18,8 +26,31 @@ function ConfirmAccount(props) {
   const username = query.get("username");
   const regKey = query.get("regKey");
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
   const confirmAdminAccount = useCallback(() => {
-    if (!accountConfirmed)
+    if (!accountConfirmed) {
+      const errorMsg = "Das Konto wurde nicht bestätigt.";
       fetch(`${process.env.REACT_APP_API_URL}/auth/confirmAdminAccount`, {
         method: "PATCH",
         headers: {
@@ -30,25 +61,30 @@ function ConfirmAccount(props) {
           registrationKey: regKey,
         }),
       })
-        .then(function (response) {
-          if (response.ok) {
-            setSuccess("Das Konto wurde erfolgreich bestätigt");
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            showSuccess("Das Benutzerkonto wurde erfolgreich bestätigt");
             setAccountConfirmed(true);
-          } else throw response;
+          }
+          else if (data.errorCode === 4022)
+            showError(errorMsg + " Der Registrierungsschlüssel ist falsch.");
+          else if (data.errorCode === 4023){
+            showSuccess("Das Konto wurde bereits bestätigt.");
+            setAccountConfirmed(true);
+          }
+          else if (data.errorCode === 4003)
+            showError(errorMsg + " Der Benutzer wurde nicht eingeladen.");
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
         })
         .catch((err) => {
-          err
-            .json().then((data) => {
-              if (data.errorCode === 4003)
-                setError("Falsche Bestätigungsanfrage");
-            })
-            .catch((err) => {
-              console.log(err);
-              setError("Fehler auf dem Server. Das Konto wurde nicht bestätigt");
-            });
+          console.error(errorMsg + " Fehler auf dem Server.", err);
+          showError(errorMsg + " Fehler auf dem Server.");
         });
-    setTimeout(() => setError(""), 5000);
-    setTimeout(() => setSuccess(""), 5000);
+    }
   }, [accountConfirmed, username, regKey])
 
   /**
@@ -69,7 +105,7 @@ function ConfirmAccount(props) {
     >
       <Grid item>
         <Typography variant="h6">
-          Kontobestätigung für '{query.get("username")}'
+          Bestätigung der Registrierung
         </Typography>
       </Grid>
       <Grid item>

@@ -24,9 +24,32 @@ function ResetPassword(props) {
   const [showLoginLink, setShowLoginLink] = useState(false);
   const dispatch = useDispatch();
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
   useEffect(() => {
     localStorage.removeItem("jwt");
   }, [dispatch]);
+
 
   /**
    * Sets state for changed fields on tap event
@@ -44,6 +67,10 @@ function ResetPassword(props) {
     }
   }
 
+
+  /**
+   * 
+   */
   function submitPass() {
     var constraints = {
       pass: {
@@ -67,10 +94,10 @@ function ResetPassword(props) {
     );
     if (result !== undefined) {
       if (result.pass || result.passRepeat)
-        setError("Passwort muss mind. 6 Zeichen lang sein");
+        showError("Passwort muss mind. 6 Zeichen lang sein");
     } else
       if (pass !== passRepeat)
-        setError("Passwörter stimmen nicht überein");
+        showError("Passwörter stimmen nicht überein");
       else {
         const errorMsg = "Das Setzen des Passwortes ist nicht möglich.";
         fetch(`${process.env.REACT_APP_API_URL}/auth/setPass`, {
@@ -87,26 +114,26 @@ function ResetPassword(props) {
           .then((response) => response.json())
           .then((json) => {
             if (json.success) {
-              setSuccess("Das Passwort wurde erfolgreich gesetzt");
+              showSuccess("Das Passwort wurde erfolgreich gesetzt");
               setShowLoginLink(true);
-              setTimeout(() => setSuccess(""), 5000);
             }
             else
               if (json.errorCode === 4003)
-                setError("Der Benutzer ist nicht im System vorhanden.");
+                showError("Der Benutzer ist nicht im System vorhanden.");
               else if (json.errorCode === 4005)
-                setError("Das Passwort ist bereits gesetzt.");
+                showError("Das Passwort ist bereits gesetzt.");
               else if (json.errorCode === 4006)
-                setError(errorMsg + " Falscher Registrierungsschlüssel.");
-              else
-                setError(errorMsg + " Unerwarteter Fehler.");
+                showError(errorMsg + " Falscher Registrierungsschlüssel.");
+              else {
+                console.error(errorMsg + " Unerwarteter Fehler.", json)
+                showError(errorMsg + " Unerwarteter Fehler.");
+              }
           })
           .catch((err) => {
-            console.log(err);
-            setError(errorMsg + "Der Server antwortet nicht.");
+            console.error(err);
+            showError(errorMsg + "Der Server antwortet nicht.");
           });
       }
-    setTimeout(() => setError(""), 5000);
   }
 
   return (

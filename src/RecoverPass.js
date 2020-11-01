@@ -12,6 +12,25 @@ function ForgotPass(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
+    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
   /**
    * Handles login event
    */
@@ -25,20 +44,22 @@ function ForgotPass(props) {
       body: JSON.stringify({ username: username }),
     })
       .then((response) => response.json())
-      .then((json) => {
-        if (json.success)
-          setSuccess("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
-        else if (json.errorCode === 4003)
-          setError("Der Benutzer '" + username + "' ist nicht registriert.");
-        else
-          setError(errorMsg + " Unerwarteter Fehler.");
+      .then((data) => {
+        if (data.success)
+          showSuccess("Zum setzen eines neuen Passwortes folgen Sie dem Link in der E-mail, die Sie in Kürze bekommen werden.");
+        else if (data.errorCode === 4003)
+          showError("Der Benutzer '" + username + "' ist nicht registriert.");
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((err) => {
         console.log(err);
-        setError(errorMsg + "Der Server antwortet nicht");
+        showError(errorMsg + "Der Server antwortet nicht");
       });
-    setTimeout(() => setError(""), 5000);
   }
+
 
   /**
    * Sets state for changed fields on tap event
@@ -53,6 +74,7 @@ function ForgotPass(props) {
     }
   }
 
+  
   /**
    * Render output
    */

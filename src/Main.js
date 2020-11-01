@@ -27,6 +27,16 @@ function Main(props) {
   let history = useHistory();
   const loc = useLocation();
 
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+
   /**
    * 
    */
@@ -46,9 +56,9 @@ function Main(props) {
           }
         })
           .then((response) => response.json())
-          .then((json) => {
-            if (json.success) {
-              dispatch(UiStateSlice.setProfile(json.success.user));
+          .then((data) => {
+            if (data.success) {
+              dispatch(UiStateSlice.setProfile(data.success.user));
 
               // fetch BookingEntries
               const year = moment(uiState.now).format("YYYY");
@@ -57,8 +67,8 @@ function Main(props) {
               const from = uiState.now + "-01";
               const till = uiState.now + "-" + daysInMonth;
 
-              const errMsg = "Zeitbuchungen können nicht abgefragt werden.";
-              fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${json.success.user.username}/${from}/${till}`,
+              const errorMsg = "Zeitbuchungen können nicht abgefragt werden.";
+              fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${data.success.user.username}/${from}/${till}`,
                 {
                   headers: { "auth-token": localStorage.getItem("jwt") },
                 })
@@ -66,38 +76,41 @@ function Main(props) {
                 .then((data) => {
                   if (data.success)
                     dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
-                  else if (data.errorCode) {
-                    console.error(errMsg + " Fehler: ", data.errorCode);
+                  else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+                    console.error(errorMsg, data)
                     if (loc.pathname !== '/Login')
                       history.push('/Login');
                   }
-                  else
-                    setError(errMsg + " Unerwarteter Fehler.");
-
+                  else {
+                    console.error(errorMsg + " Unerwarteter Fehler.", data)
+                    showError(errorMsg + " Unerwarteter Fehler.");
+                  }
                 })
                 .catch((err) => {
-                  console.error(err)
-                  setError(errMsg + ' Der Server antwortet nicht.');
+                  console.error(errorMsg + " Der Server antwortet nicht.", err)
+                  showError(errorMsg + " Der Server antwortet nicht.");
                 });
               //end fetch BookingEntries
             }
-            else if (json.errorCode) {
-              console.error(errorMsg + " Fehler: ", json.errorCode)
+            else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
               dispatch(UiStateSlice.setProfile(null));
+              console.error(errorMsg, data)
               if (loc.pathname !== '/Login')
                 history.push('/Login');
             }
-            else
-              setError(errorMsg + " Unerwarteter Fehler.");
+            else {
+              console.error(errorMsg + " Unerwarteter Fehler.", data)
+              showError(errorMsg + " Unerwarteter Fehler.");
+            }
           })
           .catch((err) => {
-            console.error(err)
-            setError(errorMsg + ' Der Server antwortet nicht.');
+            console.error(errorMsg + " Der Server antwortet nicht.", err)
+            showError(errorMsg + " Der Server antwortet nicht.");
 
           });
-        setTimeout(() => setError(""), 5000);
       }
   }, [history, loc.pathname, dispatch, uiState.now]);
+
 
   /**
    * 
