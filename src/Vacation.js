@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import 'date-fns';
 import moment from "moment";
 import shortid from "shortid";
@@ -31,61 +32,34 @@ function Vacation(props) {
   const [vacationFrom, setVacationFrom] = useState(new Date());
   const [vacationTill, setVacationTill] = useState(new Date());
   const [vacations, setVacations] = useState([]);
-  const classes = useStyles();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-
-  const handleVacationFrom = (date) => {
-    setVacationFrom(date);
-  };
-
-  const handleVacationTill = (date) => {
-    setVacationTill(date);
-  };
+  const classes = useStyles();
+  let history = useHistory();
+  const loc = useLocation();
 
   /**
    * 
    */
-  function requestVacation() {
-    const start = moment(vacationFrom);
-    const end = moment(vacationTill);
-    if (end.isSameOrAfter(start)) {
-      postData(`${process.env.REACT_APP_API_URL}/vacation/${uiState.profile.username}`,
-        localStorage.getItem('jwt'),
-        {
-          from: vacationFrom.toISOString().slice(0, 10),
-          till: vacationTill.toISOString().slice(0, 10)
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setSuccess("Ihre Urlaubsanfrage wurde erfolgreich eingereicht.");
-            fetchVacationData();
-          }
-          if (data.errorCode === 4008)
-            setError("Sie sind nicht eingeloggt.");
-          if (data.errorCode === 4015)
-            setError("Ihr Urlaubswusch überschneidet sich mit einer anderen Urlaubsperiode.");
-          else if (data.errorCode)
-            setError("Die Urlaubsanfrage konnte nicht erstellt werden. Serverfehler " + data.errorCode);
-
-        })
-        .catch((err) => {
-          console.log(err);
-          setError("Die Urlaubsanfrage konnte nicht verarbeitet werden. Der Server antwortet nicht.");
-        })
-    }
-    else
-      setError(" 'Ende' kann nicht vor 'Start' liegen");
-
+  function showError(msg) {
+    setError(msg);
     setTimeout(() => setError(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function showSuccess(msg) {
+    setSuccess(msg);
     setTimeout(() => setSuccess(""), 5000);
   }
+
 
   /**
    * 
    */
   const fetchVacationData = useCallback(() => {
+    const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
     fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
       {
         method: "GET",
@@ -99,18 +73,22 @@ function Vacation(props) {
         if (data.success) {
           setVacations(data.success.vacations);
         }
-        if (data.errorCode === 4008)
-          setError("Sie sind nicht eingeloggt.");
-        else if (data.errorCode)
-          setError("Urlaubsdaten können nicht geholt werden. Serverfehler " + data.errorCode);
-
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data.message)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((err) => {
-        console.log(err);
-        setError("Urlaubsdaten können nicht geholt werden. Der Server antwortet nicht");
+        console.error(errorMsg + " Der Server antwortet nicht.", err);
+        showError(errorMsg + " Der Server antwortet nicht.");
       });
-    setTimeout(() => setError(""), 5000);
-  }, []);
+  }, [history, loc.pathname]);
+
 
   /**
    * 
@@ -119,19 +97,55 @@ function Vacation(props) {
     fetchVacationData()
   }, [fetchVacationData])
 
+
   /**
    * 
    */
-  function getStatus(status) {
-    switch (status) {
-      case "pending":
-        return "beantragt";
-      default:
-        return '';
+  function requestVacation() {
+    const start = moment(vacationFrom);
+    const end = moment(vacationTill);
+    if (end.isSameOrAfter(start)) {
+      const errorMsg = "Die Urlaubsanfrage konnte nicht erstellt werden.";
+      postData(`${process.env.REACT_APP_API_URL}/vacation/${uiState.profile.username}`,
+        localStorage.getItem('jwt'),
+        {
+          from: vacationFrom.toISOString().slice(0, 10),
+          till: vacationTill.toISOString().slice(0, 10)
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            showSuccess("Ihre Urlaubsanfrage wurde erfolgreich eingereicht.");
+            fetchVacationData();
+          }
+          else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+            console.error(errorMsg, data.message)
+            if (loc.pathname !== '/Login')
+              history.push('/Login');
+          }
+          else if (data.errorCode === 4015)
+            showError("Ihr Urlaubswusch überschneidet sich mit einer anderen Urlaubsperiode.");
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
+        })
+        .catch((err) => {
+          console.error(errorMsg + " Der Server antwortet nicht.", err);
+          showError(errorMsg + " Der Server antwortet nicht.");
+        })
     }
+    else
+      showError(" 'Ende' kann nicht vor 'Start' liegen");
   }
 
+
+  /**
+   * 
+   */
   function deleteVacation(id) {
+    const errorMsg = "Der Urlaubseintrag konnte nicht gelöscht werden."
     fetch(`${process.env.REACT_APP_API_URL}/vacation/${id}`,
       {
         method: "DELETE",
@@ -143,21 +157,36 @@ function Vacation(props) {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setSuccess("Der Urlaubseintrag wurde erfolgreich gelöscht");
+          showSuccess("Der Urlaubseintrag wurde erfolgreich gelöscht");
           fetchVacationData();
         }
-        if (data.errorCode === 4008)
-          setError("Sie sind nicht eingeloggt.");
-        else if (data.errorCode)
-          setError("Der Urlaubseintrag konnte nicht gelöscht werden. Serverfehler " + data.errorCode);
-
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data.message)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
       })
       .catch((err) => {
-        console.log(err);
-        setError("Der Urlaubseintrag konnte nicht gelöscht werden. Der Server antwortet nicht");
+        console.error(errorMsg + " Der Server antwortet nicht.", err);
+        showError(errorMsg + " Der Server antwortet nicht.");
       });
-    setTimeout(() => setError(""), 5000);
-    setTimeout(() => setSuccess(""), 5000);
+  }
+
+
+  /**
+   * 
+   */
+  function getStatus(status) {
+    switch (status) {
+      case "pending":
+        return "beantragt";
+      default:
+        return '';
+    }
   }
 
   return (
@@ -184,7 +213,7 @@ function Vacation(props) {
               id="vacationFrom"
               label="Vom"
               value={vacationFrom}
-              onChange={handleVacationFrom}
+              onChange={(date) => setVacationFrom(date)}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -197,7 +226,7 @@ function Vacation(props) {
               id="vacationTill"
               label="Bis"
               value={vacationTill}
-              onChange={handleVacationTill}
+              onChange={(date) => setVacationTill(date)}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
