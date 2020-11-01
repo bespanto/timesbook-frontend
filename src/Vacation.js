@@ -60,7 +60,7 @@ function Vacation(props) {
    */
   const fetchVacationData = useCallback(() => {
     const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
-    fetch(`${process.env.REACT_APP_API_URL}/vacation/`,
+    fetch(`${process.env.REACT_APP_API_URL}/vacation/byUser`,
       {
         method: "GET",
         headers: {
