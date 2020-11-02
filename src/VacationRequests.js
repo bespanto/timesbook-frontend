@@ -17,6 +17,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 
 
 function RequestVacationCardMenu(props) {
@@ -56,9 +59,19 @@ function VacationRequests(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [vacations, setVacations] = useState([]);
+  const [name, setName] = useState('');
+  const [names, setNames] = useState(new Set([]));
   const classes = useStyles();
   let history = useHistory();
   const loc = useLocation();
+
+  /**
+   * 
+   */
+  const handleChange = (event) => {
+    setName(event.target.value);
+    fetchVacationData(name);
+  };
 
   /**
    * 
@@ -95,8 +108,8 @@ function VacationRequests(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success){
-          showSuccess("Der status wurde erfolgreich geändert");
+        if (data.success) {
+          showSuccess("Der Status wurde erfolgreich geändert");
           fetchVacationData();
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
@@ -119,9 +132,42 @@ function VacationRequests(props) {
   /**
    * 
    */
+  const fetchEmployeeData = useCallback(() => {
+    const errorMsg = "Die Benutzerliste kann nicht abgerufen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user`, {
+      headers: {
+        "auth-token": localStorage.getItem("jwt"),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setNames(new Set(data.success.users.map(el => el.name)))
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+      });
+  }, [history, loc.pathname])
+
+  /**
+   * 
+   */
   const fetchVacationData = useCallback(() => {
     const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
-    fetch(`${process.env.REACT_APP_API_URL}/vacation/byOrga`,
+    let url = `${process.env.REACT_APP_API_URL}/vacation/byOrga`;
+    if (name)
+      url = url + "?" + new URLSearchParams({ name: name })
+    fetch(url,
       {
         method: "GET",
         headers: {
@@ -148,7 +194,15 @@ function VacationRequests(props) {
         console.error(errorMsg + " Der Server antwortet nicht.", err);
         showError(errorMsg + " Der Server antwortet nicht.");
       });
-  }, [history, loc.pathname]);
+  }, [history, loc.pathname, name]);
+
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    fetchEmployeeData()
+  }, [fetchEmployeeData])
 
 
   /**
@@ -157,6 +211,13 @@ function VacationRequests(props) {
   useEffect(() => {
     fetchVacationData()
   }, [fetchVacationData])
+
+
+  function getSelectElements() {
+    const arr = []
+    names.forEach((el1, el2, set) => arr.push(<MenuItem key={shortid.generate()} value={el1}>{el1}</MenuItem>))
+    return arr
+  }
 
   return (
     <React.Fragment>
@@ -171,21 +232,36 @@ function VacationRequests(props) {
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaubsanträge</Typography>
       </Box>
-
-
+      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="name-select-label">Name</InputLabel>
+          <Select
+            labelId="name-select-label"
+            id="name-select"
+            value={name}
+            onChange={handleChange}
+          >
+            <MenuItem value="">
+              <em>alle Mitarbeiter</em>
+            </MenuItem>
+            {getSelectElements()}
+          </Select>
+        </FormControl>
+      </Box>
       <Container style={{ marginTop: "1.5em" }}>
         {vacations.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" style={{backgroundColor: getBackground(row.status)}}>
+                <Avatar aria-label="recipe" style={{ backgroundColor: getBackground(row.status) }}>
                   <FlightTakeoffIcon />
                 </Avatar>
               }
               action={
+                row.status === 'pending' &&
                 <RequestVacationCardMenu handleVacation={updateVacationStatus} vacationId={row._id} />
               }
-              title={row.username}
+              title={row.name}
               subheader={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
             />
             <CardContent>
@@ -205,6 +281,10 @@ const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: '15em',
   },
 }));
 
