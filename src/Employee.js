@@ -275,6 +275,7 @@ function Admin(props) {
                 </Avatar>
               }
               action={
+                uiState.profile.username !== row.username &&
                 <IconButton aria-label="settings" onClick={handleOpen}>
                   <DeleteIcon />
                 </IconButton>
