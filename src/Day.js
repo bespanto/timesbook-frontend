@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import BookingDayForm from "./BookingDayForm";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import * as DateUtils from "./DateUtils";
+import * as Utils from "./Utils";
 import "./App.css";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -50,9 +50,9 @@ function Day(props) {
     workingTime = moment.duration(end.diff(start));
     start = start.format(timeFormat);
     end = end.format(timeFormat);
-    overtime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8 * 60);
-    workingTime = DateUtils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
-    pause = DateUtils.minutesToTimeString(pause.asMinutes());
+    overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8 * 60);
+    workingTime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
+    pause = Utils.minutesToTimeString(pause.asMinutes());
   }
 
   return (
@@ -60,7 +60,7 @@ function Day(props) {
       <Paper style={weekday === 6 || weekday === 0 ? {backgroundColor: '#49516b'} : {backgroundColor: '#424242'} }>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
-            <Typography variant="h6">{DateUtils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+            <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
           </Grid>
           <Grid container>
             <Grid item xs={2} style={{ textAlign: 'center' }}>

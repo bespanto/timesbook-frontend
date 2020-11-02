@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import moment from "moment";
 import shortid from "shortid";
+import { getStatus, getBackground } from "./Utils";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
@@ -9,6 +10,7 @@ import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import IconButton from '@material-ui/core/IconButton';
@@ -24,12 +26,12 @@ function RequestVacationCardMenu(props) {
     setAnchorEl(event.currentTarget);
   };
 
-  function handleClick (decision) {
+  function handleClick(decision) {
     props.handleVacation(props.vacationId, decision);
     setAnchorEl(null);
   };
 
-  const handleClose = () =>{
+  const handleClose = () => {
     setAnchorEl(null);
   };
 
@@ -42,8 +44,8 @@ function RequestVacationCardMenu(props) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}>
-        <MenuItem onClick={()=>handleClick('approved')} style={{ color: '#ffffff' }}>Genehmigen</MenuItem>
-        <MenuItem onClick={()=>handleClick('rejected')} style={{ color: '#ffffff' }}>Ablehnen</MenuItem>
+        <MenuItem onClick={() => handleClick('approved')} style={{ color: '#ffffff' }}>Genehmigen</MenuItem>
+        <MenuItem onClick={() => handleClick('rejected')} style={{ color: '#ffffff' }}>Ablehnen</MenuItem>
       </Menu>
     </div>
   );
@@ -93,8 +95,10 @@ function VacationRequests(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success)
+        if (data.success){
           showSuccess("Der status wurde erfolgreich geändert");
+          fetchVacationData();
+        }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -174,16 +178,21 @@ function VacationRequests(props) {
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" className={classes.avatar}>
+                <Avatar aria-label="recipe" style={{backgroundColor: getBackground(row.status)}}>
                   <FlightTakeoffIcon />
                 </Avatar>
               }
               action={
-                <RequestVacationCardMenu handleVacation={updateVacationStatus} vacationId={row._id}/>
+                <RequestVacationCardMenu handleVacation={updateVacationStatus} vacationId={row._id} />
               }
               title={row.username}
               subheader={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
             />
+            <CardContent>
+              <Typography color="textSecondary" variant="body2">
+                Status: {getStatus(row.status)}
+              </Typography>
+            </CardContent>
           </Card>
         ))}
       </Container>
@@ -196,9 +205,6 @@ const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
-  },
-  avatar: {
-    backgroundColor: "blueviolet",
   },
 }));
 

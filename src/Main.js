@@ -15,7 +15,7 @@ import ResetPassword from "./ResetPassword";
 import ConfirmAccount from "./ConfirmAccount";
 import Home from "./Home";
 import moment from "moment";
-import * as DateUtils from "./DateUtils";
+import * as Utils from "./Utils";
 //Material UI
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
@@ -63,7 +63,7 @@ function Main(props) {
               // fetch BookingEntries
               const year = moment(uiState.now).format("YYYY");
               const month = moment(uiState.now).format("MM");
-              const daysInMonth = DateUtils.getDaysInMonth(year, month);
+              const daysInMonth = Utils.getDaysInMonth(year, month);
               const from = uiState.now + "-01";
               const till = uiState.now + "-" + daysInMonth;
 

@@ -7,11 +7,13 @@ import shortid from "shortid";
 import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
 import { postData } from "./serverConnections/connect";
+import { getStatus, getBackground } from "./Utils";
 import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from '@material-ui/core/CardContent';
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
@@ -177,18 +179,6 @@ function Vacation(props) {
   }
 
 
-  /**
-   * 
-   */
-  function getStatus(status) {
-    switch (status) {
-      case "pending":
-        return "beantragt";
-      default:
-        return '';
-    }
-  }
-
   return (
     <React.Fragment>
       <Box display="flex" justifyContent="center">
@@ -248,7 +238,7 @@ function Vacation(props) {
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" className={classes.avatar}>
+                <Avatar aria-label="recipe" style={{backgroundColor: getBackground(row.status)}}>
                   <FlightTakeoffIcon />
                 </Avatar>
               }
@@ -260,6 +250,11 @@ function Vacation(props) {
               title={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
               subheader={"Status: " + getStatus(row.status)}
             />
+            <CardContent>
+              <Typography color="textSecondary" variant="body2">
+                Status: {getStatus(row.status)}
+              </Typography>
+            </CardContent>
           </Card>
         ))}
       </Container>
@@ -272,9 +267,6 @@ const useStyles = makeStyles((theme) => ({
   card: {
     width: "100%",
     marginTop: "0.5em",
-  },
-  avatar: {
-    backgroundColor: "blueviolet",
   },
 }));
 

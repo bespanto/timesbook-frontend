@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import * as DateUtils from "./DateUtils";
+import * as Utils from "./Utils";
 import Day from "./Day";
 import shortid from "shortid";
 import moment from "moment";
@@ -21,7 +21,7 @@ function Month(props) {
    *
    */
   function getDayComponents() {
-    const daysInMonth = DateUtils.getDaysInMonth(
+    const daysInMonth = Utils.getDaysInMonth(
       moment(uiState.now).format("YYYY"),
       moment(uiState.now).format("MM")
     );
@@ -74,7 +74,7 @@ function Month(props) {
         </Grid>
         <Grid item xs={6} style={{ textAlign: "center" }}>
           <Typography variant="h5" style={{ textDecoration: "underline" }}>
-            {DateUtils.getMonthName(moment(uiState.now).month())}{" "}
+            {Utils.getMonthName(moment(uiState.now).month())}{" "}
             {moment(uiState.now).year()}
           </Typography>
         </Grid>

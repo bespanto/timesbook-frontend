@@ -1,8 +1,10 @@
 export function getDaysInMonth(year, month) {
-  return 32 - new Date(year, parseInt(month)-1, 32).getDate();
+  return 32 - new Date(year, parseInt(month) - 1, 32).getDate();
 }
 
-
+/**
+ * 
+ */
 export function getMonthName(number) {
   var month = new Array(12);
   month[0] = "Januar";
@@ -20,6 +22,9 @@ export function getMonthName(number) {
   return month[number];
 }
 
+/**
+ * 
+ */
 export function getWeekday(dayOfWeek) {
   var weekday = new Array(7);
   weekday[0] = "Sonntag";
@@ -32,7 +37,10 @@ export function getWeekday(dayOfWeek) {
   return weekday[dayOfWeek];
 }
 
-
+/**
+ * 
+ * @param {*} minutes 
+ */
 export function minutesToTimeString(minutes) {
   let h = Math.trunc(minutes / 60);
   if (h < 10 && h >= 0)
@@ -45,7 +53,7 @@ export function minutesToTimeString(minutes) {
     }
 
   let m = minutes % 60
-  m= m<0 ? m*(-1) : m;
+  m = m < 0 ? m * (-1) : m;
   if (m < 10 && m >= 0)
     m = '0' + m;
   else
@@ -58,3 +66,35 @@ export function minutesToTimeString(minutes) {
   return h + ':' + m;
 }
 
+/**
+ * 
+ */
+export function getBackground(status){
+  switch (status) {
+    case "pending":
+      return "yellow";
+    case "approved":
+      return "green";
+    case "rejected":
+      return "red";
+    default:
+      return 'blueviolet';
+  }
+}
+
+
+/**
+ * 
+ */
+export function getStatus(status) {
+  switch (status) {
+    case "pending":
+      return "beantragt";
+    case "approved":
+      return "genehmigt";
+    case "rejected":
+      return "abgelehnt";
+    default:
+      return '';
+  }
+}
