@@ -13,7 +13,6 @@ import * as UiStateSlice from "./redux/UiStateSlice";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from '@material-ui/core/CardContent';
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
@@ -243,6 +242,7 @@ function Vacation(props) {
                 </Avatar>
               }
               action={
+                row.status === 'pending' &&
                 <IconButton aria-label="settings" onClick={() => deleteVacation(row._id)}>
                   <DeleteIcon />
                 </IconButton>
@@ -250,11 +250,6 @@ function Vacation(props) {
               title={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
               subheader={"Status: " + getStatus(row.status)}
             />
-            <CardContent>
-              <Typography color="textSecondary" variant="body2">
-                Status: {getStatus(row.status)}
-              </Typography>
-            </CardContent>
           </Card>
         ))}
       </Container>
