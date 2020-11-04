@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
+import EmployeeCard from "./EmployeeCard"
 import { postData, deleteData } from "./serverConnections/connect";
 import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
@@ -11,19 +12,14 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
-import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import Container from "@material-ui/core/Container";
-import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from "@material-ui/core/Modal";
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import WarningIcon from '@material-ui/icons/Warning';
 
-function Admin(props) {
+function Employee(props) {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [success, setSuccess] = useState("");
@@ -266,23 +262,9 @@ function Admin(props) {
         </Box>
       </Container>
       <Container style={{ marginTop: "1.5em" }}>
-        {employees.map((row) => (
-          <Card key={shortid.generate()} className={classes.card}>
-            <CardHeader
-              avatar={
-                <Avatar aria-label="recipe" className={classes.avatar}>
-                  {row.name[0]}
-                </Avatar>
-              }
-              action={
-                uiState.profile.username !== row.username &&
-                <IconButton aria-label="settings" onClick={handleOpen}>
-                  <DeleteIcon />
-                </IconButton>
-              }
-              title={row.name}
-              subheader={row.username}
-            />
+        {employees.map((employee) => (
+          <div key={shortid.generate()}>
+            <EmployeeCard handleOpen={handleOpen} fetchEmployeeData={fetchEmployeeData} employee={employee}/>
             <Modal
               style={{ marginLeft: '1em', marginRight: '1em' }}
               aria-labelledby="transition-modal-title"
@@ -301,12 +283,12 @@ function Admin(props) {
                   <WarningIcon fontSize="large" />
                   <Typography style={{ marginTop: '1em' }}>Durch diese Aktion löschen Sie unwiederruflich den Benutzer und alle seine Buchungen.</Typography>
                   <Container style={{ textAlign: 'center', marginTop: '1em' }}>
-                    <Button variant="contained" onClick={() => deleteUser(row.username)}>Löschen</Button>
+                    <Button variant="contained" onClick={() => deleteUser(employee.username)}>Löschen</Button>
                   </Container>
                 </Box>
               </Fade>
             </Modal>
-          </Card>
+          </div>
         ))}
       </Container>
     </React.Fragment>
@@ -314,13 +296,6 @@ function Admin(props) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  card: {
-    width: "100%",
-    marginTop: "0.5em",
-  },
-  avatar: {
-    backgroundColor: "blueviolet",
-  },
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -335,4 +310,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Admin;
+export default Employee;
