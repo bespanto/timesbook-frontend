@@ -64,7 +64,7 @@ export default function WorkingModelForm(props) {
         }
 
         const errorMsg = "Das Arbeitsmodell konnte nicht gespeichert werden.";
-        fetch(`${process.env.REACT_APP_API_URL}/user/${props.username}/workingModel`, {
+        fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.username}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -74,9 +74,9 @@ export default function WorkingModelForm(props) {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (data.success){
+                if (data.success) {
                     showSuccess("Das Arbeitsmodell wurde erfolgreich gespeichert");
-                    props.fetchEmployeeData();
+                    props.fetchWorkingModels()
                 }
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
                     console.error(errorMsg, data)
@@ -95,8 +95,6 @@ export default function WorkingModelForm(props) {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
             });
-
-
     }
 
     /**

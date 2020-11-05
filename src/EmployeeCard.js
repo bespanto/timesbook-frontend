@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import clsx from 'clsx';
 import shortid from "shortid";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -14,6 +15,7 @@ import CardActions from "@material-ui/core/CardActions";
 import IconButton from "@material-ui/core/IconButton";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -22,10 +24,24 @@ import { Collapse, Typography } from '@material-ui/core';
 export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
     const [showWorkingModel, setShowWorkingModel] = useState(false);
+    const [workingModels, setWorkingModels] = useState([]);
     const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
     const classes = useStyles();
+    const [error, setError] = useState("");
+    let history = useHistory();
+    const loc = useLocation();
 
+    /**
+     * 
+     */
+    function showError(msg) {
+        setError(msg);
+        setTimeout(() => setError(""), 5000);
+    }
 
+    /**
+     * 
+     */
     function toggleWorkingModelForm() {
         setShowWorkingModel(!showWorkingModel);
     }
@@ -37,6 +53,50 @@ export default function EmployeeCard(props) {
         setExpanded(!expanded);
     };
 
+
+    /**
+     * 
+     */
+    const fetchWorkingModels = useCallback(() => {
+        const errorMsg = "Das Arbeitsmodell konnte nicht abgerufen werden.";
+        fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'auth-token': localStorage.getItem('jwt')
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    setWorkingModels(data.success.workingModels)
+
+                }
+                else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+                    console.error(errorMsg, data)
+                    if (loc.pathname !== '/Login')
+                        history.push('/Login');
+                }
+                else {
+                    console.error(errorMsg + " Unerwarteter Fehler.", data)
+                    showError(errorMsg + " Unerwarteter Fehler.");
+                }
+            })
+            .catch((err) => {
+                console.error(errorMsg + " Der Server antwortet nicht.", err);
+                showError(errorMsg + " Der Server antwortet nicht.");
+            });
+    }, [history, loc.pathname, props.employee.username])
+
+
+    useEffect(() => {
+        fetchWorkingModels();
+    }, [fetchWorkingModels])
+
+
+    /**
+     * 
+     */
     function getWorkingModels(workingModels) {
         let el = [];
         for (let index = 0; index < workingModels.length; index++) {
@@ -57,6 +117,10 @@ export default function EmployeeCard(props) {
         return el;
     }
 
+    
+    /**
+     * 
+     */
     return (
         <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
@@ -91,13 +155,18 @@ export default function EmployeeCard(props) {
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
+                    <Box display="flex" justifyContent="center">
+                        <Typography style={{ color: "red", textAlign: "center" }}>
+                            {error}
+                        </Typography>
+                    </Box>
                     <Grid container direction="column" justify="center">
-                        {getWorkingModels(props.employee.workingModels)}
+                        {getWorkingModels(workingModels)}
                     </Grid>
                     <IconButton>
                         <AddCircleIcon fontSize="large" onClick={() => toggleWorkingModelForm()} />
                     </IconButton>
-                    {showWorkingModel && <WorkingModelForm fetchEmployeeData={props.fetchEmployeeData} username={props.employee.username} />}
+                    {showWorkingModel && <WorkingModelForm fetchWorkingModels={fetchWorkingModels} username={props.employee.username} />}
 
                 </CardContent>
             </Collapse>

@@ -264,7 +264,7 @@ function Employee(props) {
       <Container style={{ marginTop: "1.5em" }}>
         {employees.map((employee) => (
           <div key={shortid.generate()}>
-            <EmployeeCard handleOpen={handleOpen} fetchEmployeeData={fetchEmployeeData} employee={employee}/>
+            <EmployeeCard handleOpen={handleOpen} employee={employee}/>
             <Modal
               style={{ marginLeft: '1em', marginRight: '1em' }}
               aria-labelledby="transition-modal-title"
