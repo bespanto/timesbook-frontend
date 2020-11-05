@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from "react-router-dom";
 import moment from "moment";
 import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
@@ -27,27 +26,6 @@ export default function WorkingModelForm(props) {
     const [saturday, setSaturday] = useState(0);
     const [validFrom, setValidFrom] = useState(new Date());
     const classes = useStyles();
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
-    let history = useHistory();
-    const loc = useLocation();
-
-    /**
-     * 
-     */
-    function showError(msg) {
-        setError(msg);
-        setTimeout(() => setError(""), 5000);
-    }
-
-
-    /**
-     * 
-     */
-    function showSuccess(msg) {
-        setSuccess(msg);
-        setTimeout(() => setSuccess(""), 5000);
-    }
 
     /**
      * 
@@ -104,14 +82,6 @@ export default function WorkingModelForm(props) {
     return (
         <div>
             <Grid container justify="center" style={{ marginTop: '1.5em' }}>
-                <Grid item>
-                    <Typography style={{ color: "red", textAlign: "center" }}>
-                        {error}
-                    </Typography>
-                    <Typography style={{ color: "green", textAlign: "center" }}>
-                        {success}
-                    </Typography>
-                </Grid>
                 <Grid item>
                     <Typography>Soll-Arbeitszeiten</Typography>
                 </Grid>

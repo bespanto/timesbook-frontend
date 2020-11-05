@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from 'clsx';
@@ -67,6 +67,9 @@ export default function EmployeeCard(props) {
     };
 
 
+    /**
+     * 
+     */
     function saveWorkingModel(workingModel) {
         console.log(workingModel)
         const errorMsg = "Das Arbeitsmodell konnte nicht gespeichert werden.";
@@ -104,6 +107,9 @@ export default function EmployeeCard(props) {
     }
 
 
+    /**
+     * 
+     */
     function deleteWorkingModel(id) {
         const errorMsg = "Das Arbeitsmodell konnte nicht gelöscht werden.";
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${id}`, {
@@ -175,17 +181,13 @@ export default function EmployeeCard(props) {
             });
     }
 
-    // useEffect(() => {
-    //     fetchWorkingModels();
-    // }, [fetchWorkingModels, history])
-
 
     /**
      * 
      */
     function getWorkingModels() {
+        
         let el = [];
-
         for (let index = 0; index < workingModels.length; index++) {
             if (index === workingModels.length - 1)
                 el.push(
@@ -200,7 +202,6 @@ export default function EmployeeCard(props) {
                     </Grid>
                 )
         }
-        console.log("workingModels:" + el);
         return el;
     }
 
@@ -227,7 +228,7 @@ export default function EmployeeCard(props) {
             />
             <CardActions disableSpacing>
                 <Grid container justify="flex-end">
-                    <Typography variant="body2" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>
+                    <Typography variant="body2">Arbeitsmodell</Typography>
                 </Grid>
                 <IconButton
                     className={clsx(classes.expand, {
