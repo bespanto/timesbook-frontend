@@ -26,8 +26,9 @@ export default function EmployeeCard(props) {
     const [showWorkingModel, setShowWorkingModel] = useState(false);
     const [workingModels, setWorkingModels] = useState([]);
     const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-    const classes = useStyles();
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const classes = useStyles();
     let history = useHistory();
     const loc = useLocation();
 
@@ -38,6 +39,16 @@ export default function EmployeeCard(props) {
         setError(msg);
         setTimeout(() => setError(""), 5000);
     }
+
+
+    /**
+     * 
+     */
+    function showSuccess(msg) {
+        setSuccess(msg);
+        setTimeout(() => setSuccess(""), 5000);
+    }
+
 
     /**
      * 
@@ -52,6 +63,43 @@ export default function EmployeeCard(props) {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+
+
+    function deleteWorkingModel(id) {
+        const errorMsg = "Das Arbeitsmodell konnte nicht gelöscht werden.";
+        fetch(`${process.env.REACT_APP_API_URL}/workingModel/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                'auth-token': localStorage.getItem('jwt')
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    showSuccess("Das Arbeitsmodell wurde erfolgreich entfernt.");
+                }
+                else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+                    console.error(errorMsg, data)
+                    if (loc.pathname !== '/Login')
+                        history.push('/Login');
+                }
+                else {
+                    console.error(errorMsg + " Unerwarteter Fehler.", data)
+                    showError(errorMsg + " Unerwarteter Fehler.");
+                }
+            })
+            .then(() => 
+            {
+                console.log('fetch after delete')
+                fetchWorkingModels()
+            }
+            )
+            .catch((err) => {
+                console.error(errorMsg + " Der Server antwortet nicht.", err);
+                showError(errorMsg + " Der Server antwortet nicht.");
+            });
+    }
 
 
     /**
@@ -69,6 +117,7 @@ export default function EmployeeCard(props) {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
+                    console.log(data.success.workingModels);
                     setWorkingModels(data.success.workingModels)
 
                 }
@@ -90,6 +139,7 @@ export default function EmployeeCard(props) {
 
 
     useEffect(() => {
+        console.log(workingModels)
         fetchWorkingModels();
     }, [fetchWorkingModels])
 
@@ -97,14 +147,13 @@ export default function EmployeeCard(props) {
     /**
      * 
      */
-    function getWorkingModels(workingModels) {
+    function getWorkingModels() {
         let el = [];
         for (let index = 0; index < workingModels.length; index++) {
-
             if (index === workingModels.length - 1)
                 el.push(
                     <Grid item key={shortid.generate()}>
-                        <WorkingModelCard removable workingModel={workingModels[index]} />
+                        <WorkingModelCard removable deleteWorkingModel={deleteWorkingModel} fetchWorkingModels={fetchWorkingModels} workingModel={workingModels[index]} />
                     </Grid>
                 )
             else
@@ -117,7 +166,7 @@ export default function EmployeeCard(props) {
         return el;
     }
 
-    
+
     /**
      * 
      */
@@ -159,9 +208,12 @@ export default function EmployeeCard(props) {
                         <Typography style={{ color: "red", textAlign: "center" }}>
                             {error}
                         </Typography>
+                        <Typography style={{ color: "green", textAlign: "center" }}>
+                            {success}
+                        </Typography>
                     </Box>
                     <Grid container direction="column" justify="center">
-                        {getWorkingModels(workingModels)}
+                        {getWorkingModels()}
                     </Grid>
                     <IconButton>
                         <AddCircleIcon fontSize="large" onClick={() => toggleWorkingModelForm()} />

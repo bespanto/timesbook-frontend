@@ -15,6 +15,7 @@ function WorkingModelCard(props) {
 
     const handleRemove = (id) => {
         console.log('remove workingModel: ' + id)
+        props.deleteWorkingModel(id);
     };
 
     return (
