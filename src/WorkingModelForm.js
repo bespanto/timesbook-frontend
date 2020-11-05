@@ -62,39 +62,7 @@ export default function WorkingModelForm(props) {
             saturday: saturday,
             validFrom: moment(moment(validFrom).format('YYYY-MM-DD')),
         }
-
-        const errorMsg = "Das Arbeitsmodell konnte nicht gespeichert werden.";
-        fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.username}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                'auth-token': localStorage.getItem('jwt')
-            },
-            body: JSON.stringify(workingModel),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    showSuccess("Das Arbeitsmodell wurde erfolgreich gespeichert");
-                    props.fetchWorkingModels()
-                }
-                else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-                    console.error(errorMsg, data)
-                    if (loc.pathname !== '/Login')
-                        history.push('/Login');
-                }
-                else if (data.errorCode === 4024) {
-                    showError(errorMsg + " Das neue Arebitsmodell muss mindestens einen Tag Abstand zum letzten Arbeitsmodell haben.")
-                }
-                else {
-                    console.error(errorMsg + " Unerwarteter Fehler.", data)
-                    showError(errorMsg + " Unerwarteter Fehler.");
-                }
-            })
-            .catch((err) => {
-                console.error(errorMsg + " Der Server antwortet nicht.", err);
-                showError(errorMsg + " Der Server antwortet nicht.");
-            });
+        props.saveWorkingModel(workingModel);
     }
 
     /**

@@ -13,11 +13,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 function WorkingModelCard(props) {
     const classes = useStyles();
 
-    const handleRemove = (id) => {
-        console.log('remove workingModel: ' + id)
-        props.deleteWorkingModel(id);
-    };
-
     return (
         <Paper style={{ paddingBottom: '0.5em' }}>
             <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
@@ -25,7 +20,7 @@ function WorkingModelCard(props) {
                     <Typography>Gültig ab {moment(props.workingModel.validFrom).format('DD.MM.YYYY')}</Typography>
                 </Grid>
                 <Grid item xs={2} style={{ textAlign: 'center' }} >
-                    {props.removable && <IconButton size="small" onClick={() => handleRemove(props.workingModel._id)}>
+                    {props.removable && <IconButton size="small" onClick={() => props.deleteWorkingModel(props.workingModel._id)}>
                         <DeleteIcon />
                     </IconButton>}
                 </Grid>

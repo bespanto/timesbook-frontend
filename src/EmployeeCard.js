@@ -62,13 +62,53 @@ export default function EmployeeCard(props) {
      */
     const handleExpandClick = () => {
         setExpanded(!expanded);
+        if (!expanded)
+            fetchWorkingModels();
     };
+
+
+    function saveWorkingModel(workingModel) {
+        console.log(workingModel)
+        const errorMsg = "Das Arbeitsmodell konnte nicht gespeichert werden.";
+        fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                'auth-token': localStorage.getItem('jwt')
+            },
+            body: JSON.stringify(workingModel),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    // showSuccess("Das Arbeitsmodell wurde erfolgreich gespeichert");
+                    fetchWorkingModels();
+                }
+                else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+                    console.error(errorMsg, data)
+                    if (loc.pathname !== '/Login')
+                        history.push('/Login');
+                }
+                else if (data.errorCode === 4024) {
+                    showError(errorMsg + " Das neue Arebitsmodell muss mindestens einen Tag Abstand zum letzten Arbeitsmodell haben.")
+                }
+                else {
+                    console.error(errorMsg + " Unerwarteter Fehler.", data)
+                    showError(errorMsg + " Unerwarteter Fehler.");
+                }
+            })
+            .catch((err) => {
+                console.error(errorMsg + " Der Server antwortet nicht.", err);
+                showError(errorMsg + " Der Server antwortet nicht.");
+            });
+    }
 
 
     function deleteWorkingModel(id) {
         const errorMsg = "Das Arbeitsmodell konnte nicht gelöscht werden.";
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${id}`, {
             method: "DELETE",
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
                 'auth-token': localStorage.getItem('jwt')
@@ -77,7 +117,9 @@ export default function EmployeeCard(props) {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    showSuccess("Das Arbeitsmodell wurde erfolgreich entfernt.");
+                    // showSuccess("Das Arbeitsmodell wurde erfolgreich entfernt.");
+                    fetchWorkingModels();
+                    return;
                 }
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
                     console.error(errorMsg, data)
@@ -89,12 +131,6 @@ export default function EmployeeCard(props) {
                     showError(errorMsg + " Unerwarteter Fehler.");
                 }
             })
-            .then(() => 
-            {
-                console.log('fetch after delete')
-                fetchWorkingModels()
-            }
-            )
             .catch((err) => {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
@@ -105,20 +141,22 @@ export default function EmployeeCard(props) {
     /**
      * 
      */
-    const fetchWorkingModels = useCallback(() => {
+    const fetchWorkingModels = () => {
         const errorMsg = "Das Arbeitsmodell konnte nicht abgerufen werden.";
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
             method: "GET",
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
-                'auth-token': localStorage.getItem('jwt')
+                'auth-token': localStorage.getItem('jwt'),
             },
         })
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    console.log(data.success.workingModels);
-                    setWorkingModels(data.success.workingModels)
+                    // console.log(data.success.workingModels);
+                    setWorkingModels(data.success.workingModels);
+                    return;
 
                 }
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
@@ -135,13 +173,11 @@ export default function EmployeeCard(props) {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
             });
-    }, [history, loc.pathname, props.employee.username])
+    }
 
-
-    useEffect(() => {
-        console.log(workingModels)
-        fetchWorkingModels();
-    }, [fetchWorkingModels])
+    // useEffect(() => {
+    //     fetchWorkingModels();
+    // }, [fetchWorkingModels, history])
 
 
     /**
@@ -149,11 +185,12 @@ export default function EmployeeCard(props) {
      */
     function getWorkingModels() {
         let el = [];
+
         for (let index = 0; index < workingModels.length; index++) {
             if (index === workingModels.length - 1)
                 el.push(
                     <Grid item key={shortid.generate()}>
-                        <WorkingModelCard removable deleteWorkingModel={deleteWorkingModel} fetchWorkingModels={fetchWorkingModels} workingModel={workingModels[index]} />
+                        <WorkingModelCard removable deleteWorkingModel={deleteWorkingModel} workingModel={workingModels[index]} />
                     </Grid>
                 )
             else
@@ -163,6 +200,7 @@ export default function EmployeeCard(props) {
                     </Grid>
                 )
         }
+        console.log("workingModels:" + el);
         return el;
     }
 
@@ -216,9 +254,9 @@ export default function EmployeeCard(props) {
                         {getWorkingModels()}
                     </Grid>
                     <IconButton>
-                        <AddCircleIcon fontSize="large" onClick={() => toggleWorkingModelForm()} />
+                        <AddCircleIcon onClick={() => toggleWorkingModelForm()} />
                     </IconButton>
-                    {showWorkingModel && <WorkingModelForm fetchWorkingModels={fetchWorkingModels} username={props.employee.username} />}
+                    {showWorkingModel && <WorkingModelForm saveWorkingModel={saveWorkingModel} username={props.employee.username} />}
 
                 </CardContent>
             </Collapse>
