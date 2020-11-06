@@ -71,7 +71,6 @@ export default function EmployeeCard(props) {
      * 
      */
     function saveWorkingModel(workingModel) {
-        console.log(workingModel)
         const errorMsg = "Das Arbeitsmodell konnte nicht gespeichert werden.";
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
             method: "PATCH",
@@ -83,10 +82,8 @@ export default function EmployeeCard(props) {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (data.success) {
-                    // showSuccess("Das Arbeitsmodell wurde erfolgreich gespeichert");
-                    fetchWorkingModels();
-                }
+                if (data.success)
+                    return;
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
                     console.error(errorMsg, data)
                     if (loc.pathname !== '/Login')
@@ -103,7 +100,10 @@ export default function EmployeeCard(props) {
             .catch((err) => {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
-            });
+            })
+            .finally(() => {
+                fetchWorkingModels();
+            })
     }
 
 
@@ -122,11 +122,8 @@ export default function EmployeeCard(props) {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (data.success) {
-                    // showSuccess("Das Arbeitsmodell wurde erfolgreich entfernt.");
-                    fetchWorkingModels();
+                if (data.success)
                     return;
-                }
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
                     console.error(errorMsg, data)
                     if (loc.pathname !== '/Login')
@@ -140,7 +137,10 @@ export default function EmployeeCard(props) {
             .catch((err) => {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
-            });
+            })
+            .finally(() => {
+                fetchWorkingModels();
+            })
     }
 
 
@@ -149,6 +149,8 @@ export default function EmployeeCard(props) {
      */
     const fetchWorkingModels = () => {
         const errorMsg = "Das Arbeitsmodell konnte nicht abgerufen werden.";
+        const url = `${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`;
+        console.log(url);
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
             method: "GET",
             mode: 'cors',
@@ -159,12 +161,8 @@ export default function EmployeeCard(props) {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (data.success) {
-                    // console.log(data.success.workingModels);
+                if (data.success)
                     setWorkingModels(data.success.workingModels);
-                    return;
-
-                }
                 else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
                     console.error(errorMsg, data)
                     if (loc.pathname !== '/Login')
@@ -186,7 +184,7 @@ export default function EmployeeCard(props) {
      * 
      */
     function getWorkingModels() {
-        
+
         let el = [];
         for (let index = 0; index < workingModels.length; index++) {
             if (index === workingModels.length - 1)
