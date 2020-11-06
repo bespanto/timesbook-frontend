@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import BookingDayForm from "./BookingDayForm";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
+import * as UiStateSlice from "./redux/UiStateSlice";
 import * as Utils from "./Utils";
 import "./App.css";
 // Material UI
@@ -22,6 +23,7 @@ function Day(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const classes = useStyles();
   const weekday = moment(props.bookingDay).weekday();
   const [open, setOpen] = React.useState(false);
@@ -50,14 +52,38 @@ function Day(props) {
     workingTime = moment.duration(end.diff(start));
     start = start.format(timeFormat);
     end = end.format(timeFormat);
-    overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - 8 * 60);
+    const targetWorkingModel = getTargetWorkingModel(bookingEntry.start);
+    const targetDayHours = targetWorkingModel ? targetWorkingModel[moment(bookingEntry.start).day()] : 0;
+    overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - (targetDayHours ? targetDayHours : 0) * 60);
     workingTime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
     pause = Utils.minutesToTimeString(pause.asMinutes());
   }
 
+  function getTargetWorkingModel(startTime) {
+
+    const models = uiState.profile.workingModels;
+    let targetWorkingModel;
+    if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
+      if (models.length === 1) {
+        if (moment(models[0].validFrom).isSameOrBefore(moment(startTime)))
+          targetWorkingModel = models[0];
+      }
+      else if (models.length > 1) {
+        for (let index = 0; index < models.length - 1; index++) {
+          if (moment(startTime).isBetween(models[index].validFrom, models[index + 1].validFrom, undefined, '[)'))
+            targetWorkingModel = models[index];
+          else if (index + 1 === models.length - 1)
+            if (moment(startTime).isSameOrAfter(moment(models[index + 1].validFrom)))
+              targetWorkingModel = models[index + 1];
+
+        }
+      }
+    return targetWorkingModel;
+  }
+
   return (
     <Container>
-      <Paper style={weekday === 6 || weekday === 0 ? {backgroundColor: '#49516b'} : {backgroundColor: '#424242'} }>
+      <Paper style={weekday === 6 || weekday === 0 ? { backgroundColor: '#49516b' } : { backgroundColor: '#424242' }}>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
             <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>

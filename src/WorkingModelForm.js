@@ -32,12 +32,12 @@ export default function WorkingModelForm(props) {
      */
     function handleWorkingModel() {
         const workingModel = {
-            monday: monday,
-            thuesday: thuesday,
-            wednesday: wednesday,
-            thursday: thursday,
-            friday: friday,
-            saturday: saturday,
+            1: monday,
+            2: thuesday,
+            3: wednesday,
+            4: thursday,
+            5: friday,
+            6: saturday,
             validFrom: moment(moment(validFrom).format('YYYY-MM-DD')),
         }
         props.saveWorkingModel(workingModel);

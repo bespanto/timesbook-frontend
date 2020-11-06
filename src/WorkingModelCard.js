@@ -8,6 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
+import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
 
 
 function WorkingModelCard(props) {
@@ -20,9 +21,12 @@ function WorkingModelCard(props) {
                     <Typography>Gültig ab {moment(props.workingModel.validFrom).format('DD.MM.YYYY')}</Typography>
                 </Grid>
                 <Grid item xs={2} style={{ textAlign: 'center' }} >
-                    {props.removable && <IconButton size="small" onClick={() => props.deleteWorkingModel(props.workingModel._id)}>
+                    {props.removable ?
+                     <IconButton size="small" onClick={() => props.deleteWorkingModel(props.workingModel._id)}>
                         <DeleteIcon />
-                    </IconButton>}
+                    </IconButton>
+                    : <BlockRoundedIcon />
+                }
                 </Grid>
                 <Grid container>
                     <Grid item xs={2} style={{ textAlign: 'center' }}>
@@ -45,17 +49,17 @@ function WorkingModelCard(props) {
                     </Grid>
                 </Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.monday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['1']}</Typography></Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.thuesday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['2']}</Typography></Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.wednesday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['3']}</Typography></Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.thursday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['4']}</Typography></Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.friday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['5']}</Typography></Grid>
                 <Grid item xs={2} className={classes.bookingRow}>
-                    <Typography variant="body2">{props.workingModel.saturday}</Typography></Grid>
+                    <Typography variant="body2">{props.workingModel['6']}</Typography></Grid>
             </Grid>
         </Paper>
     );
