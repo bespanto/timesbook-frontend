@@ -318,7 +318,7 @@ function Profile(props) {
           </Button>
         </Grid>
         {
-          uiState.profile && uiState.profile.workingModels &&
+          uiState.profile && uiState.profile.workingModels && uiState.profile.workingModels > 0 &&
           <Grid
             container
             spacing={1}

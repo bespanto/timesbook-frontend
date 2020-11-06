@@ -216,7 +216,7 @@ export default function EmployeeCard(props) {
             />
             <CardActions disableSpacing>
                 <Grid container justify="flex-end">
-                    <Typography variant="body2">Arbeitsmodell</Typography>
+                    <Typography variant="body2">Details</Typography>
                 </Grid>
                 <IconButton
                     className={clsx(classes.expand, {
@@ -236,18 +236,22 @@ export default function EmployeeCard(props) {
                             {error}
                         </Typography>
                     </Box>
+                    <Box display="flex" justifyContent="center">
+                        <Typography variant="h6">Arbeitsmodelle</Typography>
+                    </Box>
                     <Grid container direction="column" justify="center">
                         {getWorkingModels()}
                     </Grid>
-                    <IconButton>
-                        {showWorkingModel ?
-                            <RemoveCircleIcon onClick={() => toggleWorkingModelForm()} />
-                            :
-                            <AddCircleIcon onClick={() => toggleWorkingModelForm()} />
-                        }
-                    </IconButton>
+                    <Grid container justify="flex-end">
+                        <IconButton>
+                            {showWorkingModel ?
+                                <RemoveCircleIcon onClick={() => toggleWorkingModelForm()} />
+                                :
+                                <AddCircleIcon onClick={() => toggleWorkingModelForm()} />
+                            }
+                        </IconButton>
+                    </Grid>
                     {showWorkingModel && <WorkingModelForm saveWorkingModel={saveWorkingModel} username={props.employee.username} />}
-
                 </CardContent>
             </Collapse>
         </Card>
