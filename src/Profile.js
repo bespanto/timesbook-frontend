@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
+import WorkingModelCard from "./WorkingModelCard";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -83,7 +84,7 @@ function Profile(props) {
       });
   }
 
-  
+
   /**
    * 
    */
@@ -316,6 +317,29 @@ function Profile(props) {
             Speichern
           </Button>
         </Grid>
+        {
+          uiState.profile && uiState.profile.workingModels &&
+          <Grid
+            container
+            spacing={1}
+            direction="column"
+            justify="center"
+            alignItems="center"
+            style={{ marginTop: '2em' }}
+          >
+
+            <Grid item>
+              <Typography variant="h6">Arbeitsmodelle</Typography>
+            </Grid>
+            <Grid item>
+              {
+                uiState.profile.workingModels.map((el) => {
+                  return <WorkingModelCard workingModel={el} />
+                })
+              }
+            </Grid>
+          </Grid>
+        }
       </Grid>
     </div>
   );

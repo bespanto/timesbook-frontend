@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
-import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
+import LockRoundedIcon from '@material-ui/icons/LockRounded';
 
 
 function WorkingModelCard(props) {
@@ -17,15 +17,15 @@ function WorkingModelCard(props) {
     return (
         <Paper style={{ paddingBottom: '0.5em' }}>
             <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
-                <Grid item xs={10} style={{ textAlign: 'center', paddingBottom: '0.5em', paddingTop: '0.5em' }}>
+                <Grid item xs={11} style={{ textAlign: 'center', paddingBottom: '0.5em', paddingTop: '0.5em' }}>
                     <Typography>Gültig ab {moment(props.workingModel.validFrom).format('DD.MM.YYYY')}</Typography>
                 </Grid>
-                <Grid item xs={2} style={{ textAlign: 'center' }} >
+                <Grid item xs={1} style={{ textAlign: 'center' }} >
                     {props.removable ?
                      <IconButton size="small" onClick={() => props.deleteWorkingModel(props.workingModel._id)}>
                         <DeleteIcon />
                     </IconButton>
-                    : <BlockRoundedIcon />
+                    : <LockRoundedIcon />
                 }
                 </Grid>
                 <Grid container>
