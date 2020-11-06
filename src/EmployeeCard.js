@@ -18,6 +18,7 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Collapse, Typography } from '@material-ui/core';
 
@@ -27,7 +28,6 @@ export default function EmployeeCard(props) {
     const [workingModels, setWorkingModels] = useState([]);
     const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
     const classes = useStyles();
     let history = useHistory();
     const loc = useLocation();
@@ -39,16 +39,6 @@ export default function EmployeeCard(props) {
         setError(msg);
         setTimeout(() => setError(""), 5000);
     }
-
-
-    /**
-     * 
-     */
-    function showSuccess(msg) {
-        setSuccess(msg);
-        setTimeout(() => setSuccess(""), 5000);
-    }
-
 
     /**
      * 
@@ -245,15 +235,16 @@ export default function EmployeeCard(props) {
                         <Typography style={{ color: "red", textAlign: "center" }}>
                             {error}
                         </Typography>
-                        <Typography style={{ color: "green", textAlign: "center" }}>
-                            {success}
-                        </Typography>
                     </Box>
                     <Grid container direction="column" justify="center">
                         {getWorkingModels()}
                     </Grid>
                     <IconButton>
-                        <AddCircleIcon onClick={() => toggleWorkingModelForm()} />
+                        {showWorkingModel ?
+                            <RemoveCircleIcon onClick={() => toggleWorkingModelForm()} />
+                            :
+                            <AddCircleIcon onClick={() => toggleWorkingModelForm()} />
+                        }
                     </IconButton>
                     {showWorkingModel && <WorkingModelForm saveWorkingModel={saveWorkingModel} username={props.employee.username} />}
 
