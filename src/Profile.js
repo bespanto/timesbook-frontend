@@ -318,7 +318,7 @@ function Profile(props) {
           </Button>
         </Grid>
         {
-          uiState.profile && uiState.profile.workingModels && uiState.profile.workingModels > 0 &&
+          uiState.profile && uiState.profile.workingModels && uiState.profile.workingModels.length > 0 &&
           <Grid
             container
             spacing={1}
@@ -329,7 +329,7 @@ function Profile(props) {
           >
 
             <Grid item>
-              <Typography variant="h6">Arbeitsmodelle</Typography>
+              <Typography variant="h6">Arbeitsmodell</Typography>
             </Grid>
             <Grid item>
               {

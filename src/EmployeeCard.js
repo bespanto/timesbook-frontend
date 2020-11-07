@@ -237,7 +237,7 @@ export default function EmployeeCard(props) {
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center">
-                        <Typography variant="h6">Arbeitsmodelle</Typography>
+                        <Typography variant="h6">Arbeitsmodell</Typography>
                     </Box>
                     <Grid container direction="column" justify="center">
                         {getWorkingModels()}
