@@ -56,3 +56,31 @@ export async function deleteData(url = '', jwt) {
   })
   return response;
 }
+
+
+export function getProfile() {
+  const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+  return fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+    headers: {
+      'auth-token': localStorage.getItem('jwt')
+    }
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        return data.success.user;
+      }
+      else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+        console.error(errorMsg, data)
+        throw new Error(errorMsg + data)
+      }
+      else {
+        console.error(errorMsg + " Unerwarteter Fehler.", data)
+        throw new Error(errorMsg + " Unerwarteter Fehler. " + data);
+      }
+    })
+    .catch((err) => {
+      console.error(errorMsg + " Der Server antwortet nicht.", err)
+      throw new Error(errorMsg + " Der Server antwortet nicht. " + err);
+    });
+}

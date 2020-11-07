@@ -139,8 +139,6 @@ export default function EmployeeCard(props) {
      */
     const fetchWorkingModels = () => {
         const errorMsg = "Das Arbeitsmodell konnte nicht abgerufen werden.";
-        const url = `${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`;
-        console.log(url);
         fetch(`${process.env.REACT_APP_API_URL}/workingModel/${props.employee.username}`, {
             method: "GET",
             mode: 'cors',

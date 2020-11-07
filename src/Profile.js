@@ -317,29 +317,6 @@ function Profile(props) {
             Speichern
           </Button>
         </Grid>
-        {
-          uiState.profile && uiState.profile.workingModels && uiState.profile.workingModels.length > 0 &&
-          <Grid
-            container
-            spacing={1}
-            direction="column"
-            justify="center"
-            alignItems="center"
-            style={{ marginTop: '2em' }}
-          >
-
-            <Grid item>
-              <Typography variant="h6">Arbeitsmodell</Typography>
-            </Grid>
-            <Grid item>
-              {
-                uiState.profile.workingModels.map((el) => {
-                  return <WorkingModelCard workingModel={el} />
-                })
-              }
-            </Grid>
-          </Grid>
-        }
       </Grid>
     </div>
   );

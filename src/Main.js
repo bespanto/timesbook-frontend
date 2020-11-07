@@ -11,6 +11,7 @@ import Profile from "./Profile";
 import Employee from "./Employee";
 import VacationRequests from "./VacationRequests";
 import Vacation from "./Vacation";
+import Overview from "./Overview";
 import ResetPassword from "./ResetPassword";
 import ConfirmAccount from "./ConfirmAccount";
 import Home from "./Home";
@@ -150,6 +151,9 @@ function Main(props) {
         </Route>
         <Route path="/Vacation">
           <Vacation />
+        </Route>
+        <Route path="/Overview">
+          <Overview />
         </Route>
         <Route path="/VacationRequests">
           <VacationRequests />

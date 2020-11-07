@@ -55,6 +55,7 @@ function Header(props) {
                 <span>
                   <MenuItem component={Link} to="/TimeBooking" onClick={handleClose} style={{ color: '#ffffff' }}>Zeitbuchungen</MenuItem>
                   <MenuItem component={Link} to="/Vacation" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaub</MenuItem>
+                  <MenuItem component={Link} to="/Overview" onClick={handleClose} style={{ color: '#ffffff' }}>Übersicht</MenuItem>
                 </span>
               }
               {uiState.profile && uiState.profile.role === 'admin' &&
