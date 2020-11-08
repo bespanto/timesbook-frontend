@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
+import shortid from "shortid";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import WorkingModelCard from "./WorkingModelCard";
 import * as Utils from "./Utils";
@@ -18,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Overview(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [overview, setOverview] = useState({});
   const classes = useStyles();
@@ -31,15 +31,6 @@ function Overview(props) {
   function showError(msg) {
     setError(msg);
     setTimeout(() => setError(""), 5000);
-  }
-
-
-  /**
-   * 
-   */
-  function showSuccess(msg) {
-    setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
   }
 
   const getOverviewData = useCallback(async () => {
@@ -57,7 +48,6 @@ function Overview(props) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log("overview from server: " + JSON.stringify(data.success.overview));
           setOverview(data.success.overview);
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
@@ -93,11 +83,7 @@ function Overview(props) {
           <Typography style={{ color: "red", textAlign: "center" }}>
             {error}
           </Typography>
-          <Typography style={{ color: "green", textAlign: "center" }}>
-            {success}
-          </Typography>
         </Grid>
-
         <Grid xs={12} item style={{ textAlign: 'center' }}>
           <Typography variant="h5">Übersicht</Typography>
         </Grid>
