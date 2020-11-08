@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 function Overview(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [error, setError] = useState("");
-  const [overview, setOverview] = useState({});
+  const [overview, setOverview] = useState(null);
   const classes = useStyles();
   let history = useHistory();
   const loc = useLocation();
@@ -91,7 +91,9 @@ function Overview(props) {
           <Grid container style={{ marginTop: '0.5em' }}>
             <Grid item xs={6}>
               <Typography display="inline">Gleitzeit: </Typography>
-              <Typography display="inline" variant="body2">{Utils.minutesToTimeString(overview.overtimeAsMinutes)} Std.</Typography>
+              <Typography display="inline" variant="body2">
+                {overview ? Utils.minutesToTimeString(overview.overtimeAsMinutes) : "--:--"} Std.
+                </Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography display="inline">Resturlaub: </Typography>
