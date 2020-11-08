@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import BookingDayForm from "./BookingDayForm";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import * as UiStateSlice from "./redux/UiStateSlice";
 import * as Utils from "./Utils";
 import "./App.css";
 // Material UI
@@ -23,7 +22,6 @@ function Day(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const classes = useStyles();
   const weekday = moment(props.bookingDay).weekday();
   const [open, setOpen] = React.useState(false);
@@ -152,9 +150,6 @@ const useStyles = makeStyles((theme) => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-  },
-  headerEmptySpace: {
-    flexGrow: 1,
   },
 }));
 
