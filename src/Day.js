@@ -45,6 +45,7 @@ function Day(props) {
   let overtime = placeholder;
   const activities = bookingEntry === undefined ? '' : bookingEntry.activities;
 
+  const targetDayHours = props.workingModel ? props.workingModel[moment(props.bookingDay).day()] : 0;
   if (bookingEntry !== undefined) {
     start = moment(bookingEntry.start);
     end = moment(bookingEntry.end);
@@ -52,33 +53,17 @@ function Day(props) {
     workingTime = moment.duration(end.diff(start));
     start = start.format(timeFormat);
     end = end.format(timeFormat);
-    const targetWorkingModel = getTargetWorkingModel(bookingEntry.start);
-    const targetDayHours = targetWorkingModel ? targetWorkingModel[moment(bookingEntry.start).day()] : 0;
+  }
+  else {
+    if (targetDayHours > 0 && moment().diff(moment(props.bookingDay)) > 0) {
+      pause = moment.duration(0);
+      workingTime = moment.duration(0);
+    }
+  }
+  if (moment.isDuration(workingTime) && moment.isDuration(pause)) {
     overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - (targetDayHours ? targetDayHours : 0) * 60);
     workingTime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
     pause = Utils.minutesToTimeString(pause.asMinutes());
-  }
-
-  function getTargetWorkingModel(startTime) {
-
-    const models = uiState.profile.workingModels;
-    let targetWorkingModel;
-    if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
-      if (models.length === 1) {
-        if (moment(models[0].validFrom).isSameOrBefore(moment(startTime)))
-          targetWorkingModel = models[0];
-      }
-      else if (models.length > 1) {
-        for (let index = 0; index < models.length - 1; index++) {
-          if (moment(startTime).isBetween(models[index].validFrom, models[index + 1].validFrom, undefined, '[)'))
-            targetWorkingModel = models[index];
-          else if (index + 1 === models.length - 1)
-            if (moment(startTime).isSameOrAfter(moment(models[index + 1].validFrom)))
-              targetWorkingModel = models[index + 1];
-
-        }
-      }
-    return targetWorkingModel;
   }
 
   return (
@@ -119,34 +104,34 @@ function Day(props) {
             <IconButton size="small" onClick={() => handleOpen()}>
               <EditIcon />
             </IconButton>
-            <Modal
-              aria-labelledby="transition-modal-title"
-              aria-describedby="transition-modal-description"
-              className={classes.modal}
-              open={open}
-              onClose={handleClose}
-              closeAfterTransition
-              BackdropComponent={Backdrop}
-              BackdropProps={{
-                timeout: 500,
-              }}
-            >
-              <Fade in={open}>
-                <Box className={classes.paper}>
-                  <BookingDayForm
-                    bookingDay={props.bookingDay}
-                    submitButtonValue="Speichern"
-                    handleClose={handleClose}
-                  />
-                </Box>
-              </Fade>
-            </Modal>
           </Grid>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
             <Typography variant="body2">{activities}</Typography>
           </Grid>
         </Grid>
       </Paper>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box className={classes.paper}>
+            <BookingDayForm
+              bookingDay={props.bookingDay}
+              submitButtonValue="Speichern"
+              handleClose={handleClose}
+            />
+          </Box>
+        </Fade>
+      </Modal>
     </Container>
   );
 }

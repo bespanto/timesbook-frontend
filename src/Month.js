@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as Utils from "./Utils";
 import Day from "./Day";
 import shortid from "shortid";
 import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
+import { getProfile } from "./serverConnections/connect";
 import { DAY_FORMAT } from "./Const";
 // Material UI
 import Grid from "@material-ui/core/Grid";
@@ -15,7 +16,22 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
+  const [user, setUser] = useState({});
   const dispatch = useDispatch();
+
+  /**
+   * 
+   */
+  const fetchProfile = useCallback(async () => {
+    setUser(await getProfile());
+  },[])
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile])
 
   /**
    *
@@ -30,9 +46,12 @@ function Month(props) {
       const bookingDay = moment(
         uiState.now + "-" + (day <= 9 ? "0" + day : day)
       ).format(DAY_FORMAT);
+      const workingModel = getTargetWorkingModel(bookingDay);
+      console.log(bookingDay + " => " + workingModel);
       days.push(
         <Day
           key={shortid.generate()}
+          workingModel={workingModel}
           bookingDay={bookingDay}
         />
       );
@@ -58,6 +77,32 @@ function Month(props) {
 
     const month = moment(uiState.now).add(1, "months").format("YYYY-MM");
     dispatch(UiStateSlice.setNow(month));
+  }
+
+
+  /**
+   * 
+   */
+  function getTargetWorkingModel(startTime) {
+    const models = user.workingModels;
+    console.log(models)
+    let targetWorkingModel;
+    if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
+      if (models.length === 1) {
+        if (moment(models[0].validFrom).isSameOrBefore(moment(startTime)))
+          targetWorkingModel = models[0];
+      }
+      else if (models.length > 1) {
+        for (let index = 0; index < models.length - 1; index++) {
+          if (moment(startTime).isBetween(models[index].validFrom, models[index + 1].validFrom, undefined, '[)'))
+            targetWorkingModel = models[index];
+          else if (index + 1 === models.length - 1)
+            if (moment(startTime).isSameOrAfter(moment(models[index + 1].validFrom)))
+              targetWorkingModel = models[index + 1];
+
+        }
+      }
+    return targetWorkingModel;
   }
 
   return (
