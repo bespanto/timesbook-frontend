@@ -131,7 +131,7 @@ function Overview(props) {
             <Grid item>
               {
                 uiState.profile.workingModels.map((el) => {
-                  return <WorkingModelCard workingModel={el} />
+                  return <WorkingModelCard key={shortid.generate()} workingModel={el} />
                 })
               }
             </Grid>
