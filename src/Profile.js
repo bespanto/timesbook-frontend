@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
-import WorkingModelCard from "./WorkingModelCard";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
