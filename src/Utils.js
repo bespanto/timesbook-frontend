@@ -46,7 +46,7 @@ export function minutesToTimeString(minutes) {
   if (h < 10 && h >= 0)
     h = '0' + h;
   else
-    if (h < 0) {
+    if (h < 0 && h>-9) {
       let arr = h.toString().split('');
       arr.splice(1, 0, '0');
       h = arr.join('')
