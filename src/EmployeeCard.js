@@ -16,16 +16,20 @@ import IconButton from "@material-ui/core/IconButton";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
+import TextField from "@material-ui/core/TextField";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded';
 import { Collapse, Typography } from '@material-ui/core';
 
 export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
     const [showWorkingModel, setShowWorkingModel] = useState(false);
     const [workingModels, setWorkingModels] = useState([]);
+    const [overtimeCorrection, setOvertimeCorrection] = useState('');
     const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
     const [error, setError] = useState("");
     const classes = useStyles();
@@ -191,6 +195,18 @@ export default function EmployeeCard(props) {
         return el;
     }
 
+    /**
+ * Sets state for changed fields on tap event
+ */
+    function handleChange(event) {
+        switch (event.target.name) {
+            case "overtimeCorrection":
+                setOvertimeCorrection(event.target.value);
+                break;
+            default:
+                break;
+        }
+    }
 
     /**
      * 
@@ -235,6 +251,37 @@ export default function EmployeeCard(props) {
                         </Typography>
                     </Box>
                     <Box display="flex" justifyContent="center">
+                        <Typography variant="h6">Überstunden-Korrektur</Typography>
+                    </Box>
+                    <Grid container justify="center" alignItems="flex-end" >
+                        <Grid item xs={3}>
+                            <Typography>Aktuell</Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Typography>20</Typography>
+                        </Grid>
+                        <Grid item xs={4} >
+                            <TextField
+                                id="overtimeCorrection"
+                                type="number"
+                                label="Stunden (+/-)"
+                                name="overtimeCorrection"
+                                value={overtimeCorrection}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <IconButton>
+                                <CheckCircleRoundedIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item>
+                            <Divider />
+                        </Grid>
+                    </Grid>
+                    <Box display="flex" justifyContent="center" style={{ marginTop: '3em' }}>
                         <Typography variant="h6">Arbeitsmodell</Typography>
                     </Box>
                     <Grid container direction="column" justify="center">

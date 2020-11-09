@@ -6,6 +6,7 @@ import shortid from "shortid";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -81,12 +82,10 @@ export default function WorkingModelForm(props) {
 
     return (
         <div>
-            <Grid container justify="center" style={{ marginTop: '1.5em' }}>
-                <Grid item>
-                    <Typography>Soll-Arbeitszeiten</Typography>
-                </Grid>
-            </Grid>
-            <Grid container spacing={3} justify="center">
+            <Box display="flex" justifyContent="center">
+                <Typography>Neues Arbeitsmodell</Typography>
+            </Box>
+            <Grid container spacing={3} justify="center" style={{marginTop: '0.5em'}}>
                 <Grid item>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="monday-select-label">Montag</InputLabel>
@@ -173,7 +172,9 @@ export default function WorkingModelForm(props) {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid container justify="center">
+            </Grid>
+            <Grid container direction="column" alignItems="center">
+                <Grid item>
                     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de} >
                         <KeyboardDatePicker
                             className={classes.datePicker}
@@ -191,10 +192,10 @@ export default function WorkingModelForm(props) {
                         />
                     </MuiPickersUtilsProvider>
                 </Grid>
-                <Grid container justify="center" style={{ marginTop: '0.em' }}>
+                <Grid item>
                     <Button variant="contained" onClick={() => handleWorkingModel()}>
                         Übernehmen
-                            </Button>
+                    </Button>
                 </Grid>
             </Grid>
         </div>
@@ -204,11 +205,9 @@ export default function WorkingModelForm(props) {
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
-        margin: theme.spacing(1),
         minWidth: '4em',
     },
     datePicker: {
-        margin: theme.spacing(1),
         width: '10em',
     },
 }));
