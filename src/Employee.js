@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
 import validate from "validate.js";
 import EmployeeCard from "./EmployeeCard"
 import { postData, deleteData } from "./serverConnections/connect";
-import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -24,8 +22,8 @@ function Employee(props) {
   const [username, setUsername] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [profile, setProfile] = useState(null);
   const [employees, setEmployees] = useState([]);
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [open, setOpen] = React.useState(false);
   let history = useHistory();
   const loc = useLocation();
@@ -49,6 +47,40 @@ function Employee(props) {
     setTimeout(() => setSuccess(""), 5000);
   }
 
+
+
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setProfile(data.success.user);
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+
+  }, [history, loc.pathname])
 
   /**
    * 
@@ -108,7 +140,7 @@ function Employee(props) {
     const userInfo = {
       username: username,
       name: name,
-      organization: uiState.profile.organization,
+      organization: profile.organization,
     };
     // Validate input fields
     const result = validate(userInfo, constraints);
@@ -264,7 +296,7 @@ function Employee(props) {
       <Container style={{ marginTop: "1.5em" }}>
         {employees.map((employee) => (
           <div key={shortid.generate()}>
-            <EmployeeCard handleOpen={handleOpen} employee={employee}/>
+            <EmployeeCard handleOpen={handleOpen} employee={employee} profile={profile}/>
             <Modal
               style={{ marginLeft: '1em', marginRight: '1em' }}
               aria-labelledby="transition-modal-title"

@@ -90,6 +90,7 @@ function Month(props) {
           key={shortid.generate()}
           workingModel={workingModel}
           bookingDay={bookingDay}
+          profile={profile}
         />
       );
     }

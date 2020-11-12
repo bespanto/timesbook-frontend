@@ -5,7 +5,6 @@ import { patchData, deleteData } from "./serverConnections/connect";
 import moment from "moment";
 import { DAY_FORMAT } from "./Const";
 import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
-import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -19,7 +18,6 @@ function BookingDayForm(props) {
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
 
   const [start, setStart] = useState(
     bookingEntry === undefined || bookingEntry.start === undefined
@@ -49,7 +47,7 @@ function BookingDayForm(props) {
   function saveEntryToBackend(item) {
     const errMsg = "Speichern ist nicht möglich.";
     patchData(
-      `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}`,
+      `${process.env.REACT_APP_API_URL}/bookingEntries/${props.profile.username}`,
       localStorage.getItem("jwt"),
       item
     )
@@ -90,7 +88,7 @@ function BookingDayForm(props) {
    */
   function save() {
     const entryToEdit = {
-      username: uiState.profile.username,
+      username: props.profile.username,
       day: moment.utc(props.bookingDay).format(),
       start: new Date(
         moment(props.bookingDay).format(DAY_FORMAT) + "T" + start
@@ -115,7 +113,7 @@ function BookingDayForm(props) {
   function deleteEntryFromBackend(day) {
     const errMsg = "Löschen ist nicht möglich.";
     deleteData(
-      `${process.env.REACT_APP_API_URL}/bookingEntries/${uiState.profile.username}/${day}`,
+      `${process.env.REACT_APP_API_URL}/bookingEntries/${props.profile.username}/${day}`,
       localStorage.getItem("jwt")
     )
       .then((response) => response.json())

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from 'clsx';
 import shortid from "shortid";
-import * as UiStateSlice from "./redux/UiStateSlice";
 import OvertimeCorrection from "./OvertimeCorrection";
 import WorkingModelCard from "./WorkingModelCard";
 import WorkingModelForm from "./WorkingModelForm";
@@ -27,7 +25,6 @@ export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
     const [showWorkingModel, setShowWorkingModel] = useState(false);
     const [workingModels, setWorkingModels] = useState([]);
-    const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
     const [error, setError] = useState("");
     const classes = useStyles();
     let history = useHistory();
@@ -205,7 +202,7 @@ export default function EmployeeCard(props) {
                     </Avatar>
                 }
                 action={
-                    uiState.profile.username !== props.employee.username &&
+                    props.profile.username !== props.employee.username &&
                     <IconButton aria-label="settings" onClick={props.handleOpen}>
                         <DeleteIcon />
                     </IconButton>

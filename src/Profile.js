@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import validate from "validate.js";
@@ -19,8 +19,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Profile(props) {
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [pass, setPass] = useState("");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
+  const [orga, setOrga] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -50,23 +53,61 @@ function Profile(props) {
   /**
    * 
    */
+  useEffect(() => {
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success){
+          setName(data.success.user.name);
+          setUsername(data.success.user.username);
+          setOrga(data.success.user.organization);
+          setRole(data.success.user.role);
+        }
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+
+  }, [history, loc.pathname])
+
+  /**
+   * 
+   */
   function save() {
     const errorMsg = "Das Profil konnte nicht geändert werden.";
-    fetch(`${process.env.REACT_APP_API_URL}/user/${uiState.profile.username}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/user/${username}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         'auth-token': localStorage.getItem('jwt')
       },
       body: JSON.stringify({
-        name: uiState.profile.name,
-        organization: uiState.profile.orga
+        name: name,
+        organization: orga
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success)
+        if (data.success){
           showSuccess("Das Profil wurde erfolgreich geändert");
+          dispatch(UiStateSlice.setProfileChanged(new Date().getTime()))
+        }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -154,7 +195,6 @@ function Profile(props) {
    * Sets state for changed fields on tap event
    */
   function handleChange(event) {
-    const profile = { ...uiState.profile }
     switch (event.target.name) {
       case "pass":
         setPass(event.target.value);
@@ -163,18 +203,17 @@ function Profile(props) {
         setPassRepeat(event.target.value);
         break;
       case "username":
-        profile.username = event.target.value;
+        setUsername(event.target.value);
         break;
       case "orga":
-        profile.orga = event.target.value;
+        setOrga(event.target.value);
         break;
       case "name":
-        profile.name = event.target.value;
+        setName(event.target.value);
         break;
       default:
         break;
     }
-    dispatch(UiStateSlice.setProfile(profile));
   }
 
 
@@ -197,7 +236,7 @@ function Profile(props) {
    * 
    */
   const getDisabled = val => {
-    if (!uiState.profile || uiState.profile.role !== 'admin') return { disabled: true };
+    if (role !== 'admin') return { disabled: true };
     return {};
   };
 
@@ -272,7 +311,7 @@ function Profile(props) {
                 label="Name"
                 variant="outlined"
                 name="name"
-                value={uiState.profile ? uiState.profile.name : ''}
+                value={name}
                 onChange={handleChange}
               />
             </Grid>
@@ -283,7 +322,7 @@ function Profile(props) {
                 label="Organisation"
                 variant="outlined"
                 name="orga"
-                value={uiState.profile ? uiState.profile.organization : ''}
+                value={orga}
                 onChange={handleChange}
               />
             </Grid>
@@ -294,7 +333,7 @@ function Profile(props) {
                 label="E-Mail"
                 variant="outlined"
                 name="username"
-                value={uiState.profile ? uiState.profile.username : ''}
+                value={username}
                 onChange={handleChange}
               />
             </Grid>
@@ -306,7 +345,7 @@ function Profile(props) {
                 label="Rolle"
                 variant="outlined"
                 name="role"
-                value={uiState.profile ? getRole(uiState.profile.role) : ''}
+                value={getRole(role)}
               />
             </Grid>
           </Grid>

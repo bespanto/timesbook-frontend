@@ -1,6 +1,6 @@
-import React from 'react';
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import React, {useCallback, useEffect, useState} from 'react';
+import { Link, useHistory, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,14 +19,48 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  let history = useHistory();
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
+  const [profile, setProfile] = useState(null);
+  const classes = useStyles();
+  let history = useHistory();
+  const loc = useLocation();
+
+
+  const fetchProfile = useCallback(() => {
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setProfile(data.success.user);
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+      });
+  }, [history, loc.pathname])
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile, uiState.profileChanged])
 
   function logout() {
     localStorage.removeItem('jwt');
-    dispatch(UiStateSlice.setProfile({}));
+    setProfile(null);
     history.push('/Login')
   }
 
@@ -51,14 +85,14 @@ function Header(props) {
               open={Boolean(anchorEl)}
               onClose={handleClose}>
               <MenuItem component={Link} to="/Home" onClick={handleClose} style={{ color: '#ffffff' }}>Home</MenuItem>
-              {uiState.profile &&
+              {profile &&
                 <span>
                   <MenuItem component={Link} to="/TimeBooking" onClick={handleClose} style={{ color: '#ffffff' }}>Zeitbuchungen</MenuItem>
                   <MenuItem component={Link} to="/Vacation" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaub</MenuItem>
                   <MenuItem component={Link} to="/Overview" onClick={handleClose} style={{ color: '#ffffff' }}>Übersicht</MenuItem>
                 </span>
               }
-              {uiState.profile && uiState.profile.role === 'admin' &&
+              {profile && profile.role === 'admin' &&
                 <span>
                   <Divider />
                   <MenuItem component={Link} to="/Employees" onClick={handleClose} style={{ color: '#ffffff' }}>Mitarbeiter</MenuItem>
@@ -67,7 +101,7 @@ function Header(props) {
                   <MenuItem component={Link} to="/Profile" onClick={handleClose} style={{ color: '#ffffff' }}>Profil</MenuItem>
                 </span>
               }
-              {!uiState.profile &&
+              {!profile &&
                 <span>
                   <Divider />
                   <MenuItem component={Link} to="/Login" onClick={handleClose} style={{ color: '#ffffff' }}>Login</MenuItem>
@@ -81,13 +115,13 @@ function Header(props) {
                 </Typography>
               </Button>
             </Box>
-            {uiState.profile &&
+            {profile &&
               <React.Fragment>
                 <span style={{ textAlign: 'center' }}>
                   <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
                     <Person fontSize="large" />
                   </IconButton>
-                  <Typography variant="body2">{uiState.profile ? uiState.profile.name : ''}</Typography>
+                  <Typography variant="body2">{profile ? profile.name : ''}</Typography>
                 </span>
                 <IconButton onClick={() => logout()} size="small" style={{ color: '#ffffff' }}>
                   <ExitToAppIcon />

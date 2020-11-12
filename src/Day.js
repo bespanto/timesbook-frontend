@@ -126,6 +126,7 @@ function Day(props) {
               bookingDay={props.bookingDay}
               submitButtonValue="Speichern"
               handleClose={handleClose}
+              profile={props.profile}
             />
           </Box>
         </Fade>

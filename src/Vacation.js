@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import 'date-fns';
 import moment from "moment";
@@ -8,7 +7,6 @@ import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
 import { postData } from "./serverConnections/connect";
 import { getStatus, getBackground } from "./Utils";
-import * as UiStateSlice from "./redux/UiStateSlice";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -30,10 +28,10 @@ import {
 function Vacation(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [profile, setProfile] = useState(null);
   const [vacationFrom, setVacationFrom] = useState(new Date());
   const [vacationTill, setVacationTill] = useState(new Date());
   const [vacations, setVacations] = useState([]);
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const classes = useStyles();
   let history = useHistory();
   const loc = useLocation();
@@ -54,6 +52,39 @@ function Vacation(props) {
     setSuccess(msg);
     setTimeout(() => setSuccess(""), 5000);
   }
+
+
+  /**
+   * 
+   */
+  useEffect(() => {
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setProfile(data.success.user);
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+
+  }, [history, loc.pathname])
 
 
   /**
@@ -107,7 +138,7 @@ function Vacation(props) {
     const end = moment(vacationTill);
     if (end.isSameOrAfter(start)) {
       const errorMsg = "Die Urlaubsanfrage konnte nicht erstellt werden.";
-      postData(`${process.env.REACT_APP_API_URL}/vacation/${uiState.profile.username}`,
+      postData(`${process.env.REACT_APP_API_URL}/vacation/${profile.username}`,
         localStorage.getItem('jwt'),
         {
           from: vacationFrom.toISOString().slice(0, 10),
