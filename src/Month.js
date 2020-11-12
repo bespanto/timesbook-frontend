@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import * as Utils from "./Utils";
 import Day from "./Day";
 import shortid from "shortid";
 import moment from "moment";
 import * as UiStateSlice from "./redux/UiStateSlice";
-import { getProfile } from "./serverConnections/connect";
 import { DAY_FORMAT } from "./Const";
 // Material UI
 import Grid from "@material-ui/core/Grid";
@@ -16,15 +16,53 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
-  const [user, setUser] = useState({});
+  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
+  let history = useHistory();
+  const loc = useLocation();
 
   /**
    * 
    */
-  const fetchProfile = useCallback(async () => {
-    setUser(await getProfile());
-  },[])
+  function showError(msg) {
+    setError(msg);
+    setTimeout(() => setError(""), 5000);
+  }
+
+  /**
+   * 
+   */
+  const fetchProfile = useCallback(() => {
+
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setProfile(data.success.user);
+        }
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+  }, [history, loc.pathname])
+
 
   /**
    * 
@@ -83,23 +121,26 @@ function Month(props) {
    * 
    */
   function getTargetWorkingModel(startTime) {
-    const models = user.workingModels;
-    let targetWorkingModel;
-    if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
-      if (models.length === 1) {
-        if (moment(models[0].validFrom).isSameOrBefore(moment(startTime)))
-          targetWorkingModel = models[0];
-      }
-      else if (models.length > 1) {
-        for (let index = 0; index < models.length - 1; index++) {
-          if (moment(startTime).isBetween(models[index].validFrom, models[index + 1].validFrom, undefined, '[)'))
-            targetWorkingModel = models[index];
-          else if (index + 1 === models.length - 1)
-            if (moment(startTime).isSameOrAfter(moment(models[index + 1].validFrom)))
-              targetWorkingModel = models[index + 1];
 
+    let targetWorkingModel;
+    if (profile) {
+      const models = profile.workingModels;
+      if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
+        if (models.length === 1) {
+          if (moment(models[0].validFrom).isSameOrBefore(moment(startTime)))
+            targetWorkingModel = models[0];
         }
-      }
+        else if (models.length > 1) {
+          for (let index = 0; index < models.length - 1; index++) {
+            if (moment(startTime).isBetween(models[index].validFrom, models[index + 1].validFrom, undefined, '[)'))
+              targetWorkingModel = models[index];
+            else if (index + 1 === models.length - 1)
+              if (moment(startTime).isSameOrAfter(moment(models[index + 1].validFrom)))
+                targetWorkingModel = models[index + 1];
+
+          }
+        }
+    }
     return targetWorkingModel;
   }
 
@@ -110,6 +151,11 @@ function Month(props) {
         alignItems="center"
         style={{ marginBottom: "1em", marginTop: "1em" }}
       >
+        <Grid item>
+          <Typography style={{ color: "red", textAlign: "center" }}>
+            {error}
+          </Typography>
+        </Grid>
         <Grid item xs={3} style={{ textAlign: "right" }}>
           <IconButton size="small" onClick={(e) => monthDown(e)}>
             <ChevronLeftIcon fontSize="large" />

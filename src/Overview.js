@@ -5,7 +5,6 @@ import shortid from "shortid";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import WorkingModelCard from "./WorkingModelCard";
 import * as Utils from "./Utils";
-import { getProfile } from "./serverConnections/connect";
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -21,6 +20,7 @@ function Overview(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [error, setError] = useState("");
   const [overview, setOverview] = useState(null);
+  const [profile, setProfile] = useState(null);
   const classes = useStyles();
   let history = useHistory();
   const loc = useLocation();
@@ -33,12 +33,47 @@ function Overview(props) {
     setTimeout(() => setError(""), 5000);
   }
 
-  const getOverviewData = useCallback(async () => {
 
-    const user = await getProfile();
+  /**
+   * 
+   */
+  const fetchProfile = useCallback(() => {
+
+    const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setProfile(data.success.user);
+        }
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+  }, [history, loc.pathname])
+
+  /**
+   * 
+   */
+  const fetchOverview = useCallback((username) => {
 
     const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
-    fetch(`${process.env.REACT_APP_API_URL}/user/${user.username}/overview`, {
+    fetch(`${process.env.REACT_APP_API_URL}/user/${username}/overview`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -67,8 +102,10 @@ function Overview(props) {
   }, [history, loc.pathname])
 
   useEffect(() => {
-    getOverviewData();
-  }, [getOverviewData])
+    fetchProfile();
+    if (profile)
+      fetchOverview(profile.username);
+  }, [fetchProfile, fetchOverview, profile])
 
 
   return (
