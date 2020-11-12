@@ -53,6 +53,7 @@ function Month(props) {
       .then((data) => {
         if (data.success) {
           setUsername(data.success.user.username);
+          setProfile(data.success.user);
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
@@ -98,7 +99,7 @@ function Month(props) {
         console.error(errorMsg + " Der Server antwortet nicht.", err)
         showError(errorMsg + " Der Server antwortet nicht.");
       });
-  }, [history, loc.pathname, dispatch, uiState.now, username])
+  }, [history, loc.pathname, dispatch, username, from, till])
 
   /**
    * 
