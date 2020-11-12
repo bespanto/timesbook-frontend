@@ -14,7 +14,7 @@ export default function OvertimeCorrection(props) {
     const [overtimeCorHours, setOvertimeCorHours] = useState('');
     const [overtimeCorMinutes, setOvertimeCorMinutes] = useState('');
     const [overtimeCorText, setOvertimeCorText] = useState('');
-    const [overview, setOverview] = useState(null);
+    const [flextime, setFlextime] = useState(null);
     const [error, setError] = useState("");
     let history = useHistory();
     const loc = useLocation();
@@ -25,7 +25,7 @@ export default function OvertimeCorrection(props) {
     const fetchOverview= useCallback((username) => {
 
         const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
-        fetch(`${process.env.REACT_APP_API_URL}/user/${username}/overview`, {
+        fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${username}/flextime`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export default function OvertimeCorrection(props) {
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              setOverview(data.success.overview);
+              setFlextime(data.success.flextime);
             }
             else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
               console.error(errorMsg, data)
@@ -109,7 +109,7 @@ export default function OvertimeCorrection(props) {
                     <Typography>Aktuell:</Typography>
                 </Grid>
                 <Grid item>
-                    <Typography>{overview ? Utils.minutesToTimeString(overview.overtimeAsMinutes) : '--:--'} Std.</Typography>
+                    <Typography>{flextime ? Utils.minutesToTimeString(flextime) : '--:--'} Std.</Typography>
                 </Grid>
             </Grid>
             <Grid container spacing={1} justify="center" alignItems="flex-end" >

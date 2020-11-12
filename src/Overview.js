@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Overview(props) {
   const [error, setError] = useState("");
-  const [overview, setOverview] = useState(null);
+  const [flextime, setFlextime] = useState(null);
   const [profile, setProfile] = useState(null);
   const classes = useStyles();
   let history = useHistory();
@@ -34,8 +34,7 @@ function Overview(props) {
   /**
    * 
    */
-  const fetchProfile = useCallback(() => {
-
+  useEffect(() => {
     const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
       headers: {
@@ -44,9 +43,8 @@ function Overview(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
+        if (data.success)
           setProfile(data.success.user);
-        }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -62,7 +60,9 @@ function Overview(props) {
         showError(errorMsg + " Der Server antwortet nicht.");
 
       });
+
   }, [history, loc.pathname])
+
 
   /**
    * 
@@ -70,7 +70,7 @@ function Overview(props) {
   const fetchOverview = useCallback((username) => {
 
     const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
-    fetch(`${process.env.REACT_APP_API_URL}/user/${username}/overview`, {
+    fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${username}/flextime`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -79,9 +79,8 @@ function Overview(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          setOverview(data.success.overview);
-        }
+        if (data.success)
+          setFlextime(data.success.flextime);
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -98,12 +97,13 @@ function Overview(props) {
       });
   }, [history, loc.pathname])
 
+  /**
+   * 
+   */
   useEffect(() => {
-    fetchProfile();
     if (profile)
       fetchOverview(profile.username);
-  }, [fetchProfile, fetchOverview, profile])
-
+  }, [fetchOverview, profile])
 
   return (
     <div className={classes.root}>
@@ -126,7 +126,7 @@ function Overview(props) {
             <Grid item xs={6}>
               <Typography display="inline">Gleitzeit: </Typography>
               <Typography display="inline" variant="body2">
-                {overview ? Utils.minutesToTimeString(overview.overtimeAsMinutes) : "--:--"} Std.
+                {flextime ? Utils.minutesToTimeString(flextime) : "--:--"} Std.
                 </Typography>
             </Grid>
             <Grid item xs={6}>
