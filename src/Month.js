@@ -5,6 +5,7 @@ import * as Utils from "./Utils";
 import Day from "./Day";
 import shortid from "shortid";
 import moment from "moment";
+import * as BookingEntriesSlice from "./redux/BookingEntriesSlice";
 import * as UiStateSlice from "./redux/UiStateSlice";
 import { DAY_FORMAT } from "./Const";
 // Material UI
@@ -17,10 +18,17 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [profile, setProfile] = useState(null);
+  const [username, setUsername] = useState(null);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   let history = useHistory();
   const loc = useLocation();
+
+  const year = moment(uiState.now).format("YYYY");
+  const month = moment(uiState.now).format("MM");
+  const daysInMonth = Utils.getDaysInMonth(year, month);
+  const from = uiState.now + "-01";
+  const till = uiState.now + "-" + daysInMonth;
 
   /**
    * 
@@ -30,11 +38,11 @@ function Month(props) {
     setTimeout(() => setError(""), 5000);
   }
 
-  /**
-   * 
-   */
-  const fetchProfile = useCallback(() => {
 
+  /**
+  * 
+  */
+  useEffect(() => {
     const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
       headers: {
@@ -44,7 +52,7 @@ function Month(props) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          setProfile(data.success.user);
+          setUsername(data.success.user.username);
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
@@ -64,12 +72,40 @@ function Month(props) {
   }, [history, loc.pathname])
 
 
+
+  const fetchBookEntries = useCallback(() => {
+
+    const errorMsg = "Zeitbuchungen können nicht abgefragt werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${username}/${from}/${till}`,
+      {
+        headers: { "auth-token": localStorage.getItem("jwt") },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          dispatch(BookingEntriesSlice.setBookingEntries(data.success.bookingEntries));
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+      });
+  }, [history, loc.pathname, dispatch, uiState.now, username])
+
   /**
    * 
    */
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile])
+    fetchBookEntries()
+  }, [fetchBookEntries]);
 
   /**
    *
