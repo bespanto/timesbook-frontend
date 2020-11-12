@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useHistory, useLocation } from "react-router-dom";
+import * as Utils from "./Utils";
 //Material UI
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -13,9 +14,51 @@ export default function OvertimeCorrection(props) {
     const [overtimeCorHours, setOvertimeCorHours] = useState('');
     const [overtimeCorMinutes, setOvertimeCorMinutes] = useState('');
     const [overtimeCorText, setOvertimeCorText] = useState('');
+    const [overview, setOverview] = useState(null);
     const [error, setError] = useState("");
     let history = useHistory();
     const loc = useLocation();
+
+    /**
+     * 
+     */
+    const fetchOverview= useCallback((username) => {
+
+        const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
+        fetch(`${process.env.REACT_APP_API_URL}/user/${username}/overview`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'auth-token': localStorage.getItem('jwt'),
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              setOverview(data.success.overview);
+            }
+            else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+              console.error(errorMsg, data)
+              if (loc.pathname !== '/Login')
+                history.push('/Login');
+            }
+            else {
+              console.error(errorMsg + " Unerwarteter Fehler.", data)
+              showError(errorMsg + " Unerwarteter Fehler.");
+            }
+          })
+          .catch((err) => {
+            console.error(errorMsg + " Der Server antwortet nicht.", err);
+            showError(errorMsg + " Der Server antwortet nicht.");
+          });
+    }, [loc.pathname, history])
+
+    /**
+     * 
+     */
+    useEffect(() => {
+        fetchOverview(props.user.username);
+    }, [fetchOverview, props.user.username])
 
     /**
      * 
@@ -66,7 +109,7 @@ export default function OvertimeCorrection(props) {
                     <Typography>Aktuell:</Typography>
                 </Grid>
                 <Grid item>
-                    <Typography>20 Std.</Typography>
+                    <Typography>{overview ? Utils.minutesToTimeString(overview.overtimeAsMinutes) : '--:--'} Std.</Typography>
                 </Grid>
             </Grid>
             <Grid container spacing={1} justify="center" alignItems="flex-end" >
@@ -111,12 +154,12 @@ export default function OvertimeCorrection(props) {
                 <Grid container justify="center" alignItems="center" >
                     <Grid item>
                         <IconButton onClick={() => handleOvertimeCorrection()}>
-                            <AddCircleIcon fontSize="large"/>
+                            <AddCircleIcon fontSize="large" />
                         </IconButton>
                     </Grid>
                     <Grid item>
                         <IconButton onClick={() => handleOvertimeCorrection()}>
-                            <RemoveCircleIcon fontSize="large"/>
+                            <RemoveCircleIcon fontSize="large" />
                         </IconButton>
                     </Grid>
                 </Grid>

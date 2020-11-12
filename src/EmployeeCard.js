@@ -236,7 +236,7 @@ export default function EmployeeCard(props) {
                             {error}
                         </Typography>
                     </Box>
-                   <OvertimeCorrection />
+                   <OvertimeCorrection user={props.employee}/>
                     <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
                         <Divider />
                     </Box>
