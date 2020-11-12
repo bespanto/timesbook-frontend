@@ -47,7 +47,6 @@ function Month(props) {
         uiState.now + "-" + (day <= 9 ? "0" + day : day)
       ).format(DAY_FORMAT);
       const workingModel = getTargetWorkingModel(bookingDay);
-      console.log(bookingDay + " => " + workingModel);
       days.push(
         <Day
           key={shortid.generate()}
@@ -85,7 +84,6 @@ function Month(props) {
    */
   function getTargetWorkingModel(startTime) {
     const models = user.workingModels;
-    console.log(models)
     let targetWorkingModel;
     if (models && models.length > 0) // mind. ein Arbeitsmodell definiert
       if (models.length === 1) {
