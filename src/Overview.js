@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import shortid from "shortid";
-import * as UiStateSlice from "./redux/UiStateSlice";
 import WorkingModelCard from "./WorkingModelCard";
 import * as Utils from "./Utils";
 // Material UI
@@ -17,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Overview(props) {
-  const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [error, setError] = useState("");
   const [overview, setOverview] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -154,7 +151,7 @@ function Overview(props) {
           </Grid>
         </Grid> */}
         {
-          uiState.profile && uiState.profile.workingModels && uiState.profile.workingModels.length > 0 &&
+          profile && profile.workingModels && profile.workingModels.length > 0 &&
           <Grid
             container
             spacing={1}
@@ -169,7 +166,7 @@ function Overview(props) {
             </Grid>
             <Grid item>
               {
-                uiState.profile.workingModels.map((el) => {
+                profile.workingModels.map((el) => {
                   return <WorkingModelCard key={shortid.generate()} workingModel={el} />
                 })
               }
