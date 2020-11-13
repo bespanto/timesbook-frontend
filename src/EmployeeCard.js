@@ -235,7 +235,7 @@ export default function EmployeeCard(props) {
                     </Box>
                    <FlextimeCorrection user={props.employee}/>
                     <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
-                        <Divider />
+                        <Divider variant="middle"/>
                     </Box>
                     <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
                         <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>
