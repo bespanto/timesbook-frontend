@@ -14,18 +14,19 @@ function FlextimeCorrectionCard(props) {
     const classes = useStyles();
 
     return (
-        <Paper style={{ paddingBottom: '0.5em', marginTop: '0.5em'}}>
+        <Paper style={{ paddingBottom: '0.5em', marginTop: '0.5em' }}>
             <Grid container alignItems="center">
                 <Grid item xs={12}>
                     <Box display="flex" alignItems="center" >
                         <Box flexGrow={1} style={{ paddingLeft: '0.5em' }} >
                             <Typography variant="body2">{Utils.minutesToTimeString(props.value)} Std.</Typography>
                         </Box>
-                        <Box>
-                            <IconButton size="small" onClick={() => props.deleteFlextime(props.id)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Box>
+                        {props.deleteFlextime &&
+                            <Box>
+                                <IconButton size="small" onClick={() => props.deleteFlextime(props.id)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>}
                     </Box>
                 </Grid>
                 <Grid item xs={2} className={classes.bookingRow} style={{ paddingLeft: '0.5em' }}>
