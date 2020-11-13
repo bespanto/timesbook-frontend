@@ -58,7 +58,7 @@ export default function FlextimeCorrection(props) {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
             });
-    }, [loc.pathname, history])
+    }, [loc.pathname, history, props.user.username])
 
 
     /**
