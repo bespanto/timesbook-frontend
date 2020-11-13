@@ -29,10 +29,10 @@ export default function FlextimeCorrection(props) {
     /**
      * 
      */
-    const fetchActualFlextime = useCallback((username) => {
+    const fetchActualFlextime = useCallback(() => {
 
         const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
-        fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${username}/flextime`, {
+        fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${props.user.username}/flextime`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -65,8 +65,8 @@ export default function FlextimeCorrection(props) {
      * 
      */
     useEffect(() => {
-        fetchActualFlextime(props.user.username);
-    }, [fetchActualFlextime, props.user.username])
+        fetchActualFlextime();
+    }, [fetchActualFlextime])
 
 
     /**
@@ -178,9 +178,10 @@ export default function FlextimeCorrection(props) {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
             })
-            .finally(() =>
-                fetchFlextimeCorrections()
-            )
+            .finally(() => {
+                fetchFlextimeCorrections();
+                fetchActualFlextime()
+            })
     }
 
     /**
@@ -271,9 +272,10 @@ export default function FlextimeCorrection(props) {
                 console.error(errorMsg + " Der Server antwortet nicht.", err);
                 showError(errorMsg + " Der Server antwortet nicht.");
             })
-            .finally(() =>
-                fetchFlextimeCorrections()
-            )
+            .finally(() => {
+                fetchFlextimeCorrections();
+                fetchActualFlextime();
+            })
     }
 
 
