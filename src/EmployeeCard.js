@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from 'clsx';
 import shortid from "shortid";
-import OvertimeCorrection from "./OvertimeCorrection";
+import FlextimeCorrection from "./FlextimeCorrection";
 import WorkingModelCard from "./WorkingModelCard";
 import WorkingModelForm from "./WorkingModelForm";
 //Material UI
@@ -202,7 +202,7 @@ export default function EmployeeCard(props) {
                     </Avatar>
                 }
                 action={
-                    props.profile.username !== props.employee.username &&
+                    props.profile && props.profile.username !== props.employee.username &&
                     <IconButton aria-label="settings" onClick={props.handleOpen}>
                         <DeleteIcon />
                     </IconButton>
@@ -233,7 +233,7 @@ export default function EmployeeCard(props) {
                             {error}
                         </Typography>
                     </Box>
-                   <OvertimeCorrection user={props.employee}/>
+                   <FlextimeCorrection user={props.employee}/>
                     <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
                         <Divider />
                     </Box>
