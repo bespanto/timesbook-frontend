@@ -25,7 +25,7 @@ function Overview(props) {
   const loc = useLocation();
 
   /**
-   * 
+   *
    */
   function showError(msg) {
     setError(msg);
@@ -34,7 +34,7 @@ function Overview(props) {
 
 
   /**
-   * 
+   *
    */
   useEffect(() => {
     const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
@@ -67,7 +67,7 @@ function Overview(props) {
 
 
   /**
-   * 
+   *
    */
   const fetchActualFlextime = useCallback((username) => {
 
@@ -100,7 +100,7 @@ function Overview(props) {
   }, [history, loc.pathname])
 
   /**
-   * 
+   *
    */
   useEffect(() => {
     if (profile)
@@ -109,7 +109,7 @@ function Overview(props) {
 
 
   /**
-   * 
+   *
    */
   const fetchFlextimeCorrections = useCallback((username) => {
     const errorMsg = "Die Gleitzeit-Übericht konnte nicht abgerufen werden.";
@@ -143,7 +143,7 @@ function Overview(props) {
 
 
   /**
-       * 
+       *
        */
   useEffect(() => {
     if (profile)
@@ -152,7 +152,7 @@ function Overview(props) {
 
   return (
     <div className={classes.root}>
-      <Grid container>
+      <Grid container justify={"center"}>
         <Grid item>
           <Grid
             container
@@ -188,11 +188,11 @@ function Overview(props) {
         {flextimes && flextimes.length > 0 &&
           <Grid item>
             <Grid container justify="center" style={{ marginTop: '1em' }}>
-              <Grid item>
-                <Typography variant="h6">Gleitzeit-Korrekturen</Typography>
+              <Grid item xs={12}>
+                <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
               </Grid>
               {flextimes.map((element) => {
-                return <Grid item>
+                return <Grid item xs={12}>
                   <FlextimeCorrectionCard
                     key={shortid.generate()}
                     id={element._id}
@@ -210,10 +210,10 @@ function Overview(props) {
           profile && profile.workingModels && profile.workingModels.length > 0 &&
           <Grid item>
             <Grid container justify="center" style={{ marginTop: '1em' }}>
-              <Grid item>
-                <Typography variant="h6">Arbeitsmodell</Typography>
+              <Grid item xs={12}>
+                <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
               </Grid>
-              <Grid item>
+              <Grid item xs={12}>
                 {
                   profile.workingModels.map((el) => {
                     return <WorkingModelCard key={shortid.generate()} workingModel={el} />
