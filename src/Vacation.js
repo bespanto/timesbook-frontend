@@ -279,7 +279,7 @@ function Vacation(props) {
                 </IconButton>
               }
               title={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
-              subheader={"Status: " + getStatus(row.status)}
+              subheader={getStatus(row.status)}
             />
           </Card>
         ))}

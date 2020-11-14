@@ -96,6 +96,8 @@ export function getStatus(status) {
       return "genehmigt";
     case "rejected":
       return "abgelehnt";
+    case "canceled":
+      return "storniert";
     default:
       return '';
   }
