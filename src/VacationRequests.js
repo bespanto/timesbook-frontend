@@ -47,8 +47,14 @@ function RequestVacationCardMenu(props) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}>
-        <MenuItem onClick={() => handleClick('approved')} style={{ color: '#ffffff' }}>Genehmigen</MenuItem>
-        <MenuItem onClick={() => handleClick('rejected')} style={{ color: '#ffffff' }}>Ablehnen</MenuItem>
+        {props.status === 'pending' ?
+          <span>
+            <MenuItem onClick={() => handleClick('approved')} style={{ color: '#ffffff' }}>Genehmigen</MenuItem>
+            <MenuItem onClick={() => handleClick('rejected')} style={{ color: '#ffffff' }}>Ablehnen</MenuItem>
+          </span>
+          :
+          <MenuItem onClick={() => handleClick('canceled')} style={{ color: '#ffffff' }}>Stornieren</MenuItem>
+        }
       </Menu>
     </div>
   );
@@ -258,8 +264,8 @@ function VacationRequests(props) {
                 </Avatar>
               }
               action={
-                row.status === 'pending' &&
-                <RequestVacationCardMenu handleVacation={updateVacationStatus} vacationId={row._id} />
+                (row.status === 'pending' || row.status === 'approved') &&
+                <RequestVacationCardMenu status={row.status} handleVacation={updateVacationStatus} vacationId={row._id} />
               }
               title={row.name}
               subheader={moment(row.from).format("DD.MM.YYYY") + " - " + moment(row.till).format("DD.MM.YYYY")}
