@@ -313,7 +313,7 @@ function Employee(props) {
               <Fade in={open}>
                 <Box className={classes.paper} style={{ textAlign: 'center' }}>
                   <WarningIcon fontSize="large" />
-                  <Typography style={{ marginTop: '1em' }}>Durch diese Aktion löschen Sie unwiederruflich den Benutzer und alle seine Buchungen.</Typography>
+                  <Typography style={{ marginTop: '1em' }}>Durch diese Aktion löschen Sie unwiederruflich den Benutzer und alle seine Daten.</Typography>
                   <Container style={{ textAlign: 'center', marginTop: '1em' }}>
                     <Button variant="contained" onClick={() => deleteUser(employee.username)}>Löschen</Button>
                   </Container>
