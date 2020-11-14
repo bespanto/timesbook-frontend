@@ -272,7 +272,7 @@ function VacationRequests(props) {
             />
             <CardContent>
               <Typography color="textSecondary" variant="body2">
-                Status: {getStatus(row.status)}
+                {getStatus(row.status)}
               </Typography>
             </CardContent>
           </Card>

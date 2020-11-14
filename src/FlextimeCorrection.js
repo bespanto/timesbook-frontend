@@ -307,7 +307,10 @@ export default function FlextimeCorrection(props) {
                     <Typography>{actualFlextime ? Utils.minutesToTimeString(actualFlextime) : '--:--'} Std.</Typography>
                 </Grid>
             </Grid>
-            <Grid container direction="column" justify="center" style={{ marginTop: '1em' }}>
+            <Grid item xs={12} style={{ textAlign: 'center', marginTop: '1em'  }}>
+                <Typography>Korrekturen</Typography>
+            </Grid>
+            <Grid container direction="column" justify="center" >
                 {flextimes.map((element) => {
                     return <FlextimeCorrectionCard
                         key={shortid.generate()}
