@@ -60,8 +60,9 @@ function Day(props) {
   }
   if (moment.isDuration(workingTime) && moment.isDuration(pause)) {
     overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - (targetDayHours ? targetDayHours : 0) * 60);
-    workingTime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes());
-    pause = Utils.minutesToTimeString(pause.asMinutes());
+    workingTime = workingTime.asMinutes() !== 0 ? Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes()) : placeholder;
+    pause = pause.asMinutes() !== 0 ? Utils.minutesToTimeString(pause.asMinutes())  : placeholder;
+
   }
 
   return (
