@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, Link } from "react-router-dom";
 import clsx from 'clsx';
 import shortid from "shortid";
 import FlextimeCorrection from "./FlextimeCorrection";
@@ -20,6 +20,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { Collapse, Typography } from '@material-ui/core';
+import Person from '@material-ui/icons/Person';
 
 export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
@@ -202,10 +203,14 @@ export default function EmployeeCard(props) {
                     </Avatar>
                 }
                 action={
-                    props.profile && props.profile.username !== props.employee.username &&
-                    <IconButton aria-label="settings" onClick={props.handleOpen}>
-                        <DeleteIcon />
-                    </IconButton>
+                    props.profile && props.profile.username !== props.employee.username ?
+                        <IconButton size="small" aria-label="settings" onClick={props.handleOpen}>
+                            <DeleteIcon />
+                        </IconButton>
+                        :
+                        <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
+                            <Person />
+                        </IconButton>
                 }
                 title={props.employee.name}
                 subheader={props.employee.username}
@@ -233,9 +238,9 @@ export default function EmployeeCard(props) {
                             {error}
                         </Typography>
                     </Box>
-                   <FlextimeCorrection user={props.employee}/>
+                    <FlextimeCorrection user={props.employee} />
                     <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
-                        <Divider variant="middle"/>
+                        <Divider variant="middle" />
                     </Box>
                     <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
                         <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>

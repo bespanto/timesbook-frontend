@@ -260,8 +260,8 @@ function Profile(props) {
           <Typography variant="h5">Benutzerprofil</Typography>
         </Grid>
         <Container>
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
+          <Grid container spacing={1} justify="center">
+            <Grid item xs={6} md={3}>
               <TextField
                 fullWidth
                 id="pass"
@@ -273,7 +273,7 @@ function Profile(props) {
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} md={3}>
               <TextField
                 fullWidth
                 id="passRepeat"

@@ -190,7 +190,7 @@ function Overview(props) {
             <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
           </Grid>
           {flextimes.map((element) => {
-            return <Grid item xs={11}>
+            return <Grid item xs={11} md={6}>
               <FlextimeCorrectionCard
                 key={shortid.generate()}
                 id={element._id}
@@ -209,7 +209,7 @@ function Overview(props) {
           <Grid item xs={12}>
             <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
           </Grid>
-          <Grid item xs={11}>
+          <Grid item xs={11} md={6}>
             {
               profile.workingModels.map((el) => {
                 return <WorkingModelCard key={shortid.generate()} workingModel={el} />
