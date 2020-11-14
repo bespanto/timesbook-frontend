@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import moment from "moment";
 import shortid from "shortid";
 import WorkingModelCard from "./WorkingModelCard";
 import FlextimeCorrectionCard from "./FlextimeCorrectionCard"
@@ -167,6 +168,9 @@ function Overview(props) {
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Typography variant="h5">Übersicht</Typography>
           </Grid>
+          <Grid xs={6} item style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Arbeitszeiten sind seit der Registrierung am {profile ? moment(profile.registrationDate).format('DD.MM.YYYY') : '__.__.____'} berücksichtigt</Typography>
+          </Grid>
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Grid container style={{ marginTop: '0.5em' }}>
               <Grid item xs={6}>
@@ -184,12 +188,12 @@ function Overview(props) {
         </Grid>
       </Grid>
 
-      {flextimes && flextimes.length > 0 &&
-        <Grid container justify="center" style={{ marginTop: '1em' }}>
-          <Grid item xs={12}>
-            <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
-          </Grid>
-          {flextimes.map((element) => {
+      <Grid container justify="center" style={{ marginTop: '1em' }}>
+        <Grid item xs={12}>
+          <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
+        </Grid>
+        {flextimes && flextimes.length ?
+          flextimes.map((element) => {
             return <Grid item xs={11} md={6}>
               <FlextimeCorrectionCard
                 key={shortid.generate()}
@@ -199,16 +203,20 @@ function Overview(props) {
                 value={element.value}
               />
             </Grid>
-          })}
-
-        </Grid>
-      }
-      {
-        profile && profile.workingModels && profile.workingModels.length > 0 &&
-        <Grid container justify="center" style={{ marginTop: '1em' }}>
-          <Grid item xs={12}>
-            <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
+          })
+          :
+          <Grid item style={{ padding: '0.5em' }}>
+            <Typography variant="body2">Keine Korrekturen vorhanden.</Typography>
           </Grid>
+        }
+      </Grid>
+
+
+      <Grid container justify="center" style={{ marginTop: '1em' }}>
+        <Grid item xs={12}>
+          <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
+        </Grid>
+        {profile && profile.workingModels && profile.workingModels.length > 0 ?
           <Grid item xs={11} md={6}>
             {
               profile.workingModels.map((el) => {
@@ -216,8 +224,13 @@ function Overview(props) {
               })
             }
           </Grid>
-        </Grid>
-      }
+          :
+          <Grid item style={{ padding: '0.5em' }}>
+            <Typography variant="body2">Sie haben kein Vertragsarbeitsmodell.</Typography>
+          </Grid>
+        }
+      </Grid>
+
 
 
     </div>
