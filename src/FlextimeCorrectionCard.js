@@ -18,7 +18,7 @@ function FlextimeCorrectionCard(props) {
             <Grid container alignItems="center">
                 <Grid item xs={12}>
                     <Box display="flex" alignItems="center" >
-                        <Box flexGrow={1} style={{ paddingLeft: '0.5em' }} >
+                        <Box flexGrow={1} style={{ textAlign: 'center', paddingTop: '0.5em', paddingBottom: '0.5em' }}>
                             <Typography variant="body2">{Utils.minutesToTimeString(props.value)} Std.</Typography>
                         </Box>
                         {props.deleteFlextime &&

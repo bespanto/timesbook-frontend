@@ -152,78 +152,73 @@ function Overview(props) {
 
   return (
     <div className={classes.root}>
-      <Grid container justify={"center"}>
-        <Grid item>
-          <Grid
-            container
-            spacing={1}
-            justify="center"
-            alignItems="center"
-          >
-            <Grid item>
-              <Typography style={{ color: "red", textAlign: "center" }}>
-                {error}
-              </Typography>
-            </Grid>
-            <Grid xs={12} item style={{ textAlign: 'center' }}>
-              <Typography variant="h5">Übersicht</Typography>
-            </Grid>
-            <Grid xs={12} item style={{ textAlign: 'center' }}>
-              <Grid container style={{ marginTop: '0.5em' }}>
-                <Grid item xs={6}>
-                  <Typography display="inline">Gleitzeit: </Typography>
-                  <Typography display="inline" variant="body2">
-                    {actualFlextime ? Utils.minutesToTimeString(actualFlextime) : "--:--"} Std.
+      <Grid item>
+        <Grid
+          container
+          spacing={1}
+          justify="center"
+          alignItems="center"
+        >
+          <Grid item>
+            <Typography style={{ color: "red", textAlign: "center" }}>
+              {error}
+            </Typography>
+          </Grid>
+          <Grid xs={12} item style={{ textAlign: 'center' }}>
+            <Typography variant="h5">Übersicht</Typography>
+          </Grid>
+          <Grid xs={12} item style={{ textAlign: 'center' }}>
+            <Grid container style={{ marginTop: '0.5em' }}>
+              <Grid item xs={6}>
+                <Typography display="inline">Gleitzeit: </Typography>
+                <Typography display="inline" variant="body2">
+                  {actualFlextime ? Utils.minutesToTimeString(actualFlextime) : "--:--"} Std.
                 </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography display="inline">Resturlaub: </Typography>
-                  <Typography display="inline" variant="body2">8 Tage</Typography>
-                </Grid>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography display="inline">Resturlaub: </Typography>
+                <Typography display="inline" variant="body2">8 Tage</Typography>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-
-        {flextimes && flextimes.length > 0 &&
-          <Grid item>
-            <Grid container justify="center" style={{ marginTop: '1em' }}>
-              <Grid item xs={12}>
-                <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
-              </Grid>
-              {flextimes.map((element) => {
-                return <Grid item xs={12}>
-                  <FlextimeCorrectionCard
-                    key={shortid.generate()}
-                    id={element._id}
-                    reason={element.reason}
-                    date={element.date}
-                    value={element.value}
-                  />
-                </Grid>
-              })}
-
-            </Grid>
-          </Grid>
-        }
-        {
-          profile && profile.workingModels && profile.workingModels.length > 0 &&
-          <Grid item>
-            <Grid container justify="center" style={{ marginTop: '1em' }}>
-              <Grid item xs={12}>
-                <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                {
-                  profile.workingModels.map((el) => {
-                    return <WorkingModelCard key={shortid.generate()} workingModel={el} />
-                  })
-                }
-              </Grid>
-            </Grid>
-          </Grid>
-        }
       </Grid>
+
+      {flextimes && flextimes.length > 0 &&
+        <Grid container justify="center" style={{ marginTop: '1em' }}>
+          <Grid item xs={12}>
+            <Typography variant="h6" align={"center"}>Gleitzeit-Korrekturen</Typography>
+          </Grid>
+          {flextimes.map((element) => {
+            return <Grid item xs={11}>
+              <FlextimeCorrectionCard
+                key={shortid.generate()}
+                id={element._id}
+                reason={element.reason}
+                date={element.date}
+                value={element.value}
+              />
+            </Grid>
+          })}
+
+        </Grid>
+      }
+      {
+        profile && profile.workingModels && profile.workingModels.length > 0 &&
+        <Grid container justify="center" style={{ marginTop: '1em' }}>
+          <Grid item xs={12}>
+            <Typography variant="h6" align={"center"}>Arbeitsmodell</Typography>
+          </Grid>
+          <Grid item xs={11}>
+            {
+              profile.workingModels.map((el) => {
+                return <WorkingModelCard key={shortid.generate()} workingModel={el} />
+              })
+            }
+          </Grid>
+        </Grid>
+      }
+
 
     </div>
   );

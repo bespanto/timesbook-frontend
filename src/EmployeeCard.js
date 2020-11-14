@@ -182,7 +182,7 @@ export default function EmployeeCard(props) {
             else
                 el.push(
                     <Grid item key={shortid.generate()}>
-                        <WorkingModelCard workingModel={workingModels[index]} />
+                        <WorkingModelCard locked workingModel={workingModels[index]} />
                     </Grid>
                 )
         }

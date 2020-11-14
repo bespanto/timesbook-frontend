@@ -20,16 +20,15 @@ function WorkingModelCard(props) {
             <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
                 <Grid item xs={12}>
                     <Box display="flex" alignItems="center" >
-                        <Box flexGrow={1} style={{ paddingLeft: '0.5em' }} >
+                        <Box flexGrow={1} style={{ textAlign: 'center', paddingTop: '0.5em', paddingBottom: '0.5em' }} >
                             <Typography variant="body2">Gültig ab {moment(props.workingModel.validFrom).format('DD.MM.YYYY')}</Typography>
                         </Box>
                         <Box>
-                            {props.removable ?
+                            {props.removable &&
                                 <IconButton size="small" onClick={() => props.deleteWorkingModel(props.workingModel._id)}>
                                     <DeleteIcon />
-                                </IconButton>
-                                : <LockRoundedIcon />
-                            }
+                                </IconButton>}
+                            {props.locked && <LockRoundedIcon />}
                         </Box>
                     </Box>
                 </Grid>
