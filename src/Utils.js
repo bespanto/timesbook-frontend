@@ -46,7 +46,7 @@ export function minutesToTimeString(minutes) {
   if (h < 10 && h >= 0)
     h = '0' + h;
   else
-    if (h < 0 && h>-9) {
+    if (h < 0 && h > -9) {
       let arr = h.toString().split('');
       arr.splice(1, 0, '0');
       h = arr.join('')
@@ -69,7 +69,7 @@ export function minutesToTimeString(minutes) {
 /**
  * 
  */
-export function getBackground(status){
+export function getBackground(status) {
   switch (status) {
     case "pending":
       return "yellow";
@@ -77,6 +77,8 @@ export function getBackground(status){
       return "green";
     case "rejected":
       return "red";
+    case "canceled":
+      return "theme.palette.background.default";
     default:
       return 'blueviolet';
   }
