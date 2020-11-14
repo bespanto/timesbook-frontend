@@ -17,6 +17,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Box from '@material-ui/core/Box';
+import BlockRoundedIcon from '@material-ui/icons/BlockRounded';
 
 function Day(props) {
   const bookingEntry = useSelector((state) =>
@@ -61,7 +62,7 @@ function Day(props) {
   if (moment.isDuration(workingTime) && moment.isDuration(pause)) {
     overtime = Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes() - (targetDayHours ? targetDayHours : 0) * 60);
     workingTime = workingTime.asMinutes() !== 0 ? Utils.minutesToTimeString(workingTime.asMinutes() - pause.asMinutes()) : placeholder;
-    pause = pause.asMinutes() !== 0 ? Utils.minutesToTimeString(pause.asMinutes())  : placeholder;
+    pause = pause.asMinutes() !== 0 ? Utils.minutesToTimeString(pause.asMinutes()) : placeholder;
 
   }
 
@@ -100,9 +101,13 @@ function Day(props) {
           <Grid item xs={2} className={classes.bookingRow}>
             <Typography variant="body2">{overtime}</Typography></Grid>
           <Grid item xs={2} style={{ textAlign: 'center' }} >
-            <IconButton size="small" onClick={() => handleOpen()}>
-              <EditIcon />
-            </IconButton>
+
+            {props.profile && moment(moment(props.profile.registrationDate).format('YYYY-MM-DD')).isSameOrBefore(props.bookingDay) ?
+              <IconButton size="small" onClick={() => handleOpen()}>
+                <EditIcon />
+              </IconButton>
+              : <BlockRoundedIcon />
+            }
           </Grid>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '0.5em' }}>
             <Typography variant="body2">{activities}</Typography>
