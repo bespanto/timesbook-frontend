@@ -3,6 +3,7 @@ import moment from "moment";
 import de from "date-fns/locale/de";
 import DateFnsUtils from '@date-io/date-fns';
 import shortid from "shortid";
+import validate from "validate.js";
 //Material UI
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -20,6 +21,7 @@ import {
 } from '@material-ui/pickers';
 
 export default function WorkingModelForm(props) {
+    const [error, setError] = useState("");
     const [monday, setMonday] = useState(8);
     const [thuesday, setThuesday] = useState(8);
     const [wednesday, setWednesday] = useState(8);
@@ -29,6 +31,14 @@ export default function WorkingModelForm(props) {
     const [validFrom, setValidFrom] = useState(new Date());
     const [vacationEntitlement, setVacationEntitlement] = useState(20);
     const classes = useStyles();
+
+    /**
+     * 
+     */
+    function showError(msg) {
+        setError(msg);
+        setTimeout(() => setError(""), 5000);
+    }
 
     /**
      * 
@@ -44,8 +54,35 @@ export default function WorkingModelForm(props) {
             vacationEntitlement: vacationEntitlement,
             validFrom: moment(moment(validFrom).format('YYYY-MM-DD')),
         }
+        if(isVacationEntitlementValid())
         props.saveWorkingModel(workingModel);
     }
+
+    /**
+      * 
+      */
+    function isVacationEntitlementValid() {
+        var constraints = {
+            days: {
+                numericality: {
+                    onlyInteger: true,
+                    greaterThan: -1,
+                    lessThanOrEqualTo: 199,
+                }
+            },
+        };
+
+        let valid = false;
+        const result = validate({ days: vacationEntitlement }, constraints);
+        if (result !== undefined) {
+            if (result.days)
+                showError("Urlaubsanspruch muss 0 bis 199 Tage betragen.");
+        }
+        else valid = true;
+
+        return valid;
+    }
+
 
     /**
     * 
@@ -90,6 +127,11 @@ export default function WorkingModelForm(props) {
         <div>
             <Box display="flex" justifyContent="center">
                 <Typography>Neues Arbeitsmodell</Typography>
+            </Box>
+            <Box display="flex" justifyContent="center">
+                <Typography style={{ color: "red", textAlign: "center" }}>
+                    {error}
+                </Typography>
             </Box>
             <Grid container spacing={3} justify="center" style={{ marginTop: '0.5em' }}>
                 <Grid item>
@@ -179,7 +221,7 @@ export default function WorkingModelForm(props) {
                     </FormControl>
                 </Grid>
             </Grid>
-            <Grid container justify="center" style={{marginTop: '1em'}}>
+            <Grid container justify="center" style={{ marginTop: '1em' }}>
                 <Grid item>
                     <TextField
                         id="vacationEntitlement"
