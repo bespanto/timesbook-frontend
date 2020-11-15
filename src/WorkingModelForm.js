@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
@@ -26,6 +27,7 @@ export default function WorkingModelForm(props) {
     const [friday, setFriday] = useState(8);
     const [saturday, setSaturday] = useState(0);
     const [validFrom, setValidFrom] = useState(new Date());
+    const [vacationEntitlement, setVacationEntitlement] = useState(20);
     const classes = useStyles();
 
     /**
@@ -39,6 +41,7 @@ export default function WorkingModelForm(props) {
             4: thursday,
             5: friday,
             6: saturday,
+            vacationEntitlement: vacationEntitlement,
             validFrom: moment(moment(validFrom).format('YYYY-MM-DD')),
         }
         props.saveWorkingModel(workingModel);
@@ -67,6 +70,9 @@ export default function WorkingModelForm(props) {
             case "saturday":
                 setSaturday(event.target.value);
                 break;
+            case "vacationEntitlement":
+                setVacationEntitlement(event.target.value);
+                break;
             default:
                 break;
         }
@@ -85,7 +91,7 @@ export default function WorkingModelForm(props) {
             <Box display="flex" justifyContent="center">
                 <Typography>Neues Arbeitsmodell</Typography>
             </Box>
-            <Grid container spacing={3} justify="center" style={{marginTop: '0.5em'}}>
+            <Grid container spacing={3} justify="center" style={{ marginTop: '0.5em' }}>
                 <Grid item>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="monday-select-label">Montag</InputLabel>
@@ -171,6 +177,18 @@ export default function WorkingModelForm(props) {
                             {getSelectElements()}
                         </Select>
                     </FormControl>
+                </Grid>
+            </Grid>
+            <Grid container justify="center" style={{marginTop: '1em'}}>
+                <Grid item>
+                    <TextField
+                        id="vacationEntitlement"
+                        type="number"
+                        label="Urlaubsanspruch im Jahr"
+                        name="vacationEntitlement"
+                        value={vacationEntitlement}
+                        onChange={handleChange}
+                    />
                 </Grid>
             </Grid>
             <Grid container direction="column" alignItems="center">
