@@ -21,12 +21,19 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { Collapse, Typography } from '@material-ui/core';
 import Person from '@material-ui/icons/Person';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
 
 export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
     const [showWorkingModel, setShowWorkingModel] = useState(false);
     const [workingModels, setWorkingModels] = useState([]);
     const [error, setError] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const classes = useStyles();
     let history = useHistory();
     const loc = useLocation();
@@ -36,8 +43,16 @@ export default function EmployeeCard(props) {
      */
     function showError(msg) {
         setError(msg);
-        setTimeout(() => setError(""), 5000);
+        setOpenSnackbar(true)
     }
+
+    const closeError = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setOpenSnackbar(false);
+      };
+
 
     /**
      * 
@@ -195,72 +210,80 @@ export default function EmployeeCard(props) {
      * 
      */
     return (
-        <Card className={classes.card}>
-            <CardHeader
-                avatar={
-                    <Avatar aria-label="recipe" className={classes.avatar}>
-                        {props.employee.name[0]}
-                    </Avatar>
-                }
-                action={
-                    props.profile && props.profile.username !== props.employee.username ?
-                        <IconButton size="small" aria-label="settings" onClick={props.handleOpen}>
-                            <DeleteIcon />
-                        </IconButton>
-                        :
-                        <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
-                            <Person />
-                        </IconButton>
-                }
-                title={props.employee.name}
-                subheader={props.employee.username}
-            />
-            <CardActions disableSpacing>
-                <Grid container justify="flex-end">
-                    <Typography variant="body2">Details</Typography>
-                </Grid>
-                <IconButton
-                    className={clsx(classes.expand, {
-                        [classes.expandOpen]: expanded,
-                    })}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                    size="small"
-                >
-                    <ExpandMoreIcon />
-                </IconButton>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    <Box display="flex" justifyContent="center">
-                        <Typography style={{ color: "red", textAlign: "center" }}>
-                            {error}
-                        </Typography>
-                    </Box>
-                    <FlextimeCorrection user={props.employee} />
-                    <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
-                        <Divider variant="middle" />
-                    </Box>
-                    <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
-                        <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>
-                    </Box>
-                    <Grid container direction="column" justify="center">
-                        {getWorkingModels()}
+        <div>
+
+            <Card className={classes.card}>
+                <CardHeader
+                    avatar={
+                        <Avatar aria-label="recipe" className={classes.avatar}>
+                            {props.employee.name[0]}
+                        </Avatar>
+                    }
+                    action={
+                        props.profile && props.profile.username !== props.employee.username ?
+                            <IconButton size="small" aria-label="settings" onClick={props.handleOpen}>
+                                <DeleteIcon />
+                            </IconButton>
+                            :
+                            <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
+                                <Person />
+                            </IconButton>
+                    }
+                    title={props.employee.name}
+                    subheader={props.employee.username}
+                />
+                <CardActions disableSpacing>
+                    <Grid container justify="flex-end">
+                        <Typography variant="body2">Details</Typography>
                     </Grid>
-                    <Grid container justify="center">
-                        <IconButton>
-                            {showWorkingModel ?
-                                <ExpandLessIcon onClick={() => toggleWorkingModelForm()} />
-                                :
-                                <ExpandMoreIcon onClick={() => toggleWorkingModelForm()} />
-                            }
-                        </IconButton>
-                    </Grid>
-                    {showWorkingModel && <WorkingModelForm saveWorkingModel={saveWorkingModel} username={props.employee.username} />}
-                </CardContent>
-            </Collapse>
-        </Card>
+                    <IconButton
+                        className={clsx(classes.expand, {
+                            [classes.expandOpen]: expanded,
+                        })}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}
+                        aria-label="show more"
+                        size="small"
+                    >
+                        <ExpandMoreIcon />
+                    </IconButton>
+                </CardActions>
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <CardContent>
+                        <Box display="flex" justifyContent="center">
+                            <Typography style={{ color: "red", textAlign: "center" }}>
+                                {error}
+                            </Typography>
+                        </Box>
+                        <FlextimeCorrection user={props.employee} />
+                        <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
+                            <Divider variant="middle" />
+                        </Box>
+                        <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+                            <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>
+                        </Box>
+                        <Grid container direction="column" justify="center">
+                            {getWorkingModels()}
+                        </Grid>
+                        <Grid container justify="center">
+                            <IconButton>
+                                {showWorkingModel ?
+                                    <ExpandLessIcon onClick={() => toggleWorkingModelForm()} />
+                                    :
+                                    <ExpandMoreIcon onClick={() => toggleWorkingModelForm()} />
+                                }
+                            </IconButton>
+                        </Grid>
+                        {showWorkingModel && <WorkingModelForm saveWorkingModel={saveWorkingModel} username={props.employee.username} />}
+                    </CardContent>
+                </Collapse>
+            </Card>
+            <Snackbar open={openSnackbar} autoHideDuration={10000} onClose={closeError}>
+                <Alert onClose={closeError} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
+        </div>
     );
 }
 

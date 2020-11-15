@@ -15,13 +15,20 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
 export default function WorkingModelForm(props) {
     const [error, setError] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [monday, setMonday] = useState(8);
     const [thuesday, setThuesday] = useState(8);
     const [wednesday, setWednesday] = useState(8);
@@ -31,15 +38,22 @@ export default function WorkingModelForm(props) {
     const [validFrom, setValidFrom] = useState(new Date());
     const [vacationEntitlement, setVacationEntitlement] = useState(20);
     const classes = useStyles();
-
+  
+  
     /**
      * 
      */
     function showError(msg) {
         setError(msg);
-        setTimeout(() => setError(""), 5000);
+        setOpenSnackbar(true)
     }
 
+    const closeError = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setOpenSnackbar(false);
+      };
     /**
      * 
      */
@@ -127,11 +141,6 @@ export default function WorkingModelForm(props) {
         <div>
             <Box display="flex" justifyContent="center">
                 <Typography>Neues Arbeitsmodell</Typography>
-            </Box>
-            <Box display="flex" justifyContent="center">
-                <Typography style={{ color: "red", textAlign: "center" }}>
-                    {error}
-                </Typography>
             </Box>
             <Grid container spacing={3} justify="center" style={{ marginTop: '0.5em' }}>
                 <Grid item>
@@ -258,10 +267,14 @@ export default function WorkingModelForm(props) {
                     </Button>
                 </Grid>
             </Grid>
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={closeError}>
+                <Alert onClose={closeError} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }
-
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
