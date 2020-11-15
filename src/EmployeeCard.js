@@ -211,7 +211,6 @@ export default function EmployeeCard(props) {
      */
     return (
         <div>
-
             <Card className={classes.card}>
                 <CardHeader
                     avatar={
@@ -250,11 +249,6 @@ export default function EmployeeCard(props) {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Box display="flex" justifyContent="center">
-                            <Typography style={{ color: "red", textAlign: "center" }}>
-                                {error}
-                            </Typography>
-                        </Box>
                         <FlextimeCorrection user={props.employee} />
                         <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
                             <Divider variant="middle" />
