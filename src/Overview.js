@@ -20,6 +20,7 @@ function Overview(props) {
   const [error, setError] = useState("");
   const [actualFlextime, setActualFlextime] = useState(null);
   const [flextimes, setFlextimes] = useState([]);
+  const [remainingVacation, setRemainingVacation] = useState([]);
   const [profile, setProfile] = useState(null);
   const classes = useStyles();
   let history = useHistory();
@@ -72,7 +73,7 @@ function Overview(props) {
    */
   const fetchActualFlextime = useCallback((username) => {
 
-    const errorMsg = "Die Übersicht konnte nicht abgerufen werden.";
+    const errorMsg = "Die Gleitzeit konnte nicht abgerufen werden.";
     fetch(`${process.env.REACT_APP_API_URL}/bookingEntries/${username}/flextime`, {
       method: "GET",
       headers: {
@@ -107,6 +108,49 @@ function Overview(props) {
     if (profile)
       fetchActualFlextime(profile.username);
   }, [fetchActualFlextime, profile])
+
+
+
+  /**
+   *
+   */
+  const fetchRemainingVacation = useCallback((username) => {
+
+    const errorMsg = "Der Resturlaub konnte nicht abgerufen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/vacation/${username}/tillThisYear`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        'auth-token': localStorage.getItem('jwt'),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success)
+          setRemainingVacation(data.success.remainigVacation);
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err);
+        showError(errorMsg + " Der Server antwortet nicht.");
+      });
+  }, [history, loc.pathname])
+
+  /**
+   *
+   */
+  useEffect(() => {
+    if (profile)
+      fetchRemainingVacation(profile.username);
+  }, [fetchRemainingVacation, profile])
 
 
   /**
@@ -151,6 +195,17 @@ function Overview(props) {
       fetchFlextimeCorrections(profile.username);
   }, [fetchFlextimeCorrections, profile])
 
+
+  function getRemainingVacationString(){
+    const wholeDays = Math.trunc(remainingVacation);
+    const hours = (Math.abs(remainingVacation) - Math.abs(Math.trunc(remainingVacation))) * 24
+    const wholeHours = Math.trunc(hours);
+    const minutes = (Math.abs(hours) - Math.abs(Math.trunc(hours))) * 60
+    const roundedMinutes = Math.round(minutes);
+
+    return `${wholeDays} Tage ${wholeHours} Std. ${roundedMinutes} Min.`;
+  }
+
   return (
     <div className={classes.root}>
       <Grid item>
@@ -173,15 +228,15 @@ function Overview(props) {
           </Grid>
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Grid container style={{ marginTop: '0.5em' }}>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <Typography display="inline">Gleitzeit: </Typography>
                 <Typography display="inline" variant="body2">
                   {actualFlextime ? Utils.minutesToTimeString(actualFlextime) : "--:--"} Std.
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <Typography display="inline">Resturlaub: </Typography>
-                <Typography display="inline" variant="body2">8 Tage</Typography>
+                <Typography display="inline" variant="body2">{getRemainingVacationString()}</Typography>
               </Grid>
             </Grid>
           </Grid>
