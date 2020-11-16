@@ -27,6 +27,7 @@ function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [profile, setProfile] = useState(null);
   const [vacations, setVacations] = useState(null);
+  const [holidays, setHolidays] = useState(null);
   const [username, setUsername] = useState(null);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
@@ -161,6 +162,52 @@ function Month(props) {
       });
   }, [history, loc.pathname, from, till])
 
+  /**
+  * 
+  */
+  useEffect(() => {
+    const errorMsg = "Feiertage können nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_HOLIDAY_API_URL}/?jahr=${moment(uiState.now).format("YYYY")}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setHolidays(data);
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+  }, [history, loc.pathname, uiState.now])
+
+
+  /**
+   * 
+   */
+  function getHoliday(day) {
+    if (holidays)
+      for (const key in holidays['NATIONAL']) {
+        if (holidays['NATIONAL'].hasOwnProperty(key)) {
+          const element = holidays['NATIONAL'][key];
+          if (moment(day).isSame(element.datum, 'day'))
+            return key;
+        }
+      }
+    return null
+  }
+
+  /**
+   * 
+   */
+  function isVacationDay(day) {
+    if (vacations)
+      for (let index = 0; index < vacations.length; index++) {
+        const vacation = vacations[index];
+        if (moment(day).isBetween(vacation.from, vacation.till, 'day', '[]'))
+          return true;
+      }
+    return false
+  }
 
   /**
    *
@@ -180,7 +227,8 @@ function Month(props) {
           workingModel={workingModel}
           bookingDay={bookingDay}
           profile={profile}
-          vacations={vacations}
+          vacationDay={isVacationDay(bookingDay)}
+          holiday={getHoliday(bookingDay)}
         />
       );
     }

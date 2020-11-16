@@ -67,23 +67,15 @@ function Day(props) {
   }
 
 
-
-  function isVacationDay(day) {
-    if (props.vacations)
-      for (let index = 0; index < props.vacations.length; index++) {
-        const vacation = props.vacations[index];
-        if (moment(day).isBetween(vacation.from, vacation.till, 'day', '[]'))
-          return true;
-      }
-    return false
-  }
-
   function getBackgroundColor() {
+
     let color = "#424242"
     if (weekday === 6 || weekday === 0)
       color = "#49516b";
-    if (isVacationDay(props.bookingDay))
+    if (props.vacationDay)
       color = "#3e664d";
+    if (props.holiday)
+      color = "#993c3c";
 
     return color;
   }
