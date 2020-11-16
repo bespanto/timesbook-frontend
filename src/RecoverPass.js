@@ -6,20 +6,37 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import MUILink from "@material-ui/core/Link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function ForgotPass(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [username, setUsername] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
 
   /**
    * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -27,9 +44,18 @@ function ForgotPass(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
 
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
   /**
    * Handles login event
@@ -74,7 +100,7 @@ function ForgotPass(props) {
     }
   }
 
-  
+
   /**
    * Render output
    */
@@ -87,14 +113,6 @@ function ForgotPass(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
-          <Typography style={{ color: "red", textAlign: "center" }}>
-            {error}
-          </Typography>
-          <Typography style={{ color: "green", textAlign: "center" }}>
-            {success}
-          </Typography>
-        </Grid>
         <Grid item>
           <Typography variant="h5">Passwort wiederherstellen</Typography>
         </Grid>
@@ -123,6 +141,16 @@ function ForgotPass(props) {
           </MUILink>
         </Grid>
       </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

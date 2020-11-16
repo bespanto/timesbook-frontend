@@ -14,8 +14,17 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
 
 export default function FlextimeCorrection(props) {
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
     const [overtimeCorHours, setOvertimeCorHours] = useState('');
     const [overtimeCorMinutes, setOvertimeCorMinutes] = useState('');
     const [overtimeCorText, setOvertimeCorText] = useState('');
@@ -25,6 +34,26 @@ export default function FlextimeCorrection(props) {
     const [error, setError] = useState("");
     let history = useHistory();
     const loc = useLocation();
+
+
+    /**
+     * 
+     */
+    function showError(msg) {
+        setError(msg);
+        setOpenErrorSnackbar(true)
+    }
+
+    /**
+     * 
+     */
+    const closeError = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenErrorSnackbar(false);
+    };
+
 
     /**
      * 
@@ -109,15 +138,6 @@ export default function FlextimeCorrection(props) {
     useEffect(() => {
         fetchFlextimeCorrections();
     }, [fetchFlextimeCorrections])
-
-
-    /**
-     * 
-     */
-    function showError(msg) {
-        setError(msg);
-        setTimeout(() => setError(""), 5000);
-    }
 
     /**
      * 
@@ -291,11 +311,6 @@ export default function FlextimeCorrection(props) {
      */
     return (
         <React.Fragment>
-            <Box display="flex" justifyContent="center">
-                <Typography style={{ color: "red", textAlign: "center" }}>
-                    {error}
-                </Typography>
-            </Box>
             <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
                 <Typography variant="h6" style={{ textDecoration: 'underline' }}>Gleitzeit</Typography>
             </Box>
@@ -307,7 +322,7 @@ export default function FlextimeCorrection(props) {
                     <Typography>{actualFlextime ? Utils.minutesToTimeString(actualFlextime) : '--:--'} Std.</Typography>
                 </Grid>
             </Grid>
-            <Grid item xs={12} style={{ textAlign: 'center', marginTop: '1em'  }}>
+            <Grid item xs={12} style={{ textAlign: 'center', marginTop: '1em' }}>
                 <Typography>Korrekturen</Typography>
             </Grid>
             <Grid container direction="column" justify="center" >
@@ -385,6 +400,12 @@ export default function FlextimeCorrection(props) {
                     </Grid>
                 </Grid>
             }
+            <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+                <Alert onClose={closeError} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
         </React.Fragment>
     );
 }
+

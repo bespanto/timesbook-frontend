@@ -46,6 +46,9 @@ export default function EmployeeCard(props) {
         setOpenSnackbar(true)
     }
 
+    /**
+     * 
+     */
     const closeError = (event, reason) => {
         if (reason === 'clickaway') {
           return;

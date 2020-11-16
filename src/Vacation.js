@@ -24,8 +24,16 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Vacation(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [profile, setProfile] = useState(null);
@@ -41,8 +49,18 @@ function Vacation(props) {
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -50,9 +68,18 @@ function Vacation(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
 
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
   /**
    * 
@@ -211,14 +238,6 @@ function Vacation(props) {
 
   return (
     <React.Fragment>
-      <Box display="flex" justifyContent="center">
-        <Typography style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </Typography>
-        <Typography style={{ color: "green", textAlign: "center" }}>
-          {success}
-        </Typography>
-      </Box>
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaub</Typography>
       </Box>
@@ -268,7 +287,7 @@ function Vacation(props) {
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" style={{backgroundColor: getBackground(row.status)}}>
+                <Avatar aria-label="recipe" style={{ backgroundColor: getBackground(row.status) }}>
                   <FlightTakeoffIcon />
                 </Avatar>
               }
@@ -284,6 +303,16 @@ function Vacation(props) {
           </Card>
         ))}
       </Container>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

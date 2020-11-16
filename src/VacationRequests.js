@@ -20,6 +20,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 function RequestVacationCardMenu(props) {
@@ -62,6 +68,8 @@ function RequestVacationCardMenu(props) {
 
 
 function VacationRequests(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [vacations, setVacations] = useState([]);
@@ -72,20 +80,22 @@ function VacationRequests(props) {
   const loc = useLocation();
 
   /**
-   * 
-   */
-  const handleChange = (event) => {
-    setName(event.target.value);
-    fetchVacationData(name);
-  };
+    * 
+    */
+  function showError(msg) {
+    setError(msg);
+    setOpenErrorSnackbar(true)
+  }
 
   /**
    * 
    */
-  function showError(msg) {
-    setError(msg);
-    setTimeout(() => setError(""), 5000);
-  }
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -93,9 +103,28 @@ function VacationRequests(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
 
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
+
+
+
+  /**
+   * 
+   */
+  const handleChange = (event) => {
+    setName(event.target.value);
+    fetchVacationData(name);
+  };
 
   /**
    * 
@@ -227,14 +256,6 @@ function VacationRequests(props) {
 
   return (
     <React.Fragment>
-      <Box display="flex" justifyContent="center">
-        <Typography style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </Typography>
-        <Typography style={{ color: "green", textAlign: "center" }}>
-          {success}
-        </Typography>
-      </Box>
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaubsanträge</Typography>
       </Box>
@@ -278,7 +299,16 @@ function VacationRequests(props) {
           </Card>
         ))}
       </Container>
-
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

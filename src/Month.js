@@ -14,8 +14,16 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 function Month(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [profile, setProfile] = useState(null);
   const [username, setUsername] = useState(null);
@@ -30,13 +38,24 @@ function Month(props) {
   const from = uiState.now + "-01";
   const till = uiState.now + "-" + daysInMonth;
 
+
   /**
    * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -189,11 +208,6 @@ function Month(props) {
         alignItems="center"
         style={{ marginBottom: "1em", marginTop: "1em" }}
       >
-        <Grid item>
-          <Typography style={{ color: "red", textAlign: "center" }}>
-            {error}
-          </Typography>
-        </Grid>
         <Grid item xs={3} style={{ textAlign: "right" }}>
           <IconButton size="small" onClick={(e) => monthDown(e)}>
             <ChevronLeftIcon fontSize="large" />
@@ -212,6 +226,11 @@ function Month(props) {
         </Grid>
       </Grid>
       {getDayComponents()}
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

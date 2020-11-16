@@ -9,6 +9,13 @@ import * as Utils from "./Utils";
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Overview(props) {
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [error, setError] = useState("");
   const [actualFlextime, setActualFlextime] = useState(null);
   const [flextimes, setFlextimes] = useState([]);
@@ -26,13 +34,25 @@ function Overview(props) {
   let history = useHistory();
   const loc = useLocation();
 
+
   /**
-   *
+   * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenSnackbar(true)
   }
+
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
 
   /**
@@ -204,11 +224,6 @@ function Overview(props) {
           justify="center"
           alignItems="center"
         >
-          <Grid item>
-            <Typography style={{ color: "red", textAlign: "center" }}>
-              {error}
-            </Typography>
-          </Grid>
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Typography variant="h5">Übersicht</Typography>
           </Grid>
@@ -225,7 +240,7 @@ function Overview(props) {
               </Grid>
               <Grid item xs={6}>
                 <Typography display="inline">Resturlaub: </Typography>
-                <Typography display="inline" variant="body2">{remainingVacation && (Math.round(remainingVacation*100)/100).toString().replace(/\./, ",")} Tag(e)</Typography>
+                <Typography display="inline" variant="body2">{remainingVacation && (Math.round(remainingVacation * 100) / 100).toString().replace(/\./, ",")} Tag(e)</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -273,9 +288,11 @@ function Overview(props) {
           </Grid>
         }
       </Grid>
-
-
-
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

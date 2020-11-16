@@ -16,8 +16,16 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import WarningIcon from '@material-ui/icons/Warning';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Employee(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [success, setSuccess] = useState("");
@@ -35,8 +43,18 @@ function Employee(props) {
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -44,10 +62,18 @@ function Employee(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
 
-
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
 
   /**
@@ -146,9 +172,9 @@ function Employee(props) {
     const result = validate(userInfo, constraints);
     if (result !== undefined) {
       if (result.name)
-        showError("Name muss angegeben werden");
+        showError("Name muss angegeben werden.");
       else if (result.username)
-        showError("Benutzername muss eine gültige E-Mail sein");
+        showError("Benutzername muss eine gültige E-Mail sein.");
     } else {
       const errorMsg = "Der Benutzer konnte nicht eingeladen werden.";
       postData(
@@ -243,14 +269,6 @@ function Employee(props) {
 
   return (
     <React.Fragment>
-      <Box display="flex" justifyContent="center">
-        <Typography style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </Typography>
-        <Typography style={{ color: "green", textAlign: "center" }}>
-          {success}
-        </Typography>
-      </Box>
       <Box
         display="flex"
         justifyContent="center"
@@ -296,7 +314,7 @@ function Employee(props) {
       <Container style={{ marginTop: "1.5em" }}>
         {employees.map((employee) => (
           <div key={shortid.generate()}>
-            <EmployeeCard handleOpen={handleOpen} employee={employee} profile={profile}/>
+            <EmployeeCard handleOpen={handleOpen} employee={employee} profile={profile} />
             <Modal
               style={{ marginLeft: '1em', marginRight: '1em' }}
               aria-labelledby="transition-modal-title"
@@ -323,6 +341,16 @@ function Employee(props) {
           </div>
         ))}
       </Container>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

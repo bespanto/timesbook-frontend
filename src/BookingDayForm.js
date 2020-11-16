@@ -10,14 +10,42 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 function BookingDayForm(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const loc = useLocation();
   const dispatch = useDispatch();
   let history = useHistory();
   const bookingEntry = useSelector((state) =>
     BookingEntriesSlice.selectBookingEntryByDay(state, props.bookingDay)
   );
+
+
+  /**
+   * 
+   */
+  function showError(msg) {
+    setError(msg);
+    setOpenErrorSnackbar(true)
+  }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
+
 
   const [start, setStart] = useState(
     bookingEntry === undefined || bookingEntry.start === undefined
@@ -66,7 +94,7 @@ function BookingDayForm(props) {
         }
         else if (data.errorCode === 4019) {
           console.error(errMsg + " Fehler: ", data.message);
-          setError(errMsg + " Fehler: " + data.message)
+          showError(errMsg + " Fehler: " + data.message)
         }
         else if (data.errorCode) {
           console.error(errMsg + " Fehler: ", data.errorCode);
@@ -74,11 +102,11 @@ function BookingDayForm(props) {
             history.push('/Login');
         }
         else
-          setError(errMsg + " Unerwarteter Fehler.");
+        showError(errMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
         console.error(err);
-        setError(errMsg + " Keine Verbindung zum Server.");
+        showError(errMsg + " Keine Verbindung zum Server.");
         throw new Exception("ERROR: " + error);
       });
   }
@@ -103,7 +131,7 @@ function BookingDayForm(props) {
       checkInputs(start, end, pause);
       saveEntryToBackend(entryToEdit);
     } catch (error) {
-      setError(error.message);
+      showError(error.message);
     }
   }
 
@@ -128,11 +156,11 @@ function BookingDayForm(props) {
             history.push('/Login');
         }
         else
-          setError(errMsg + " Unerwarteter Fehler.");
+        showError(errMsg + " Unerwarteter Fehler.");
       })
       .catch((err) => {
         console.error(err);
-        setError(errMsg + "Der Server antwortet nicht.");
+        showError(errMsg + "Der Server antwortet nicht.");
       });
   }
 
@@ -188,89 +216,91 @@ function BookingDayForm(props) {
   }
 
   return (
-    <Grid
-      container
-      spacing={2}
-      direction="column"
-      justify="center"
-      alignItems="center"
-    >
-      <Grid item>
-        <Typography style={{ color: "red", textAlign: "center" }}>
+    <div>
+      <Grid
+        container
+        spacing={2}
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
+        <Grid item>
+          <Typography variant="h6">
+            {moment(props.bookingDay).format("DD.MM.YYYY")}
+          </Typography>
+        </Grid>
+        <Grid item style={{ marginTop: "0.5em" }}>
+          <TextField
+            id="start"
+            label="Start"
+            type="time"
+            name="start"
+            value={start}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item style={{ marginTop: "0.5em" }}>
+          <TextField
+            id="ende"
+            label="Ende"
+            type="time"
+            name="end"
+            value={end}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item style={{ marginTop: "0.5em" }}>
+          <TextField
+            id="Pause"
+            label="Pause"
+            type="time"
+            name="pause"
+            value={pause}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item style={{ marginTop: "0.5em" }}>
+          <TextField
+            id="activities"
+            label="Tätigkeiten"
+            type="text"
+            name="activities"
+            value={activities}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item style={{ marginTop: "0.5em" }}>
+          <Button
+            variant="contained"
+            onClick={() => deleteEntryFromBackend(moment.utc(props.bookingDay).format())}
+            style={{ marginRight: "0.5em" }}
+          >
+            Löschen
+        </Button>
+          <Button
+            variant="contained"
+            onClick={(e) => save()}
+            style={{ marginLeft: "0.5em" }}
+          >
+            {props.submitButtonValue}
+          </Button>
+        </Grid>
+      </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
           {error}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Typography variant="h6">
-          {moment(props.bookingDay).format("DD.MM.YYYY")}
-        </Typography>
-      </Grid>
-      <Grid item style={{ marginTop: "0.5em" }}>
-        <TextField
-          id="start"
-          label="Start"
-          type="time"
-          name="start"
-          value={start}
-          onChange={handleChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </Grid>
-      <Grid item style={{ marginTop: "0.5em" }}>
-        <TextField
-          id="ende"
-          label="Ende"
-          type="time"
-          name="end"
-          value={end}
-          onChange={handleChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </Grid>
-      <Grid item style={{ marginTop: "0.5em" }}>
-        <TextField
-          id="Pause"
-          label="Pause"
-          type="time"
-          name="pause"
-          value={pause}
-          onChange={handleChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </Grid>
-      <Grid item style={{ marginTop: "0.5em" }}>
-        <TextField
-          id="activities"
-          label="Tätigkeiten"
-          type="text"
-          name="activities"
-          value={activities}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item style={{ marginTop: "0.5em" }}>
-        <Button
-          variant="contained"
-          onClick={() => deleteEntryFromBackend(moment.utc(props.bookingDay).format())}
-          style={{ marginRight: "0.5em" }}
-        >
-          Löschen
-        </Button>
-        <Button
-          variant="contained"
-          onClick={(e) => save()}
-          style={{ marginLeft: "0.5em" }}
-        >
-          {props.submitButtonValue}
-        </Button>
-      </Grid>
-    </Grid>
+        </Alert>
+      </Snackbar>
+    </div>
   );
 }
 

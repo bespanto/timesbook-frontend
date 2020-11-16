@@ -11,6 +11,13 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Profile(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [pass, setPass] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -37,8 +46,18 @@ function Profile(props) {
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -46,8 +65,18 @@ function Profile(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
+
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
 
   /**
@@ -62,7 +91,7 @@ function Profile(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success){
+        if (data.success) {
           setName(data.success.user.name);
           setUsername(data.success.user.username);
           setOrga(data.success.user.organization);
@@ -104,7 +133,7 @@ function Profile(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success){
+        if (data.success) {
           showSuccess("Das Profil wurde erfolgreich geändert");
           dispatch(UiStateSlice.setProfileChanged(new Date().getTime()))
         }
@@ -151,7 +180,7 @@ function Profile(props) {
     );
     if (result !== undefined) {
       if (result.pass || result.passRepeat)
-        showError("Passwort muss mind. 6 Zeichen lang sein");
+        showError("Das Passwort muss mind. 6 Zeichen lang sein");
     } else if (pass !== passRepeat)
       showError("Passwörter stimmen nicht überein");
     else {
@@ -248,14 +277,6 @@ function Profile(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
-          <Typography style={{ color: "red", textAlign: "center" }}>
-            {error}
-          </Typography>
-          <Typography style={{ color: "green", textAlign: "center" }}>
-            {success}
-          </Typography>
-        </Grid>
         <Grid xs={12} item style={{ textAlign: 'center', marginBottom: '0.5em' }}>
           <Typography variant="h5">Benutzerprofil</Typography>
         </Grid>
@@ -356,6 +377,16 @@ function Profile(props) {
           </Button>
         </Grid>
       </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

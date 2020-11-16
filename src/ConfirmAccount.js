@@ -4,7 +4,12 @@ import { useLocation, Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import MUILink from "@material-ui/core/Link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 /**
  * 
@@ -18,6 +23,8 @@ function useQuery() {
  * 
  */
 function ConfirmAccount(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [accountConfirmed, setAccountConfirmed] = useState(false);
@@ -26,14 +33,23 @@ function ConfirmAccount(props) {
   const username = query.get("username");
   const regKey = query.get("regKey");
 
-
   /**
    * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -41,8 +57,18 @@ function ConfirmAccount(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
+
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
 
   /**
@@ -69,7 +95,7 @@ function ConfirmAccount(props) {
           }
           else if (data.errorCode === 4022)
             showError(errorMsg + " Der Registrierungsschlüssel ist falsch.");
-          else if (data.errorCode === 4023){
+          else if (data.errorCode === 4023) {
             showSuccess("Das Konto wurde bereits bestätigt.");
             setAccountConfirmed(true);
           }
@@ -96,34 +122,38 @@ function ConfirmAccount(props) {
 
 
   return (
-    <Grid
-      container
-      spacing={1}
-      direction="column"
-      justify="center"
-      alignItems="center"
-    >
-      <Grid item>
-        <Typography variant="h6">
-          Bestätigung der Registrierung
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Typography style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </Typography>
-        <Typography style={{ color: "green", textAlign: "center" }}>
-          {success}
-        </Typography>
-      </Grid>
-      {accountConfirmed &&
+    <React.Fragment>
+      <Grid
+        container
+        spacing={1}
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
         <Grid item>
-          <MUILink variant="body1" component={Link} to="/Login">
-            Login
-          </MUILink>
+          <Typography variant="h6">
+            Bestätigung der Registrierung
+        </Typography>
         </Grid>
-      }
-    </Grid>
+        {accountConfirmed &&
+          <Grid item>
+            <MUILink variant="body1" component={Link} to="/Login">
+              Login
+          </MUILink>
+          </Grid>
+        }
+      </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
+    </React.Fragment>
   );
 }
 

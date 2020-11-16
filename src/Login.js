@@ -6,21 +6,37 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import MUILink from "@material-ui/core/Link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Login(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   let history = useHistory();
-
 
   /**
    * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -91,11 +107,6 @@ function Login(props) {
         alignItems="center"
       >
         <Grid item>
-          <Typography style={{ color: "red", textAlign: "center" }}>
-            {error}
-          </Typography>
-        </Grid>
-        <Grid item>
           <Typography variant="h5">Login</Typography>
         </Grid>
 
@@ -135,6 +146,11 @@ function Login(props) {
           </MUILink>
         </Grid>
       </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

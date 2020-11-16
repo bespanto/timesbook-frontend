@@ -8,12 +8,21 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import MUILink from "@material-ui/core/Link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
 function ResetPassword(props) {
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const query = useQuery();
   const [pass, setPass] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
@@ -24,14 +33,23 @@ function ResetPassword(props) {
   const [showLoginLink, setShowLoginLink] = useState(false);
   const dispatch = useDispatch();
 
-
   /**
    * 
    */
   function showError(msg) {
     setError(msg);
-    setTimeout(() => setError(""), 5000);
+    setOpenErrorSnackbar(true)
   }
+
+  /**
+   * 
+   */
+  const closeError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorSnackbar(false);
+  };
 
 
   /**
@@ -39,8 +57,18 @@ function ResetPassword(props) {
    */
   function showSuccess(msg) {
     setSuccess(msg);
-    setTimeout(() => setSuccess(""), 5000);
+    setOpenSuccessSnackbar(true);
   }
+
+  /**
+    * 
+    */
+  const closeSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+  };
 
 
   /**
@@ -137,72 +165,76 @@ function ResetPassword(props) {
   }
 
   return (
-    <Grid
-      container
-      spacing={1}
-      direction="column"
-      justify="center"
-      alignItems="center"
-    >
-      <Grid item>
-        <Typography style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </Typography>
-        <Typography style={{ color: "green", textAlign: "center" }}>
-          {success}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Typography variant="h5">
-          Passwort für '{query.get("username")}' setzen
-        </Typography>
-      </Grid>
-      {showLoginLink ? (
+    <React.Fragment>
+      <Grid
+        container
+        spacing={1}
+        direction="column"
+        justify="center"
+        alignItems="center"
+      >
         <Grid item>
-          <MUILink variant="body1" component={Link} to="/Login">
-            Login
-          </MUILink>
+          <Typography variant="h5">
+            Passwort für '{query.get("username")}' setzen
+        </Typography>
         </Grid>
-      ) : (
+        {showLoginLink ? (
           <Grid item>
-            <Grid
-              container
-              spacing={1}
-              direction="column"
-              justify="center"
-              alignItems="center"
-            >
-              <Grid item>
-                <TextField
-                  id="pass"
-                  type="password"
-                  label="Passwort"
-                  variant="outlined"
-                  name="pass"
-                  value={pass}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item>
-                <TextField
-                  id="passRepeat"
-                  type="password"
-                  label="Passwort wiederholen"
-                  variant="outlined"
-                  name="passRepeat"
-                  value={passRepeat}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item style={{ marginBottom: "0.3em", marginTop: "0.3em" }}>
-                <Button variant="contained" onClick={() => submitPass()}>
-                  Senden
+            <MUILink variant="body1" component={Link} to="/Login">
+              Login
+          </MUILink>
+          </Grid>
+        ) : (
+            <Grid item>
+              <Grid
+                container
+                spacing={1}
+                direction="column"
+                justify="center"
+                alignItems="center"
+              >
+                <Grid item>
+                  <TextField
+                    id="pass"
+                    type="password"
+                    label="Passwort"
+                    variant="outlined"
+                    name="pass"
+                    value={pass}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    id="passRepeat"
+                    type="password"
+                    label="Passwort wiederholen"
+                    variant="outlined"
+                    name="passRepeat"
+                    value={passRepeat}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item style={{ marginBottom: "0.3em", marginTop: "0.3em" }}>
+                  <Button variant="contained" onClick={() => submitPass()}>
+                    Senden
               </Button>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        )}
-    </Grid>
+          )}
+      </Grid>
+      <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
+        <Alert onClose={closeError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={closeSuccess}>
+        <Alert onClose={closeSuccess} severity="success">
+          {success}
+        </Alert>
+      </Snackbar>
+    </React.Fragment>
   );
 }
 
