@@ -195,17 +195,6 @@ function Overview(props) {
       fetchFlextimeCorrections(profile.username);
   }, [fetchFlextimeCorrections, profile])
 
-
-  function getRemainingVacationString(){
-    const wholeDays = Math.trunc(remainingVacation);
-    const hours = (Math.abs(remainingVacation) - Math.abs(Math.trunc(remainingVacation))) * 24
-    const wholeHours = Math.trunc(hours);
-    const minutes = (Math.abs(hours) - Math.abs(Math.trunc(hours))) * 60
-    const roundedMinutes = Math.round(minutes);
-
-    return `${wholeDays} Tage ${wholeHours} Std. ${roundedMinutes} Min.`;
-  }
-
   return (
     <div className={classes.root}>
       <Grid item>
@@ -223,20 +212,20 @@ function Overview(props) {
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Typography variant="h5">Übersicht</Typography>
           </Grid>
-          <Grid xs={6} item style={{ textAlign: 'center' }}>
-            <Typography variant="caption">Arbeitszeiten sind seit der Registrierung am {profile ? moment(profile.registrationDate).format('DD.MM.YYYY') : '__.__.____'} berücksichtigt</Typography>
+          <Grid xs={10} item style={{ textAlign: 'center' }}>
+            <Typography variant="caption">Arbeitszeiten und Urlaub sind seit der Registrierung am {profile ? moment(profile.registrationDate).format('DD.MM.YYYY') : '__.__.____'} berücksichtigt</Typography>
           </Grid>
           <Grid xs={12} item style={{ textAlign: 'center' }}>
             <Grid container style={{ marginTop: '0.5em' }}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Typography display="inline">Gleitzeit: </Typography>
                 <Typography display="inline" variant="body2">
                   {actualFlextime ? Utils.minutesToTimeString(actualFlextime) : "--:--"} Std.
                 </Typography>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Typography display="inline">Resturlaub: </Typography>
-                <Typography display="inline" variant="body2">{getRemainingVacationString()}</Typography>
+                <Typography display="inline" variant="body2">{remainingVacation && (Math.round(remainingVacation*100)/100).toString().replace(/\./, ",")} Tag(e)</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -249,9 +238,8 @@ function Overview(props) {
         </Grid>
         {flextimes && flextimes.length ?
           flextimes.map((element) => {
-            return <Grid item xs={11} md={6}>
+            return <Grid item xs={11} md={6} key={shortid.generate()} >
               <FlextimeCorrectionCard
-                key={shortid.generate()}
                 id={element._id}
                 reason={element.reason}
                 date={element.date}

@@ -65,7 +65,7 @@ function WorkingModelCard(props) {
                     <Typography variant="caption">{props.workingModel['6']}</Typography></Grid>
 
                     <Grid item xs={12} className={classes.bookingRow}>
-                    <Typography variant="caption">Jahresurlaubsanspruch: {props.workingModel.vacationEntitlement} Tage</Typography></Grid>
+                    <Typography variant="caption">Urlaubsanspruch im Jahr: {props.workingModel.vacationEntitlement} Tage</Typography></Grid>
             </Grid>
         </Paper>
     );
