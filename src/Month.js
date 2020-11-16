@@ -170,7 +170,6 @@ function Month(props) {
     fetch(`${process.env.REACT_APP_HOLIDAY_API_URL}/?jahr=${moment(uiState.now).format("YYYY")}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setHolidays(data);
       })
       .catch((err) => {

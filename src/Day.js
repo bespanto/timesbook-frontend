@@ -86,7 +86,9 @@ function Day(props) {
       <Paper style={{ backgroundColor: getBackgroundColor() }}>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
-            <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+              <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+              {props.holiday &&
+              <Typography variant="caption">{props.holiday}</Typography>}
           </Grid>
           <Grid container>
             <Grid item xs={2} style={{ textAlign: 'center' }}>
