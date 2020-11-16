@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
@@ -15,6 +15,7 @@ import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Person from '@material-ui/icons/Person';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 function Header(props) {
@@ -118,13 +119,19 @@ function Header(props) {
             {profile &&
               <React.Fragment>
                 <span style={{ textAlign: 'center' }}>
-                  <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
-                    <Person fontSize="large" />
-                  </IconButton>
-                  <Typography variant="body2">{profile ? profile.name : ''}</Typography>
+                  <Grid container direction="column" alignItems="center" justify="cenetr">
+                    <Grid item>
+                      <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
+                        <Person fontSize="large" />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="caption">{profile ? profile.name : ''}</Typography>
+                    </Grid>
+                  </Grid>
                 </span>
                 <IconButton onClick={() => logout()} size="small" style={{ color: '#ffffff' }}>
-                  <ExitToAppIcon />
+                  <ExitToAppIcon/>
                 </IconButton>
               </React.Fragment>
             }
