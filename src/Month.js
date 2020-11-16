@@ -26,6 +26,7 @@ function Month(props) {
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [profile, setProfile] = useState(null);
+  const [vacations, setVacations] = useState(null);
   const [username, setUsername] = useState(null);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
@@ -127,6 +128,40 @@ function Month(props) {
     fetchBookEntries()
   }, [fetchBookEntries]);
 
+
+  /**
+  * 
+  */
+  useEffect(() => {
+    const errorMsg = "Urlaubsdaten können nicht geladen werden.";
+    fetch(`${process.env.REACT_APP_API_URL}/vacation/${from}/${till}`, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setVacations(data.success.vacations);
+        }
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
+
+      });
+  }, [history, loc.pathname, from, till])
+
+
   /**
    *
    */
@@ -137,9 +172,7 @@ function Month(props) {
     );
     let days = [];
     for (let day = 1; day <= daysInMonth; day++) {
-      const bookingDay = moment(
-        uiState.now + "-" + (day <= 9 ? "0" + day : day)
-      ).format(DAY_FORMAT);
+      const bookingDay = moment(uiState.now + "-" + (day <= 9 ? "0" + day : day)).format(DAY_FORMAT);
       const workingModel = getTargetWorkingModel(bookingDay);
       days.push(
         <Day
@@ -147,6 +180,7 @@ function Month(props) {
           workingModel={workingModel}
           bookingDay={bookingDay}
           profile={profile}
+          vacations={vacations}
         />
       );
     }

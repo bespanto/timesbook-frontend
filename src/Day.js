@@ -66,9 +66,32 @@ function Day(props) {
 
   }
 
+
+
+  function isVacationDay(day) {
+    if (props.vacations)
+      for (let index = 0; index < props.vacations.length; index++) {
+        const vacation = props.vacations[index];
+        if (moment(day).isBetween(vacation.from, vacation.till, 'day', '[]'))
+          return true;
+      }
+    return false
+  }
+
+  function getBackgroundColor() {
+    let color = "#424242"
+    if (weekday === 6 || weekday === 0)
+      color = "#49516b";
+    if (isVacationDay(props.bookingDay))
+      color = "#3e664d";
+
+    return color;
+  }
+
+
   return (
     <Container>
-      <Paper style={weekday === 6 || weekday === 0 ? { backgroundColor: '#49516b' } : { backgroundColor: '#424242' }}>
+      <Paper style={{ backgroundColor: getBackgroundColor() }}>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
             <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
