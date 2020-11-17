@@ -98,6 +98,7 @@ function Header(props) {
                   <Divider />
                   <MenuItem component={Link} to="/Employees" onClick={handleClose} style={{ color: '#ffffff' }}>Mitarbeiter</MenuItem>
                   <MenuItem component={Link} to="/VacationRequests" onClick={handleClose} style={{ color: '#ffffff' }}>Urlaubsanträge</MenuItem>
+                  <MenuItem component={Link} to="/SickDays" onClick={handleClose} style={{ color: '#ffffff' }}>Krankheitstage</MenuItem>
                   <Divider />
                   <MenuItem component={Link} to="/Profile" onClick={handleClose} style={{ color: '#ffffff' }}>Profil</MenuItem>
                 </span>
@@ -119,7 +120,7 @@ function Header(props) {
             {profile &&
               <React.Fragment>
                 <span style={{ textAlign: 'center' }}>
-                  <Grid container direction="column" alignItems="center" justify="cenetr">
+                  <Grid container direction="column" alignItems="center" justify="center">
                     <Grid item>
                       <IconButton component={Link} to="/Profile" size="small" style={{ color: '#ffffff' }}>
                         <Person fontSize="large" />
