@@ -88,9 +88,9 @@ function Day(props) {
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
               <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
               {props.vacationDay &&
-              <Typography variant="caption">Urlaub</Typography>}
+              <Typography component="p" variant="caption">Urlaub</Typography>}
               {props.holiday &&
-              <Typography variant="caption">{props.holiday}</Typography>}
+              <Typography component="p" variant="caption">{props.holiday}</Typography>}
           </Grid>
           <Grid container>
             <Grid item xs={2} style={{ textAlign: 'center' }}>
