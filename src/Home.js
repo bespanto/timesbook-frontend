@@ -6,7 +6,6 @@ import Divider from "@material-ui/core/Divider";
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import FlightTakeoffRoundedIcon from '@material-ui/icons/FlightTakeoffRounded';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import DateRangeIcon from '@material-ui/icons/DateRange';
 
 function Home(props) {
 
