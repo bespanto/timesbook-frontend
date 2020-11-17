@@ -70,15 +70,15 @@ function Day(props) {
   function getBackgroundColor() {
 
     let color = "#424242"
-    if (weekday === 6 || weekday === 0)
-      color = "#49516b";
+
     if (props.vacationDay)
       color = "#3e664d";
+    if (props.sickDay)
+      color = "#9c7a4b";
+    if (weekday === 6 || weekday === 0)
+      color = "#49516b";
     if (props.holiday)
       color = "#993c3c";
-      if (props.sickDay)
-      color = "#9c7a4b";
-
     return color;
   }
 
@@ -88,12 +88,12 @@ function Day(props) {
       <Paper style={{ backgroundColor: getBackgroundColor() }}>
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
-              <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
-              {props.sickDay &&
+            <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
+            {props.sickDay &&
               <Typography component="p" variant="caption">Krankheit</Typography>}
-              {props.vacationDay && !props.sickDay && !props.holiday &&
+            {props.vacationDay && !props.sickDay && !props.holiday &&
               <Typography component="p" variant="caption">Urlaub</Typography>}
-              {props.holiday &&
+            {props.holiday &&
               <Typography component="p" variant="caption">{props.holiday}</Typography>}
           </Grid>
           <Grid container>
