@@ -76,6 +76,8 @@ function Day(props) {
       color = "#3e664d";
     if (props.holiday)
       color = "#993c3c";
+      if (props.sickDay)
+      color = "#9c7a4b";
 
     return color;
   }
@@ -87,7 +89,9 @@ function Day(props) {
         <Grid container alignItems="center" style={{ marginTop: '0.5em' }}>
           <Grid item xs={12} style={{ textAlign: 'center', paddingBottom: '1em' }}>
               <Typography variant="h6">{Utils.getWeekday(weekday) + ', ' + moment(props.bookingDay).date() + '.'}</Typography>
-              {props.vacationDay &&
+              {props.sickDay &&
+              <Typography component="p" variant="caption">Krankheit</Typography>}
+              {props.vacationDay && !props.sickDay && !props.holiday &&
               <Typography component="p" variant="caption">Urlaub</Typography>}
               {props.holiday &&
               <Typography component="p" variant="caption">{props.holiday}</Typography>}

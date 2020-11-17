@@ -27,6 +27,7 @@ function Month(props) {
   const uiState = useSelector((state) => UiStateSlice.selectUiState(state));
   const [profile, setProfile] = useState(null);
   const [vacations, setVacations] = useState(null);
+  const [sickTimes, setSickTimes] = useState(null);
   const [holidays, setHolidays] = useState(null);
   const [username, setUsername] = useState(null);
   const [error, setError] = useState("");
@@ -181,6 +182,53 @@ function Month(props) {
 
 
   /**
+  * 
+  */
+ useEffect(() => {
+  const errorMsg = "Krankheitstage können nicht geladen werden.";
+  fetch(`${process.env.REACT_APP_API_URL}/sickTime/${username}/${from}/${till}`, {
+    headers: {
+      'auth-token': localStorage.getItem('jwt')
+    }
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        setSickTimes(data.success);
+      }
+      else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+        console.error(errorMsg, data)
+        if (loc.pathname !== '/Login')
+          history.push('/Login');
+      }
+      else {
+        console.error(errorMsg + " Unerwarteter Fehler.", data)
+        showError(errorMsg + " Unerwarteter Fehler.");
+      }
+    })
+    .catch((err) => {
+      console.error(errorMsg + " Der Server antwortet nicht.", err)
+      showError(errorMsg + " Der Server antwortet nicht.");
+
+    });
+}, [history, loc.pathname, from, till, username])
+
+
+
+  /**
+   * 
+   */
+  function isSickDay(day) {
+    if (sickTimes)
+      for (let index = 0; index < sickTimes.length; index++) {
+        const sickTime = sickTimes[index];
+        if (moment(day).isBetween(sickTime.from, sickTime.till, 'day', '[]'))
+          return true;
+      }
+    return false
+  }
+
+  /**
    * 
    */
   function getHoliday(day) {
@@ -228,6 +276,7 @@ function Month(props) {
           profile={profile}
           vacationDay={isVacationDay(bookingDay)}
           holiday={getHoliday(bookingDay)}
+          sickDay={isSickDay(bookingDay)}
         />
       );
     }
