@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Card from "@material-ui/core/Card";
+import Divider from "@material-ui/core/Divider";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from '@material-ui/core/Avatar';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -42,6 +43,9 @@ function SickDays(props) {
   const [sickDayFrom, setSickDayFrom] = useState(new Date());
   const [sickDayTill, setSickDayTill] = useState(new Date());
   const [username, setUsername] = useState('');
+  const [filterUsername, setFilterUsername] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+  const [years, setYears] = useState('');
   const [users, setUsers] = useState(new Set([]));
   const classes = useStyles();
   let history = useHistory();
@@ -85,15 +89,28 @@ function SickDays(props) {
   };
 
 
-
   /**
    * 
    */
   const handleChange = (event) => {
     setUsername(event.target.value);
-    // fetchVacationData(name);
   };
 
+  /**
+   * 
+   */
+  const handleChangeFilterUsername = (event) => {
+    setFilterUsername(event.target.value);
+    fetchSickTimes();
+  };
+
+  /**
+ * 
+ */
+  const handleChangeFilterYear = (event) => {
+    setFilterYear(event.target.value);
+    fetchSickTimes();
+  };
 
   /**
    * 
@@ -107,8 +124,10 @@ function SickDays(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success)
-          setUsers(new Set(data.success.users))
+        if (data.success) {
+          setUsers(new Set(data.success.users));
+          setYearRange(data.success.users);
+        }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -135,8 +154,14 @@ function SickDays(props) {
 
 
   const fetchSickTimes = useCallback(() => {
+
+    let url = `${process.env.REACT_APP_API_URL}/sickTime`
+    if (filterUsername)
+      url = url + `/${filterUsername}`;
+    if (filterYear)
+      url = url + "?" + new URLSearchParams({ from: filterYear + "-01-01", till: filterYear + "-12-31" })
     const errorMsg = "Die Krankheitstage können nicht abgerufen werden.";
-    fetch(`${process.env.REACT_APP_API_URL}/sickTime`, {
+    fetch(url, {
       headers: {
         "auth-token": localStorage.getItem("jwt"),
       },
@@ -159,7 +184,7 @@ function SickDays(props) {
         console.error(errorMsg + " Der Server antwortet nicht.", err)
         showError(errorMsg + " Der Server antwortet nicht.");
       });
-  }, [loc.pathname, history])
+  }, [loc.pathname, history, filterUsername, filterYear])
 
 
   useEffect(() => {
@@ -196,7 +221,7 @@ function SickDays(props) {
         console.error(errorMsg + " Der Server antwortet nicht.", err);
         showError(errorMsg + " Der Server antwortet nicht.");
       })
-      .finally(()=>fetchSickTimes())
+      .finally(() => fetchSickTimes())
   }
 
   function saveSickTime() {
@@ -241,10 +266,33 @@ function SickDays(props) {
     }
   }
 
-  function getSelectElements() {
+  function getSelectUserElements() {
     const arr = []
     users.forEach((el1, el2, set) => arr.push(<MenuItem key={shortid.generate()} value={el1.username}>{el1.name}</MenuItem>))
     return arr
+  }
+
+
+  function getSelectYearElements() {
+    const menuItems = [];
+
+
+    if (years && years.length > 0) {
+      let actYear = years[0];
+      while (actYear <= years[years.length - 1]) {
+        menuItems.push(<MenuItem key={shortid.generate()} value={actYear}>{actYear}</MenuItem>);
+        actYear = moment(actYear + "").add(moment.duration({ 'year': 1 })).year();
+      }
+    }
+
+    return menuItems
+  }
+
+  function setYearRange(users) {
+    const years = new Set();
+    users.forEach((el) => years.add(moment(el.registrationDate).year()));
+    const yearsArr = Array.from(years).sort((a, b) => a.registrationDate - b.registrationDate);
+    setYears(yearsArr);
   }
 
   return (
@@ -264,7 +312,7 @@ function SickDays(props) {
             <MenuItem value="">
               <em>alle Mitarbeiter</em>
             </MenuItem>
-            {getSelectElements()}
+            {getSelectUserElements()}
           </Select>
         </FormControl>
       </Box>
@@ -309,6 +357,44 @@ function SickDays(props) {
           </Button>
         </Box>
       </Container>
+      <Divider variant="middle" style={{ marginTop: '1em', marginBottom: '1em' }} />
+      <Grid container justify="center" alignItems="center" style={{ marginTop: '1em' }}>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <Typography>Filteroptionen</Typography>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="filterUsername-select-label">Name</InputLabel>
+            <Select
+              labelId="filterUsername-select-label"
+              id="filterUsername-select"
+              value={filterUsername}
+              onChange={handleChangeFilterUsername}
+            >
+              <MenuItem value="">
+                <em>alle Mitarbeiter</em>
+              </MenuItem>
+              {getSelectUserElements()}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="filterYear-select-label">Jahr</InputLabel>
+            <Select
+              labelId="filterYear-select-label"
+              id="filterYear-select"
+              value={filterYear}
+              onChange={handleChangeFilterYear}
+            >
+              <MenuItem value="">
+                <em>alle Jahre</em>
+              </MenuItem>
+              {getSelectYearElements()}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
       <Container style={{ marginTop: "1.5em" }}>
         {sickTimes && sickTimes.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
