@@ -122,9 +122,10 @@ function Day(props) {
           <Grid item xs={2} className={classes.bookingRow}>
             <Typography variant="body2">{workingTime}</Typography></Grid>
           <Grid item xs={2} className={classes.bookingRow}>
-            <Typography variant="body2">{overtime}</Typography></Grid>
+            <Typography variant="body2">
+              {!props.sickDay && !props.holiday && !props.vacationDay ? overtime : placeholder}
+            </Typography></Grid>
           <Grid item xs={2} style={{ textAlign: 'center' }} >
-
             {props.profile && moment(moment(props.profile.registrationDate).format('YYYY-MM-DD')).isSameOrBefore(props.bookingDay) ?
               <IconButton size="small" onClick={() => handleOpen()}>
                 <EditIcon />
