@@ -184,34 +184,36 @@ function Month(props) {
   /**
   * 
   */
- useEffect(() => {
-  const errorMsg = "Krankheitstage können nicht geladen werden.";
-  fetch(`${process.env.REACT_APP_API_URL}/sickTime/${username}/${from}/${till}`, {
-    headers: {
-      'auth-token': localStorage.getItem('jwt')
-    }
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        setSickTimes(data.success);
-      }
-      else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-        console.error(errorMsg, data)
-        if (loc.pathname !== '/Login')
-          history.push('/Login');
-      }
-      else {
-        console.error(errorMsg + " Unerwarteter Fehler.", data)
-        showError(errorMsg + " Unerwarteter Fehler.");
+  useEffect(() => {
+    const errorMsg = "Krankheitstage können nicht geladen werden.";
+    let url = `${process.env.REACT_APP_API_URL}/sickTime/${username}`
+    url = url + "?" + new URLSearchParams({ from: from, till: till })
+    fetch(url, {
+      headers: {
+        'auth-token': localStorage.getItem('jwt')
       }
     })
-    .catch((err) => {
-      console.error(errorMsg + " Der Server antwortet nicht.", err)
-      showError(errorMsg + " Der Server antwortet nicht.");
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setSickTimes(data.success);
+        }
+        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+          console.error(errorMsg, data)
+          if (loc.pathname !== '/Login')
+            history.push('/Login');
+        }
+        else {
+          console.error(errorMsg + " Unerwarteter Fehler.", data)
+          showError(errorMsg + " Unerwarteter Fehler.");
+        }
+      })
+      .catch((err) => {
+        console.error(errorMsg + " Der Server antwortet nicht.", err)
+        showError(errorMsg + " Der Server antwortet nicht.");
 
-    });
-}, [history, loc.pathname, from, till, username])
+      });
+  }, [history, loc.pathname, from, till, username])
 
 
 
