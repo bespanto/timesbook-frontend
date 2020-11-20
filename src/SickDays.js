@@ -266,6 +266,9 @@ function SickDays(props) {
     }
   }
 
+  /**
+   * 
+   */
   function getSelectUserElements() {
     const arr = []
     users.forEach((el1, el2, set) => arr.push(<MenuItem key={shortid.generate()} value={el1.username}>{el1.name}</MenuItem>))
@@ -273,9 +276,11 @@ function SickDays(props) {
   }
 
 
+  /**
+   * 
+   */
   function getSelectYearElements() {
     const menuItems = [];
-
 
     if (years && years.length > 0) {
       let actYear = years[0];
@@ -284,14 +289,17 @@ function SickDays(props) {
         actYear = moment(actYear + "").add(moment.duration({ 'year': 1 })).year();
       }
     }
-
     return menuItems
   }
 
+  /**
+   * 
+   * @param {*} users 
+   */
   function setYearRange(users) {
     const years = new Set();
     users.forEach((el) => years.add(moment(el.registrationDate).year()));
-    const yearsArr = Array.from(years).sort((a, b) => a.registrationDate - b.registrationDate);
+    const yearsArr = Array.from(years).sort((a, b) => a - b);
     setYears(yearsArr);
   }
 
