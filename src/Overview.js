@@ -137,7 +137,8 @@ function Overview(props) {
   const fetchRemainingVacation = useCallback((username) => {
 
     const errorMsg = "Der Resturlaub konnte nicht abgerufen werden.";
-    fetch(`${process.env.REACT_APP_API_URL}/vacation/${username}/tillThisYear`, {
+    const url = `${process.env.REACT_APP_API_URL}/vacation/remaining?` + new URLSearchParams({ username: username });
+    fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

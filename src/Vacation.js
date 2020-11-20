@@ -118,35 +118,38 @@ function Vacation(props) {
    * 
    */
   const fetchVacationData = useCallback(() => {
-    const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
-    fetch(`${process.env.REACT_APP_API_URL}/vacation/byUser`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          'auth-token': localStorage.getItem('jwt')
-        }
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setVacations(data.success.vacations);
-        }
-        else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
-          console.error(errorMsg, data)
-          if (loc.pathname !== '/Login')
-            history.push('/Login');
-        }
-        else {
-          console.error(errorMsg + " Unerwarteter Fehler.", data)
-          showError(errorMsg + " Unerwarteter Fehler.");
-        }
-      })
-      .catch((err) => {
-        console.error(errorMsg + " Der Server antwortet nicht.", err);
-        showError(errorMsg + " Der Server antwortet nicht.");
-      });
-  }, [history, loc.pathname]);
+    if (profile) {
+      const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
+      const url = `${process.env.REACT_APP_API_URL}/vacation?` + new URLSearchParams({ username: profile.username });;
+      fetch(url,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'auth-token': localStorage.getItem('jwt')
+          }
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setVacations(data.success);
+          }
+          else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
+            console.error(errorMsg, data)
+            if (loc.pathname !== '/Login')
+              history.push('/Login');
+          }
+          else {
+            console.error(errorMsg + " Unerwarteter Fehler.", data)
+            showError(errorMsg + " Unerwarteter Fehler.");
+          }
+        })
+        .catch((err) => {
+          console.error(errorMsg + " Der Server antwortet nicht.", err);
+          showError(errorMsg + " Der Server antwortet nicht.");
+        });
+    }
+  }, [history, loc.pathname, profile]);
 
 
   /**
