@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
@@ -24,10 +24,11 @@ function Header(props) {
   const [profile, setProfile] = useState(null);
   const classes = useStyles();
   let history = useHistory();
-  const loc = useLocation();
 
-
-  const fetchProfile = useCallback(() => {
+  /**
+   * 
+   */
+  useEffect(() => {
     const errorMsg = "Das Benutzerprofil kann nicht geladen werden.";
     fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
       headers: {
@@ -40,8 +41,6 @@ function Header(props) {
           setProfile(data.success.user);
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
-          if (loc.pathname !== '/Login')
-            history.push('/Login');
         }
         else {
           console.error(errorMsg + " Unerwarteter Fehler.", data)
@@ -50,14 +49,7 @@ function Header(props) {
       .catch((err) => {
         console.error(errorMsg + " Der Server antwortet nicht.", err)
       });
-  }, [history, loc.pathname])
-
-  /**
-   * 
-   */
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile, uiState.profileChanged])
+  }, [uiState.profileChanged])
 
   function logout() {
     localStorage.removeItem('jwt');
@@ -132,7 +124,7 @@ function Header(props) {
                   </Grid>
                 </span>
                 <IconButton onClick={() => logout()} size="small" style={{ color: '#ffffff' }}>
-                  <ExitToAppIcon/>
+                  <ExitToAppIcon />
                 </IconButton>
               </React.Fragment>
             }
