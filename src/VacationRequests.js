@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from '@material-ui/core/CardContent';
@@ -73,8 +74,10 @@ function VacationRequests(props) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [vacations, setVacations] = useState([]);
-  const [name, setName] = useState('');
-  const [names, setNames] = useState(new Set([]));
+  const [filterUsername, setFilterUsername] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+  const [years, setYears] = useState('');
+  const [users, setUsers] = useState(new Set([]));
   const classes = useStyles();
   let history = useHistory();
   const loc = useLocation();
@@ -117,14 +120,24 @@ function VacationRequests(props) {
   };
 
 
-
   /**
    * 
    */
-  const handleChange = (event) => {
-    setName(event.target.value);
-    fetchVacationData(name);
+  const handleChangeFilterUsername = (event) => {
+    setFilterUsername(event.target.value);
+    fetchVacationData();
   };
+
+
+  /**
+ * 
+ */
+  const handleChangeFilterYear = (event) => {
+    setFilterYear(event.target.value);
+    console.log(filterYear)
+    fetchVacationData();
+  };
+
 
   /**
    * 
@@ -177,7 +190,7 @@ function VacationRequests(props) {
       .then((response) => response.json())
       .then((data) => {
         if (data.success)
-          setNames(new Set(data.success.users.map(el => el.name)))
+          setUsers(new Set(data.success.users));
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
           if (loc.pathname !== '/Login')
@@ -198,10 +211,21 @@ function VacationRequests(props) {
    * 
    */
   const fetchVacationData = useCallback(() => {
+    let url = `${process.env.REACT_APP_API_URL}/vacation`
+    if (filterUsername || filterYear) {
+      let serachParams;
+      url = url + "?"
+      if (filterUsername)
+        serachParams = { username: filterUsername };
+      if (filterYear) {
+        serachParams.from = filterYear + "-01-01";
+        serachParams.till = filterYear + "-12-31";
+      }
+
+      url = url + new URLSearchParams(serachParams);
+    }
+
     const errorMsg = "Urlaubsdaten können nicht abgefragt werden."
-    let url = `${process.env.REACT_APP_API_URL}/vacation/byOrga`;
-    if (name)
-      url = url + "?" + new URLSearchParams({ name: name })
     fetch(url,
       {
         method: "GET",
@@ -213,7 +237,8 @@ function VacationRequests(props) {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setVacations(data.success.vacations);
+          setVacations(data.success);
+          setYearRange(data.success);
         }
         else if (data.errorCode === 4007 || data.errorCode === 4008 || data.errorCode === 4009) {
           console.error(errorMsg, data)
@@ -229,7 +254,7 @@ function VacationRequests(props) {
         console.error(errorMsg + " Der Server antwortet nicht.", err);
         showError(errorMsg + " Der Server antwortet nicht.");
       });
-  }, [history, loc.pathname, name]);
+  }, [history, loc.pathname, filterUsername, filterYear]);
 
 
   /**
@@ -248,10 +273,43 @@ function VacationRequests(props) {
   }, [fetchVacationData])
 
 
-  function getSelectElements() {
+  /**
+   * 
+   */
+  function getSelectUserElements() {
     const arr = []
-    names.forEach((el1, el2, set) => arr.push(<MenuItem key={shortid.generate()} value={el1}>{el1}</MenuItem>))
+    users.forEach((el1, el2, set) => arr.push(<MenuItem key={shortid.generate()} value={el1.username}>{el1.name}</MenuItem>))
     return arr
+  }
+
+  /**
+   * 
+   */
+  function getSelectYearElements() {
+    const menuItems = [];
+
+    if (years && years.length > 0) {
+      let actYear = years[0];
+      while (actYear <= years[years.length - 1]) {
+        menuItems.push(<MenuItem key={shortid.generate()} value={actYear}>{actYear}</MenuItem>);
+        actYear = moment(actYear + "").add(moment.duration({ 'year': 1 })).year();
+      }
+    }
+    return menuItems
+  }
+
+  /**
+   * 
+   * @param {*} users 
+   */
+  function setYearRange(vacations) {
+    const years = new Set();
+    vacations.forEach((el) => {
+      years.add(moment(el.from).year())
+      years.add(moment(el.till).year())
+    });
+    const yearsArr = Array.from(years).sort((a, b) => a - b);
+    setYears(yearsArr);
   }
 
   return (
@@ -259,22 +317,43 @@ function VacationRequests(props) {
       <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
         <Typography variant="h5">Urlaubsanträge</Typography>
       </Box>
-      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="name-select-label">Name</InputLabel>
-          <Select
-            labelId="name-select-label"
-            id="name-select"
-            value={name}
-            onChange={handleChange}
-          >
-            <MenuItem value="">
-              <em>alle Mitarbeiter</em>
-            </MenuItem>
-            {getSelectElements()}
-          </Select>
-        </FormControl>
-      </Box>
+      <Grid container justify="center" alignItems="center" style={{ marginTop: '1em' }}>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <Typography>Filteroptionen</Typography>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="filterUsername-select-label">Name</InputLabel>
+            <Select
+              labelId="filterUsername-select-label"
+              id="filterUsername-select"
+              value={filterUsername}
+              onChange={handleChangeFilterUsername}
+            >
+              <MenuItem value="">
+                <em>alle Mitarbeiter</em>
+              </MenuItem>
+              {getSelectUserElements()}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'center' }}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="filterYear-select-label">Jahr</InputLabel>
+            <Select
+              labelId="filterYear-select-label"
+              id="filterYear-select"
+              value={filterYear}
+              onChange={handleChangeFilterYear}
+            >
+              <MenuItem value="">
+                <em>alle Jahre</em>
+              </MenuItem>
+              {getSelectYearElements()}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
       <Container style={{ marginTop: "1.5em" }}>
         {vacations.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>
