@@ -260,7 +260,7 @@ function Month(props) {
     if (vacations)
       for (let index = 0; index < vacations.length; index++) {
         const vacation = vacations[index];
-        if (moment(day).isBetween(vacation.from, vacation.till, 'day', '[]'))
+        if (moment(day).isBetween(vacation.from, vacation.till, 'day', '[]') && vacation.status === 'approved')
           return true;
       }
     return false
