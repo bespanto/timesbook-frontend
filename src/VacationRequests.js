@@ -134,7 +134,6 @@ function VacationRequests(props) {
  */
   const handleChangeFilterYear = (event) => {
     setFilterYear(event.target.value);
-    console.log(filterYear)
     fetchVacationData();
   };
 
@@ -213,7 +212,7 @@ function VacationRequests(props) {
   const fetchVacationData = useCallback(() => {
     let url = `${process.env.REACT_APP_API_URL}/vacation`
     if (filterUsername || filterYear) {
-      let serachParams;
+      let serachParams = {};
       url = url + "?"
       if (filterUsername)
         serachParams = { username: filterUsername };
