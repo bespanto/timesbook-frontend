@@ -20,6 +20,8 @@ import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -32,6 +34,7 @@ function Alert(props) {
 }
 
 function Vacation(props) {
+  const [showForm, setShowForm] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [success, setSuccess] = useState("");
@@ -80,6 +83,14 @@ function Vacation(props) {
     }
     setOpenSuccessSnackbar(false);
   };
+
+
+  /**
+   * 
+   */
+  function toggleForm() {
+    setShowForm(!showForm);
+  }
 
   /**
    * 
@@ -241,10 +252,19 @@ function Vacation(props) {
 
   return (
     <React.Fragment>
-      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+      <Box display="flex" justifyContent="center">
         <Typography variant="h5">Urlaub</Typography>
       </Box>
-      <Container>
+      <Box display="flex" justifyContent="center">
+        <IconButton size="small">
+          {showForm ?
+            <ExpandLessIcon onClick={() => toggleForm()} />
+            :
+            <ExpandMoreIcon onClick={() => toggleForm()} />
+          }
+        </IconButton>
+      </Box>
+      { showForm && <Container>
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de} >
           <Grid container justify="space-around">
             <KeyboardDatePicker
@@ -284,7 +304,7 @@ function Vacation(props) {
             Einreichen
           </Button>
         </Box>
-      </Container>
+      </Container>}
       <Container style={{ marginTop: "1.5em" }}>
         {vacations.map((row) => (
           <Card key={shortid.generate()} className={classes.card}>

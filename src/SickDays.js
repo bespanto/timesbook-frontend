@@ -23,6 +23,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -35,6 +37,7 @@ function Alert(props) {
 }
 
 function SickDays(props) {
+  const [showForm, setShowForm] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [success, setSuccess] = useState("");
@@ -87,6 +90,14 @@ function SickDays(props) {
     }
     setOpenSuccessSnackbar(false);
   };
+
+
+  /**
+   * 
+   */
+  function toggleForm() {
+    setShowForm(!showForm);
+  }
 
 
   /**
@@ -305,67 +316,79 @@ function SickDays(props) {
 
   return (
     <React.Fragment>
-      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+      <Box display="flex" justifyContent="center">
         <Typography variant="h5">Krankheitstage</Typography>
       </Box>
-      <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="name-select-label">Name</InputLabel>
-          <Select
-            labelId="name-select-label"
-            id="name-select"
-            value={username}
-            onChange={handleChange}
-          >
-            <MenuItem value="">
-              <em>alle Mitarbeiter</em>
-            </MenuItem>
-            {getSelectUserElements()}
-          </Select>
-        </FormControl>
+      <Box display="flex" justifyContent="center">
+        <IconButton size="small">
+          {showForm ?
+            <ExpandLessIcon onClick={() => toggleForm()} />
+            :
+            <ExpandMoreIcon onClick={() => toggleForm()} />
+          }
+        </IconButton>
       </Box>
-      <Container>
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de} >
-          <Grid container justify="space-around">
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="dd.MM.yyyy"
-              margin="normal"
-              id="sickDayFrom"
-              label="Vom"
-              value={sickDayFrom}
-              onChange={(date) => setSickDayFrom(date)}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="dd.MM.yyyy"
-              margin="normal"
-              id="sickDayTill"
-              label="Bis"
-              value={sickDayTill}
-              onChange={(date) => setSickDayTill(date)}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-          </Grid>
-        </MuiPickersUtilsProvider>
-        <Box
-          display="flex"
-          justifyContent="center"
-          style={{ marginTop: "0.5em" }}
-        >
-          <Button variant="contained" onClick={() => saveSickTime()}>
-            Speichern
+      { showForm &&
+        <Container>
+          <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+            <FormControl className={classes.formControl}>
+              <InputLabel id="name-select-label">Name</InputLabel>
+              <Select
+                labelId="name-select-label"
+                id="name-select"
+                value={username}
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>alle Mitarbeiter</em>
+                </MenuItem>
+                {getSelectUserElements()}
+              </Select>
+            </FormControl>
+          </Box>
+          <Container>
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de} >
+              <Grid container justify="space-around">
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="dd.MM.yyyy"
+                  margin="normal"
+                  id="sickDayFrom"
+                  label="Vom"
+                  value={sickDayFrom}
+                  onChange={(date) => setSickDayFrom(date)}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="dd.MM.yyyy"
+                  margin="normal"
+                  id="sickDayTill"
+                  label="Bis"
+                  value={sickDayTill}
+                  onChange={(date) => setSickDayTill(date)}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </Grid>
+            </MuiPickersUtilsProvider>
+            <Box
+              display="flex"
+              justifyContent="center"
+              style={{ marginTop: "0.5em" }}
+            >
+              <Button variant="contained" onClick={() => saveSickTime()}>
+                Speichern
           </Button>
-        </Box>
-      </Container>
-      <Divider variant="middle" style={{ marginTop: '1em', marginBottom: '1em' }} />
+            </Box>
+          </Container>
+          <Divider variant="middle" style={{ marginTop: '1em', marginBottom: '1em' }} />
+        </Container>}
       <Grid container justify="center" alignItems="center" style={{ marginTop: '1em' }}>
         <Grid item xs={12} style={{ textAlign: 'center' }}>
           <Typography>Filteroptionen</Typography>
