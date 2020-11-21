@@ -24,7 +24,7 @@ import {
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+}
 
 export default function WorkingModelForm(props) {
     const [error, setError] = useState("");
@@ -38,8 +38,8 @@ export default function WorkingModelForm(props) {
     const [validFrom, setValidFrom] = useState(new Date());
     const [vacationEntitlement, setVacationEntitlement] = useState(20);
     const classes = useStyles();
-  
-  
+
+
     /**
      * 
      */
@@ -50,10 +50,10 @@ export default function WorkingModelForm(props) {
 
     const closeError = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
         setOpenSnackbar(false);
-      };
+    };
     /**
      * 
      */
@@ -68,8 +68,8 @@ export default function WorkingModelForm(props) {
             vacationEntitlement: vacationEntitlement,
             validFrom: moment(moment(validFrom).format('YYYY-MM-DD')),
         }
-        if(isVacationEntitlementValid())
-        props.saveWorkingModel(workingModel);
+        if (isVacationEntitlementValid())
+            props.saveWorkingModel(workingModel);
     }
 
     /**
@@ -140,7 +140,7 @@ export default function WorkingModelForm(props) {
     return (
         <div>
             <Box display="flex" justifyContent="center">
-                <Typography>Neues Arbeitsmodell</Typography>
+                <Typography>Neues Arbeitszeitmodell</Typography>
             </Box>
             <Grid container spacing={3} justify="center" style={{ marginTop: '0.5em' }}>
                 <Grid item>

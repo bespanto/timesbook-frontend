@@ -431,7 +431,7 @@ function SickDays(props) {
           <Card key={shortid.generate()} className={classes.card}>
             <CardHeader
               avatar={
-                <Avatar aria-label="recipe" style={{ backgroundColor: 'red' }}>
+                <Avatar aria-label="recipe" style={{ backgroundColor: '#9c7a4b' }}>
                   <LocalHospitalIcon />
                 </Avatar>
               }

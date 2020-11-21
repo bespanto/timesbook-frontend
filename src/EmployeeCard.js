@@ -26,7 +26,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+}
 
 export default function EmployeeCard(props) {
     const [expanded, setExpanded] = useState(false);
@@ -51,10 +51,10 @@ export default function EmployeeCard(props) {
      */
     const closeError = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
         setOpenSnackbar(false);
-      };
+    };
 
 
     /**
@@ -257,7 +257,7 @@ export default function EmployeeCard(props) {
                             <Divider variant="middle" />
                         </Box>
                         <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
-                            <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitsmodell</Typography>
+                            <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitszeitmodell</Typography>
                         </Box>
                         <Grid container direction="column" justify="center">
                             {getWorkingModels()}
