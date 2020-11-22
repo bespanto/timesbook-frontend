@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 import validate from "validate.js";
 // Material UI
 import Typography from "@material-ui/core/Typography";
@@ -21,6 +22,7 @@ function Register(props) {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
+  const [recaptchaKey, setRecaptchaKey] = useState("");
   const [passRepeat, setPassRepeat] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -130,6 +132,7 @@ function Register(props) {
           password: pass,
           name: name,
           organization: orga,
+          recaptchaKey: recaptchaKey
         }),
       })
         .then((response) => response.json())
@@ -138,6 +141,8 @@ function Register(props) {
             resetRegisterFields();
             showSuccess("Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
           }
+          else if (data.errorCode === 4027)
+            showError(errorMsg + " reCAPTCHA muss bestätigt werden");
           else if (data.errorCode === 4001) {
             showError(errorMsg + " Der Benutzer '" + newAdminAccount.username + "' existiert bereits.");
           } else if (data.errorCode === 4002)
@@ -188,6 +193,10 @@ function Register(props) {
       default:
         break;
     }
+  }
+
+  function onChange(value) {
+    setRecaptchaKey(value);
   }
 
   /**
@@ -270,6 +279,15 @@ function Register(props) {
           <MUILink component={Link} to="/RecoverPass" variant="body1">
             Passwort vergessen
           </MUILink>
+        </Grid>
+        <Grid item>
+          <ReCAPTCHA
+            sitekey="6LdvtOcZAAAAADiNtsa6N-4gQoFU1RIpFatGqGMb"
+            onChange={onChange}
+            theme="dark"
+            hl="de"
+            size="compact"
+          />
         </Grid>
       </Grid>
       <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
