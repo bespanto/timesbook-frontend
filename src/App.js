@@ -11,7 +11,7 @@ function App() {
     <BrowserRouter>
       <React.Fragment>
         <CssBaseline />
-        <div>
+        <div className="app-width">
           <Header />
           <Main />
         </div>
