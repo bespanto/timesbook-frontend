@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
+import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -16,9 +19,11 @@ function Alert(props) {
 function Login(props) {
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [username, setUsername] = useState("");
+  const [recaptchaKey, setRecaptchaKey] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   let history = useHistory();
+  const dispatch = useDispatch()
 
   /**
    * 
@@ -49,7 +54,11 @@ function Login(props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: username, password: pass }),
+      body: JSON.stringify({
+        username: username,
+        password: pass,
+        recaptchaKey: recaptchaKey
+      }),
     })
       .then(function (response) {
         return response.json();
@@ -57,8 +66,11 @@ function Login(props) {
       .then((data) => {
         if (data.success) {
           localStorage.setItem("jwt", data.success.jwt);
+          dispatch(UiStateSlice.setProfileChanged(new Date().getTime()));
           history.push("/TimeBooking");
         }
+        else if (data.errorCode === 4027)
+          showError(errorMsg + " reCAPTCHA muss bestätigt werden");
         else if (data.errorCode === 4003) {
           showError(errorMsg + " Der Benutzer '" + username + "' ist nicht registriert.");
         } else if (data.errorCode === 4004) {
@@ -92,6 +104,14 @@ function Login(props) {
       default:
         break;
     }
+  }
+
+  /**
+   * 
+   * @param {*} value 
+   */
+  function onChange(value) {
+    setRecaptchaKey(value);
   }
 
   /**
@@ -144,6 +164,15 @@ function Login(props) {
           <MUILink component={Link} to="/RecoverPass" variant="body1">
             Passwort vergessen
           </MUILink>
+        </Grid>
+        <Grid item>
+          <ReCAPTCHA
+            sitekey="6LdvtOcZAAAAADiNtsa6N-4gQoFU1RIpFatGqGMb"
+            onChange={onChange}
+            theme="dark"
+            hl="de"
+            size="compact"
+          />
         </Grid>
       </Grid>
       <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
