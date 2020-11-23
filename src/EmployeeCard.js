@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory, useLocation, Link } from "react-router-dom";
 import clsx from 'clsx';
 import shortid from "shortid";
+import moment from "moment";
 import FlextimeCorrection from "./FlextimeCorrection";
 import WorkingModelCard from "./WorkingModelCard";
 import WorkingModelForm from "./WorkingModelForm";
@@ -252,6 +253,15 @@ export default function EmployeeCard(props) {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
+                        <Box display="flex" justifyContent="center" style={{ marginBottom: '1em' }}>
+                            <Typography variant="h6" style={{ textDecoration: 'underline' }}>Registrierung</Typography>
+                        </Box>
+                        <Box display="flex" justifyContent="center">
+                            <Typography variant="body1">{moment(props.employee.registrationDate).format('DD.MM.YYYY')}</Typography>
+                        </Box>
+                        <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
+                            <Divider variant="middle" />
+                        </Box>
                         <FlextimeCorrection user={props.employee} />
                         <Box style={{ marginTop: '2em', marginBottom: '2em' }}>
                             <Divider variant="middle" />
@@ -260,7 +270,11 @@ export default function EmployeeCard(props) {
                             <Typography variant="h6" style={{ textDecoration: 'underline' }}>Arbeitszeitmodell</Typography>
                         </Box>
                         <Grid container direction="column" justify="center">
-                            {getWorkingModels()}
+                            {workingModels.length !== 0 ? getWorkingModels():
+                                <Grid item style={{textAlign: 'center'}}>
+                                    <Typography variant="caption">keine vorhanden</Typography>
+                                </Grid>
+                            }
                         </Grid>
                         <Grid container justify="center">
                             <IconButton>
@@ -280,7 +294,7 @@ export default function EmployeeCard(props) {
                     {error}
                 </Alert>
             </Snackbar>
-        </div>
+        </div >
     );
 }
 
