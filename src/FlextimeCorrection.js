@@ -7,6 +7,7 @@ import FlextimeCorrectionCard from "./FlextimeCorrectionCard"
 //Material UI
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
 import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import Typography from '@material-ui/core/Typography';
@@ -20,7 +21,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+}
 
 
 export default function FlextimeCorrection(props) {
@@ -322,11 +323,11 @@ export default function FlextimeCorrection(props) {
                     <Typography>{actualFlextime ? Utils.minutesToTimeString(actualFlextime) : '--:--'} Std.</Typography>
                 </Grid>
             </Grid>
-            <Grid item xs={12} style={{ textAlign: 'center', marginTop: '1em' }}>
+            <Grid item xs={12} style={{ textAlign: 'center', marginTop: '1em', marginBottom: '1em' }}>
                 <Typography>Korrekturen</Typography>
             </Grid>
             <Grid container direction="column" justify="center" >
-                {flextimes.map((element) => {
+                {flextimes.length !== 0 ? flextimes.map((element) => {
                     return <FlextimeCorrectionCard
                         key={shortid.generate()}
                         id={element._id}
@@ -335,7 +336,11 @@ export default function FlextimeCorrection(props) {
                         value={element.value}
                         deleteFlextime={deleteFlextime}
                     />
-                })}
+                }) :
+                    <Grid item style={{ textAlign: 'center' }}>
+                        <Typography variant="caption">keine vorhanden</Typography>
+                    </Grid>
+                }
             </Grid>
             <Grid container justify="center">
                 <IconButton>
@@ -347,58 +352,63 @@ export default function FlextimeCorrection(props) {
                 </IconButton>
             </Grid>
             {showCorrectionForm &&
-                <Grid container spacing={1} justify="center" alignItems="flex-end" >
-                    <Grid item>
-                        <TextField
-                            id="overtimeCorHours"
-                            type="number"
-                            label="Std."
-                            name="overtimeCorHours"
-                            value={overtimeCorHours}
-                            onChange={handleChange}
-                            style={{ width: '4em' }}
-                        />
-                    </Grid>
-                    <Grid item>
-                        :
-                </Grid>
-                    <Grid item>
-                        <TextField
-                            id="overtimeCorMinutes"
-                            type="number"
-                            label="Min."
-                            name="overtimeCorMinutes"
-                            value={overtimeCorMinutes}
-                            onChange={handleChange}
-                            style={{ width: '2em' }}
-                        />
-                    </Grid>
-                    <Grid container justify="center" alignItems="center" >
+                <Container>
+                    <Box display="flex" justifyContent="center">
+                        <Typography>Neue Korrektur</Typography>
+                    </Box>
+                    <Grid container spacing={1} justify="center" alignItems="flex-end" >
                         <Grid item>
                             <TextField
-                                id="overtimeCorText"
-                                type="text"
-                                label="Grund"
-                                name="overtimeCorText"
-                                value={overtimeCorText}
+                                id="overtimeCorHours"
+                                type="number"
+                                label="Std."
+                                name="overtimeCorHours"
+                                value={overtimeCorHours}
                                 onChange={handleChange}
-                                style={{ width: '10em' }}
+                                style={{ width: '4em' }}
                             />
                         </Grid>
-                    </Grid>
-                    <Grid container justify="center" alignItems="center" >
                         <Grid item>
-                            <IconButton onClick={() => handleOvertimeCorrectionPlus()}>
-                                <AddCircleIcon fontSize="large" />
-                            </IconButton>
-                        </Grid>
-                        <Grid item>
-                            <IconButton onClick={() => handleOvertimeCorrectionMinus()}>
-                                <RemoveCircleIcon fontSize="large" />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
+                            :
                 </Grid>
+                        <Grid item>
+                            <TextField
+                                id="overtimeCorMinutes"
+                                type="number"
+                                label="Min."
+                                name="overtimeCorMinutes"
+                                value={overtimeCorMinutes}
+                                onChange={handleChange}
+                                style={{ width: '2em' }}
+                            />
+                        </Grid>
+                        <Grid container justify="center" alignItems="center" >
+                            <Grid item>
+                                <TextField
+                                    id="overtimeCorText"
+                                    type="text"
+                                    label="Grund"
+                                    name="overtimeCorText"
+                                    value={overtimeCorText}
+                                    onChange={handleChange}
+                                    style={{ width: '10em' }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid container justify="center" alignItems="center" >
+                            <Grid item>
+                                <IconButton onClick={() => handleOvertimeCorrectionPlus()}>
+                                    <AddCircleIcon fontSize="large" />
+                                </IconButton>
+                            </Grid>
+                            <Grid item>
+                                <IconButton onClick={() => handleOvertimeCorrectionMinus()}>
+                                    <RemoveCircleIcon fontSize="large" />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Container>
             }
             <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
                 <Alert onClose={closeError} severity="error">
