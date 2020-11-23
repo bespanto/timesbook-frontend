@@ -18,7 +18,6 @@ function Alert(props) {
 function Login(props) {
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [username, setUsername] = useState("");
-  const [recaptchaKey, setRecaptchaKey] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
   let history = useHistory();
@@ -55,8 +54,7 @@ function Login(props) {
       },
       body: JSON.stringify({
         username: username,
-        password: pass,
-        recaptchaKey: recaptchaKey
+        password: pass
       }),
     })
       .then(function (response) {
