@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
-import ReCAPTCHA from "react-google-recaptcha";
 import * as UiStateSlice from "./redux/UiStateSlice";
 // Material UI
 import Typography from "@material-ui/core/Typography";
@@ -107,14 +106,6 @@ function Login(props) {
   }
 
   /**
-   * 
-   * @param {*} value 
-   */
-  function onChange(value) {
-    setRecaptchaKey(value);
-  }
-
-  /**
    * Render output
    */
   return (
@@ -163,15 +154,6 @@ function Login(props) {
           <MUILink component={Link} to="/RecoverPass" variant="body1">
             Passwort vergessen
           </MUILink>
-        </Grid>
-        <Grid item>
-          <ReCAPTCHA
-            sitekey="6LdvtOcZAAAAADiNtsa6N-4gQoFU1RIpFatGqGMb"
-            onChange={onChange}
-            theme="dark"
-            hl="de"
-            size="compact"
-          />
         </Grid>
       </Grid>
       <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={closeError}>
