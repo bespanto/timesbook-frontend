@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import validate from "validate.js";
 // Material UI
@@ -26,6 +26,7 @@ function Register(props) {
   const [passRepeat, setPassRepeat] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const history = useHistory();
 
 
   /**
@@ -63,6 +64,7 @@ function Register(props) {
       return;
     }
     setOpenSuccessSnackbar(false);
+    history.push('/Login');
   };
 
   /**
@@ -140,6 +142,7 @@ function Register(props) {
           if (data.success) {
             resetRegisterFields();
             showSuccess("Bitte prüfen Sie Ihre E-Mails und bestätigen Sie die Registrierung.");
+            setTimeout(() => history.push('/Login'), 6000);
           }
           else if (data.errorCode === 4027)
             showError(errorMsg + " reCAPTCHA muss bestätigt werden");
@@ -211,7 +214,7 @@ function Register(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item style={{ paddingTop: '1em', paddingBottom: '1em' }}>
           <Typography variant="h5">Registrieren</Typography>
         </Grid>
         <Grid item>
@@ -286,7 +289,6 @@ function Register(props) {
             onChange={onChange}
             theme="dark"
             hl="de"
-            size="compact"
           />
         </Grid>
       </Grid>
