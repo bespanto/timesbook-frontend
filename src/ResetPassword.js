@@ -173,13 +173,13 @@ function ResetPassword(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item style={{paddingTop: '1em', paddingBottom: '1em'}}>
           <Typography variant="h5">
             Passwort für '{query.get("username")}' setzen
         </Typography>
         </Grid>
         {showLoginLink ? (
-          <Grid item>
+          <Grid item style={{paddingTop: '1em', paddingBottom: '1em'}}>
             <MUILink variant="body1" component={Link} to="/Login">
               Login
           </MUILink>

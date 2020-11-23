@@ -126,10 +126,9 @@ function Login(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item style={{paddingTop: '1em', paddingBottom: '1em'}}>
           <Typography variant="h5">Login</Typography>
         </Grid>
-
         <Grid item>
           <TextField
             id="username"
