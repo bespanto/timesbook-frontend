@@ -130,7 +130,7 @@ function ConfirmAccount(props) {
         justify="center"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item style={{paddingTop: '1em', paddingBottom: '1em'}}>
           <Typography variant="h6">
             Bestätigung der Registrierung
         </Typography>
